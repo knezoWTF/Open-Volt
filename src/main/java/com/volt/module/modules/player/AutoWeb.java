@@ -82,8 +82,7 @@ public final class AutoWeb extends Module {
 
         if (websPlaced < targetWebCount) {
             ((MinecraftClientAccessor) mc).invokeDoItemUse();
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
             websPlaced++;
             clickTimer.reset();
         } else {

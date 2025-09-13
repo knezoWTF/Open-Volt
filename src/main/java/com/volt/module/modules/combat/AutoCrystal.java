@@ -62,8 +62,7 @@ public final class AutoCrystal extends Module {
             if (entityHit.getEntity() instanceof EndCrystalEntity crystal) {
                 if (mc.player.getPos().distanceTo(crystal.getPos()) <= 4.5) {
                     ((MinecraftClientAccessor) mc).invokeDoAttack();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                 }
                 return;
             }
@@ -80,8 +79,7 @@ public final class AutoCrystal extends Module {
 
                 if (mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL) {
                     ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                 }
             }
         }
@@ -136,9 +134,5 @@ public final class AutoCrystal extends Module {
     @Override
     public int getKey() {
         return -1;
-    }
-
-    @Override
-    public void setKey(int key) {
     }
 }

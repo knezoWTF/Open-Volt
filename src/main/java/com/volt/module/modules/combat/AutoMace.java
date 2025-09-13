@@ -163,9 +163,8 @@ public final class AutoMace extends Module {
 
     private void attackTarget() {
         if (currentTarget == null) return;
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+    ((MinecraftClientAccessor) mc).invokeDoAttack();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
     }
 
     private void handleLanding() {

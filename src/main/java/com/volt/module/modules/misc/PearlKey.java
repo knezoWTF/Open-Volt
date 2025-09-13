@@ -71,8 +71,7 @@ public final class PearlKey extends Module {
 
         if (mc.interactionManager != null) {
             mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         }
 
         mc.player.getInventory().selectedSlot = currentSlot;
@@ -84,8 +83,7 @@ public final class PearlKey extends Module {
 
         if (mc.interactionManager != null) {
             mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         }
 
         scheduleSlotRestore();
@@ -102,7 +100,6 @@ public final class PearlKey extends Module {
     }
 
     private void scheduleSlotRestore() {
-        // Using a scheduled task instead of raw Thread to be safer in MC environment
         new Thread(() -> {
             try {
                 Thread.sleep(switchDelayMS.getValueInt());
@@ -135,6 +132,6 @@ public final class PearlKey extends Module {
 
     @Override
     public void setKey(int key) {
-        // no-op since pearlKeybind handles the key
+   
     }
 }

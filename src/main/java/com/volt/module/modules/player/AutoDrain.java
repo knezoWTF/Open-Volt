@@ -65,9 +65,8 @@ public final class AutoDrain extends Module {
 
         originalSlot = mc.player.getInventory().selectedSlot;
         mc.player.getInventory().selectedSlot = emptyBucketSlot;
-        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         pendingSwitchBack = true;
         switchBackTimer.reset();
         cooldownTimer.reset();

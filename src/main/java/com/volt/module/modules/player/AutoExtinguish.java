@@ -67,7 +67,7 @@ public final class AutoExtinguish extends Module {
         long max = maxMS.getValueInt();
 
         if (min >= max) {
-            currentDelay = min; // using the min value directly
+            currentDelay = min;
         } else {
             currentDelay = (long) MathUtils.randomDoubleBetween(min, max);
         }
@@ -95,8 +95,7 @@ public final class AutoExtinguish extends Module {
                 case PLACING:
                     InventoryUtil.swapToSlot(Items.WATER_BUCKET);
                     ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                     currentState = pickUP.getValue() ? State.PICKING_UP : State.RETURNING;
                     timer.reset();
                     break;
@@ -104,8 +103,7 @@ public final class AutoExtinguish extends Module {
                 case PICKING_UP:
                     if (delay.hasElapsedTime(100)) {
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         currentState = State.RETURNING;
                         timer.reset();
                     }
