@@ -16,8 +16,7 @@
     "ScreenMixin",
     "WorldRendererMixin",
     "ClientPlayerInteractionManagerMixin",
-    "PlayerEntityMixin",
-    "ClientPlayerEntityMixin"
+    "PlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
