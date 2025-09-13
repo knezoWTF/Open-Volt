@@ -202,9 +202,8 @@ private boolean setPreferCrits() {
         return item instanceof AxeItem || item instanceof SwordItem;
     }
         public void attack() {
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+    ((MinecraftClientAccessor) mc).invokeDoAttack();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();

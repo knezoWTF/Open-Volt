@@ -92,8 +92,7 @@ public final class KeyCrystal extends Module {
 
                 if (mc.player.getPos().distanceTo(crystal.getPos()) <= 6.0 && attackTimer.hasElapsedTime(150)) {
                     ((MinecraftClientAccessor) mc).invokeDoAttack();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                     attackTimer.reset();
                 }
                 return;
@@ -110,8 +109,7 @@ public final class KeyCrystal extends Module {
                 if (hasItemInHotbar(Items.END_CRYSTAL)) {
                     InventoryUtil.swapToSlot(Items.END_CRYSTAL);
                     ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                 }
             } else if (isValidPosition(placementPos) && !hasPlacedObsidian) {
                 BlockPos below = placementPos.down();
@@ -119,8 +117,7 @@ public final class KeyCrystal extends Module {
                     if (hasItemInHotbar(Items.OBSIDIAN)) {
                         InventoryUtil.swapToSlot(Items.OBSIDIAN);
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         hasPlacedObsidian = true;
                     }
                 }

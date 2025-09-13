@@ -226,9 +226,8 @@ public final class ThrowPot extends Module {
         }
 
         mc.player.getInventory().selectedSlot = slot;
-        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
     }
 
     private void finishThrow() {

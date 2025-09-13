@@ -98,44 +98,44 @@ public final class KeyAnchor extends Module {
             BlockPos targetBlock = blockHit.getBlockPos();
             var blockState = mc.world.getBlockState(targetBlock);
 
-
             if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
                 int charges = blockState.get(RespawnAnchorBlock.CHARGES);
 
                 if (charges == 0) {
                     if (swapToItem(Items.GLOWSTONE)) {
+                        // set a guard to avoid multiple glowstone placements in a single cycle
+                        hasPlacedThisCycle = true;
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                     }
                 } else {
                     if (swapToSword()) {
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         scheduleRestoreOriginalSlot();
                     } else if (swapToItem(Items.TOTEM_OF_UNDYING)) {
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         scheduleRestoreOriginalSlot();
                     }
+                    // mark placed to prevent immediate re-placement
+                    hasPlacedThisCycle = true;
                 }
+
                 return;
             }
-
 
             BlockPos placementPos = targetBlock.offset(blockHit.getSide());
             if (isValidAnchorPosition(placementPos) && !hasPlacedThisCycle) {
                 if (swapToItem(Items.RESPAWN_ANCHOR)) {
-                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                    // set flag first to avoid duplicate placements from re-entrant logic
                     hasPlacedThisCycle = true;
+                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                 }
             }
+            }
         }
-    }
 
     private boolean isValidAnchorPosition(BlockPos pos) {
         if (mc.world == null || mc.player == null) return false;

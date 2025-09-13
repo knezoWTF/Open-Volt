@@ -104,9 +104,8 @@ public final class WindChargeKey extends Module {
 
         mc.player.getInventory().selectedSlot = windChargeSlot;
 
-        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 
         mc.player.getInventory().selectedSlot = currentSlot;
     }
@@ -116,9 +115,8 @@ public final class WindChargeKey extends Module {
 
         mc.player.getInventory().selectedSlot = windChargeSlot;
 
-        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 
         needsSlotRestore = true;
         switchBackTimer.reset();

@@ -71,8 +71,7 @@ public final class PearlKey extends Module {
 
         if (mc.interactionManager != null) {
             mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         }
 
         mc.player.getInventory().selectedSlot = currentSlot;
@@ -84,8 +83,7 @@ public final class PearlKey extends Module {
 
         if (mc.interactionManager != null) {
             mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         }
 
         scheduleSlotRestore();
