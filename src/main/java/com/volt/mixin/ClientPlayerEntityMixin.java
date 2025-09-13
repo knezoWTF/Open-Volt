@@ -9,6 +9,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +21,9 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 
     @Shadow
     protected abstract void sendSprintingPacket();
+
+    @Shadow
+    private boolean lastSneaking;
 
     @Shadow
     protected abstract boolean isCamera();
@@ -79,6 +83,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 
 
         this.sendSprintingPacket();
+        this.sendSneakingPacket();
 
         if (this.isCamera()) {
             Volt.INSTANCE.getVoltEventBus().post(event);
@@ -131,6 +136,15 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 
             this.lastOnGround = event.isOnGround();
             this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
+        }
+    }
+
+    private void sendSneakingPacket() {
+        boolean sneaking = this.isSneaking();
+        if (sneaking != this.lastSneaking) {
+            ClientCommandC2SPacket.Mode mode = sneaking ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
+            this.networkHandler.sendPacket(new ClientCommandC2SPacket((ClientPlayerEntity)(Object)this, mode));
+            this.lastSneaking = sneaking;
         }
     }
 }
