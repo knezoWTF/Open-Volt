@@ -53,10 +53,10 @@ public final class ShieldBreaker extends Module {
 		}
 
 		if (savedSlot == -1) savedSlot = mc.player.getInventory().selectedSlot;
-		if (!slotTimer.hasElapsedTime(slotDelay.getValueInt())) return;
+		if (!slotTimer.hasElapsedTime(slotDelay.getValueInt() * 50)) return;
 		InventoryUtil.swapToWeapon(AxeItem.class);
 
-		if (!hitDelayTimer.hasElapsedTime(hitDelay.getValueInt())) return;
+		if (!hitDelayTimer.hasElapsedTime(hitDelay.getValueInt() * 50)) return;
 		((MinecraftClientAccessor) mc).invokeDoAttack();
 		MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
