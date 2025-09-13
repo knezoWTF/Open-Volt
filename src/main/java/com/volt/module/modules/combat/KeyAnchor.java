@@ -103,7 +103,6 @@ public final class KeyAnchor extends Module {
 
                 if (charges == 0) {
                     if (swapToItem(Items.GLOWSTONE)) {
-                        // set a guard to avoid multiple glowstone placements in a single cycle
                         hasPlacedThisCycle = true;
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
@@ -118,7 +117,6 @@ public final class KeyAnchor extends Module {
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         scheduleRestoreOriginalSlot();
                     }
-                    // mark placed to prevent immediate re-placement
                     hasPlacedThisCycle = true;
                 }
 
@@ -128,7 +126,6 @@ public final class KeyAnchor extends Module {
             BlockPos placementPos = targetBlock.offset(blockHit.getSide());
             if (isValidAnchorPosition(placementPos) && !hasPlacedThisCycle) {
                 if (swapToItem(Items.RESPAWN_ANCHOR)) {
-                    // set flag first to avoid duplicate placements from re-entrant logic
                     hasPlacedThisCycle = true;
                     ((MinecraftClientAccessor) mc).invokeDoItemUse();
                     MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);

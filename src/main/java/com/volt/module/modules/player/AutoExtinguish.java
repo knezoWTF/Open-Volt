@@ -67,7 +67,7 @@ public final class AutoExtinguish extends Module {
         long max = maxMS.getValueInt();
 
         if (min >= max) {
-            currentDelay = min; // using the min value directly
+            currentDelay = min;
         } else {
             currentDelay = (long) MathUtils.randomDoubleBetween(min, max);
         }

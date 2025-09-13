@@ -100,7 +100,6 @@ public final class PearlKey extends Module {
     }
 
     private void scheduleSlotRestore() {
-        // Using a scheduled task instead of raw Thread to be safer in MC environment
         new Thread(() -> {
             try {
                 Thread.sleep(switchDelayMS.getValueInt());
@@ -133,6 +132,6 @@ public final class PearlKey extends Module {
 
     @Override
     public void setKey(int key) {
-        // no-op since pearlKeybind handles the key
+   
     }
 }

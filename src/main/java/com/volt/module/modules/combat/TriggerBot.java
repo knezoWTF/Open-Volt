@@ -208,7 +208,6 @@ private boolean setPreferCrits() {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
         }
-        // After each attack, recalculate sword/axe delays for next attack
         waitingForDelay = false;
 }
     @Override

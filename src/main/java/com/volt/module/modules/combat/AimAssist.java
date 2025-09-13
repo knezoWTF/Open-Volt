@@ -82,7 +82,6 @@ public class AimAssist extends Module {
     private Entity findBestTarget() {
         if (isNull()) return null;
 
-        // Quick first-pass check
         for (Entity entity : mc.world.getEntities()) {
             if (!isValidTarget(entity)) continue;
             double distance = mc.player.distanceTo(entity);
