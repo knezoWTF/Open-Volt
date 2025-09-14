@@ -42,8 +42,10 @@ public final class TriggerBot extends Module {
     public static final NumberSetting axePostDelayMin = new NumberSetting("Axe Post Min", 1, 500, 120, 0.5);
     public static final NumberSetting reactionTimeMax = new NumberSetting("Reaction Time Max", 1, 350, 95, 0.5);
     public static final NumberSetting reactionTimeMin = new NumberSetting("Reaction Time Min", 1, 350, 20, 0.5);
+    public static final BooleanSetting intelligentCooldown = new BooleanSetting("Intelligent Cooldown", false);
     public static final BooleanSetting preferCrits = new BooleanSetting("Prefer Crits", false);
     public static final NumberSetting preferCritsMin = new NumberSetting("CritMin Cooldown", 0.1, 1, 0.90, 0.01);
+    public static final BooleanSetting forcePreferCrits = new BooleanSetting("Force Prefer Crits", false);
     public static final BooleanSetting ignorePassiveMobs = new BooleanSetting("No Passive", true);
     public static final BooleanSetting ignoreInvisible = new BooleanSetting("No Invisible", true);
     public static final BooleanSetting ignoreCrystals = new BooleanSetting("No Crystals", true);
@@ -63,12 +65,13 @@ public final class TriggerBot extends Module {
     private float randomizedThreshold = 0;
     private Entity target;
     private String lastTargetUUID = null;
+    private boolean wasSprinting = false;
 
     public TriggerBot() {
         super("Trigger Bot", "Makes you automatically attack once aimed at a target", -1, Category.COMBAT);
         addSettings(
-                swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin, axePostDelayMax, axePostDelayMin,reactionTimeMax,reactionTimeMin,ignorePassiveMobs,
-                ignoreCrystals, respectShields, preferCrits,preferCritsMin,  ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe, disableOnWorldChange, samePlayer
+                swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin, axePostDelayMax, axePostDelayMin,reactionTimeMax,reactionTimeMin,intelligentCooldown,ignorePassiveMobs,
+                ignoreCrystals, respectShields, preferCrits,preferCritsMin,forcePreferCrits,  ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe, disableOnWorldChange, samePlayer
         );
     }
 
@@ -114,7 +117,17 @@ public final class TriggerBot extends Module {
         if (!waitingForReaction) {
             waitingForReaction = true;
             timerReactionTime.reset();
-            currentReactionDelay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+            if (intelligentCooldown.getValue() && waitingForDelay) {
+                double distance = mc.player.distanceTo(target);
+                double maxDistance = 3.0;
+                double multiplier = distance < maxDistance / 2 ? 0.666 : 1.0; 
+
+                long elapsed = timer.getElapsedTime();
+                currentReactionDelay = (long) (Math.max(0, currentReactionDelay - elapsed) * multiplier);
+            } else {
+                currentReactionDelay =
+                (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+            }
         }
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
             if (hasElapsedDelay()) {
@@ -216,15 +229,30 @@ private boolean setPreferCrits() {
         Item item = mc.player.getMainHandStack().getItem();
         return item instanceof AxeItem || item instanceof SwordItem;
     }
-        public void attack() {
-    ((MinecraftClientAccessor) mc).invokeDoAttack();
-    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-        if (samePlayer.getValue() && target != null) {
-            lastTargetUUID = target.getUuidAsString();
-            samePlayerTimer.reset();
+
+public void attack() {
+    if (forcePreferCrits.getValue() && setPreferCrits()) {
+        wasSprinting = mc.player.isSprinting();
+        if (wasSprinting) {
+            mc.options.sprintKey.setPressed(false);
         }
-        waitingForDelay = false;
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        if (wasSprinting) mc.options.sprintKey.setPressed(true);
+
+    } else {
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+    }
+
+    if (samePlayer.getValue() && target != null) {
+        lastTargetUUID = target.getUuidAsString();
+        samePlayerTimer.reset();
+    }
+
+    waitingForDelay = false;
 }
+
     @Override
     public void onEnable() {
         timer.reset();
