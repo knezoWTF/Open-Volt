@@ -47,6 +47,12 @@ public final class ProfileManager {
     private void readProfileFromFile(final File profileFile) {
         try (FileReader reader = new FileReader(profileFile, StandardCharsets.UTF_8)) {
             final JsonObject json = gson.fromJson(reader, JsonObject.class);
+
+            if (json == null) {
+                ChatUtils.addChatMessage("§eProfile file is empty or invalid: " + profileFile.getName());
+                return;
+            }
+
             for (Module module : moduleManager.getModules()) {
                 if (json.has(module.getName())) {
                     final JsonObject moduleJson = json.getAsJsonObject(module.getName());
@@ -54,6 +60,9 @@ public final class ProfileManager {
                 }
             }
             ChatUtils.addChatMessage("Profile loaded successfully.");
+        } catch (com.google.gson.JsonSyntaxException jse) {
+            ChatUtils.addChatMessage("§cFailed to parse profile (invalid JSON): " + profileFile.getName());
+            jse.printStackTrace();
         } catch (IOException e) {
             ChatUtils.addChatMessage("§cFailed to load profile: " + e.getMessage());
             e.printStackTrace();
