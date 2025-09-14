@@ -6,10 +6,13 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
+import com.volt.utils.mc.CombatUtil;
 import com.volt.utils.mc.InventoryUtil;
 import com.volt.utils.mc.MouseSimulation;
 import com.volt.utils.math.TimerUtil;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Items;
@@ -22,6 +25,8 @@ public final class ShieldBreaker extends Module {
 	private final BooleanSetting revertSlot = new BooleanSetting("Go back to original slot", true);
 	private final BooleanSetting autoStun = new BooleanSetting("Auto Stun", false);
 	private final BooleanSetting requireAxe = new BooleanSetting("Require Axe", false);
+	private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
+	private final BooleanSetting requireClick = new BooleanSetting("Require Click", false);
 
 	private final TimerUtil hitDelayTimer = new TimerUtil();
 	private final TimerUtil slotTimer = new TimerUtil();
@@ -29,21 +34,20 @@ public final class ShieldBreaker extends Module {
 
 	public ShieldBreaker() {
 		super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-		this.addSettings(hitDelay, slotDelay, revertSlot, autoStun, requireAxe);
+		this.addSettings(hitDelay, slotDelay, revertSlot, autoStun, requireAxe, rayTraceCheck, requireClick);
 	}
 
 	@EventHandler
 	private void onTickEvent(TickEvent event) {
 		if (isNull()) return;
 		if (mc.currentScreen != null) return;
-
 		if (requireAxe.getValue() && !(mc.player.getMainHandStack().getItem() instanceof AxeItem)) return;
-
+		if (requireClick.getValue() && !mc.mouse.wasLeftButtonClicked()) return;
 		if (!(mc.crosshairTarget instanceof EntityHitResult entityHit)) return;
 
 		var entity = entityHit.getEntity();
 		if (!(entity instanceof PlayerEntity player)) return;
-
+		if (rayTraceCheck.getValue() && CombatUtil.isShieldFacingAway((LivingEntity) entity)) return;
 		if (!player.isHolding(Items.SHIELD) || !player.isBlocking()) {
 			if (savedSlot != -1) {
 				if (revertSlot.getValue()) mc.player.getInventory().selectedSlot = savedSlot;

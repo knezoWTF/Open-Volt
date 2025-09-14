@@ -13,10 +13,13 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
+import com.volt.utils.mc.CombatUtil;
 import com.volt.utils.mc.MouseSimulation;
 import com.volt.module.modules.misc.Teams;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -99,7 +102,7 @@ public final class TriggerBot extends Module {
         if (!hasTarget(target)) return;
         if (respectShields.getValue()) {
             Item item = mc.player.getMainHandStack().getItem();
-            if (target instanceof PlayerEntity playerTarget && playerTarget.isBlocking() && item instanceof SwordItem) {
+            if (target instanceof PlayerEntity playerTarget && CombatUtil.isShieldFacingAway(((LivingEntity)playerTarget)) && item instanceof SwordItem) {
                 return;
             }
         }
@@ -137,23 +140,35 @@ public final class TriggerBot extends Module {
     }
 
 private boolean setPreferCrits() {
-    if (!preferCrits.getValue()) {
-        return false;
-    }
+    if (!preferCrits.getValue()) return false;
 
     assert mc.player != null;
-    boolean isFalling = mc.player.getVelocity().y < -0.08F; 
+
     boolean isSneaking = mc.player.isSneaking();
-    boolean isOnGround = mc.player.isOnGround();
     boolean isUsingItem = mc.player.isUsingItem();
     boolean hasBlindness = mc.player.hasStatusEffect(StatusEffects.BLINDNESS);
     boolean isRiding = mc.player.getVehicle() != null;
     boolean isInWater = mc.player.isTouchingWater();
     boolean isInLava = mc.player.isInLava();
     boolean isCooldownCharged = mc.player.getAttackCooldownProgress(0.0F) >= preferCritsMin.getValueFloat();
-        return isFalling && !isSneaking && !isOnGround && !isUsingItem && 
-           !hasBlindness && !isRiding && !isInWater && !isInLava && isCooldownCharged;
+
+    boolean isFalling = mc.player.getVelocity().y < -0.08F;
+    boolean inCobweb = mc.world.getBlockState(mc.player.getBlockPos()).getBlock() == Blocks.COBWEB
+            || mc.world.getBlockState(mc.player.getBlockPos().up()).getBlock() == Blocks.COBWEB
+            || mc.world.getBlockState(mc.player.getBlockPos().down()).getBlock() == Blocks.COBWEB;
+    boolean isFallFlying = mc.player.isFallFlying();
+
+    return (isFalling || inCobweb || isFallFlying)
+            && !isSneaking
+            && !mc.player.isOnGround()
+            && !isUsingItem
+            && !hasBlindness
+            && !isRiding
+            && !isInWater
+            && !isInLava
+            && isCooldownCharged;
 }
+
 
 
     private boolean samePlayerCheck(Entity entity) {
