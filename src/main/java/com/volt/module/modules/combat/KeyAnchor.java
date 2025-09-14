@@ -25,7 +25,7 @@ public final class KeyAnchor extends Module {
 
     private final KeybindSetting anchorKeybind = new KeybindSetting("Anchor Key", GLFW.GLFW_KEY_X, false);
     private final NumberSetting delay = new NumberSetting("Delay (MS)", 1, 500, 50, 1);
-    private final NumberSetting restoreDelayTicks = new NumberSetting("Restore Delay", 0, 20, 2, 1);
+    private final NumberSetting restoreDelayTicks = new NumberSetting("Restore Delay", 1, 20, 2, 1);
 
     private final TimerUtil timer = new TimerUtil();
     private boolean keyPressed = false;
