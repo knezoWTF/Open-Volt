@@ -52,9 +52,9 @@ public final class ModuleManager {
         add(
                 new AutoMace(), new TotemHit(), new TriggerBot(), new Velocity(),
                 new ShieldBreaker(), new ThrowPot(), new ElytraHotSwap(),
-                new AntiMiss(), new WTap(), new STap(),     
-                new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new SwordSwap()
-        );
+                new AntiMiss(), new WTap(), new STap(),
+                new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new KeyCrystal(), new KeyAnchor(),
+                new SwordSwap());
         // Movement
         add(new Sprint(), new AutoFirework(), new AutoHeadHitter());
 
@@ -63,21 +63,18 @@ public final class ModuleManager {
                 new AutoExtinguish(), new AutoTool(), new AutoWeb(), new AutoRefill(),
                 new AutoDrain(), new AutoCrafter(), new FastPlace(), new FastEXP(),
                 new Eagle(), new TrapSave(), new PingSpoof(), new AutoDoubleHand(),
-                new FastMine()
-        );
+                new FastMine());
 
         // Render
         add(
                 new ContainerSlots(), new FullBright(), new HUD(), new PlayerESP(),
                 new SwingSpeed(), new OreESP(), new Trajectory(), new FpsCounter(),
-                new SkeletonESP(), new EntityESP()
-        );
+                new SkeletonESP(), new EntityESP());
 
         // Misc
         add(
                 new CartKey(), new HoverTotem(), new MiddleClickFriend(),
-                new PearlKey(), new WindChargeKey(), new Teams(), new FakePlayer()
-        );
+                new PearlKey(), new WindChargeKey(), new Teams(), new FakePlayer());
 
         // Client
         add(new ClickGUIModule(), new Client(), new Panic(), new Debugger());
