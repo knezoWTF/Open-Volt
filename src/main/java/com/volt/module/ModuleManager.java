@@ -8,6 +8,7 @@ import com.volt.module.modules.combat.*;
 import com.volt.module.modules.misc.*;
 import com.volt.module.modules.movement.AutoFirework;
 import com.volt.module.modules.movement.AutoHeadHitter;
+import com.volt.module.modules.movement.NoJumpDelay;
 import com.volt.module.modules.movement.Sprint;
 import com.volt.module.modules.player.*;
 import com.volt.module.modules.render.*;
@@ -55,7 +56,7 @@ public final class ModuleManager {
                 new AntiMiss(), new WTap(), new STap(),
                 new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new SwordSwap());
         // Movement
-        add(new Sprint(), new AutoFirework(), new AutoHeadHitter());
+        add(new Sprint(), new AutoFirework(), new AutoHeadHitter(), new NoJumpDelay());
 
         // Player
         add(
