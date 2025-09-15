@@ -11,7 +11,6 @@ import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.InventoryUtil;
 import com.volt.utils.mc.MouseSimulation;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.Items;
@@ -27,11 +26,17 @@ import org.lwjgl.glfw.GLFW;
 public final class AutoCrystal extends Module {
 
     private final KeybindSetting crystalKey = new KeybindSetting("Crystal Key", GLFW.GLFW_MOUSE_BUTTON_4, false);
+
     private final NumberSetting delay = new NumberSetting("Delay (MS)", 1, 200, 50, 1);
+
     private final BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
+
     private final BooleanSetting autoSwitch = new BooleanSetting("Auto Switch", true);
+
     private final BooleanSetting switchBack = new BooleanSetting("Switch Back", true);
+
     private final TimerUtil timer = new TimerUtil();
+
     private int originalSlot = -1;
 
     public AutoCrystal() {
@@ -54,20 +59,24 @@ public final class AutoCrystal extends Module {
     }
 
     private void processCrystal() {
-        if (antiSuicide.getValue() && !mc.player.isOnGround()) {
-            return;
-        }
+        if (antiSuicide.getValue() && !mc.player.isOnGround()) return;
 
         if (mc.crosshairTarget instanceof EntityHitResult entityHit) {
             if (entityHit.getEntity() instanceof EndCrystalEntity crystal) {
-                if (mc.player.getPos().distanceTo(crystal.getPos()) <= 4.5) {
-                    ((MinecraftClientAccessor) mc).invokeDoAttack();
-                    MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                if (crystal != null
+                        && !crystal.isRemoved()
+                        && crystal.isAlive()
+                        && mc.world.getEntityById(crystal.getId()) != null) {
+
+                    if (mc.player.getPos().distanceTo(crystal.getPos()) <= 4.5) {
+                        ((MinecraftClientAccessor) mc).invokeDoAttack();
+                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                    }
                 }
                 return;
             }
         }
-
+        
         if (mc.crosshairTarget instanceof BlockHitResult blockHit) {
             BlockPos targetBlock = blockHit.getBlockPos();
             BlockPos placementPos = targetBlock.offset(blockHit.getSide());
@@ -88,9 +97,7 @@ public final class AutoCrystal extends Module {
     private boolean hasItemInHotbar() {
         for (int i = 0; i < 9; i++) {
             var stack = mc.player.getInventory().getStack(i);
-            if (!stack.isEmpty() && stack.getItem() == Items.END_CRYSTAL) {
-                return true;
-            }
+            if (!stack.isEmpty() && stack.getItem() == Items.END_CRYSTAL) return true;
         }
         return false;
     }
@@ -106,7 +113,6 @@ public final class AutoCrystal extends Module {
         if (mc.player.getPos().distanceTo(Vec3d.ofCenter(pos)) > 4.5) return false;
 
         if (!mc.world.getBlockState(pos).isAir()) return false;
-
         if (!mc.world.getBlockState(pos.up()).isAir()) return false;
 
         BlockPos playerPos = mc.player.getBlockPos();
@@ -116,9 +122,7 @@ public final class AutoCrystal extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-        if (autoSwitch.getValue()) {
-            originalSlot = mc.player.getInventory().selectedSlot;
-        }
+        if (autoSwitch.getValue()) originalSlot = mc.player.getInventory().selectedSlot;
         timer.reset();
     }
 

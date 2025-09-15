@@ -28,6 +28,7 @@ public final class ShieldBreaker extends Module {
     private final BooleanSetting requireAxe = new BooleanSetting("Require Axe", false);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
     private final BooleanSetting requireClick = new BooleanSetting("Require Click", false);
+	private final BooleanSetting ignoreIfUsingItem = new BooleanSetting("Ignore if using item", true);
 
     private final TimerUtil hitDelayTimer = new TimerUtil();
     private final TimerUtil slotTimer = new TimerUtil();
@@ -36,7 +37,7 @@ public final class ShieldBreaker extends Module {
 
     public ShieldBreaker() {
         super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-        this.addSettings(hitDelay, slotDelay, cpsLimit, revertSlot, autoStun, requireAxe, rayTraceCheck, requireClick);
+        this.addSettings(hitDelay, slotDelay, cpsLimit, revertSlot, autoStun, requireAxe, rayTraceCheck, requireClick, ignoreIfUsingItem);
     }
 
     @EventHandler
@@ -49,6 +50,7 @@ public final class ShieldBreaker extends Module {
 
         var entity = entityHit.getEntity();
         if (!(entity instanceof PlayerEntity player)) return;
+		if (ignoreIfUsingItem.getValue() && mc.player.isUsingItem()) return;
         if (rayTraceCheck.getValue() && CombatUtil.isShieldFacingAway((LivingEntity) entity)) return;
         if (!player.isHolding(Items.SHIELD) || !player.isBlocking()) {
             if (savedSlot != -1) {
