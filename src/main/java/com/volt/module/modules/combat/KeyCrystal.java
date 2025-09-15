@@ -97,9 +97,8 @@ public final class KeyCrystal extends Module {
                 if (mc.player.getPos().distanceTo(crystal.getPos()) <= 6.0 && attackTimer.hasElapsedTime(150)) {
                     if (mouseSimulation.getValue()) {
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                    } else {
-                        ((MinecraftClientAccessor) mc).invokeDoAttack();
                     }
+                    ((MinecraftClientAccessor) mc).invokeDoAttack();
                     attackTimer.reset();
                 }
                 return;
@@ -114,6 +113,7 @@ public final class KeyCrystal extends Module {
                 if (hasItemInHotbar(Items.END_CRYSTAL)) {
                     InventoryUtil.swapToSlot(Items.END_CRYSTAL);
                     if (mouseSimulation.getValue()) {
+                        ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                     } else {
                         ((MinecraftClientAccessor) mc).invokeDoItemUse();
@@ -125,6 +125,7 @@ public final class KeyCrystal extends Module {
                     if (hasItemInHotbar(Items.OBSIDIAN)) {
                         InventoryUtil.swapToSlot(Items.OBSIDIAN);
                         if (mouseSimulation.getValue()) {
+                            ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
                             MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
                         } else {
                             ((MinecraftClientAccessor) mc).invokeDoItemUse();
