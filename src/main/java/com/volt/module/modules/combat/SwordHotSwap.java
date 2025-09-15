@@ -19,6 +19,7 @@ public final class SwordHotSwap extends Module {
     private final KeybindSetting hotswapKey = new KeybindSetting("Hotswap Key", GLFW.GLFW_MOUSE_BUTTON_2, false);
     private final NumberSetting swapDelay = new NumberSetting("Swap Delay (MS)", 0, 1000, 150, 25);
     private final BooleanSetting switchBack = new BooleanSetting("Switch Back", true);
+
     private final TimerUtil swapTimer = new TimerUtil();
     private boolean isSwapping = false;
     private boolean keyPressed = false;
@@ -41,7 +42,9 @@ public final class SwordHotSwap extends Module {
         }
 
         if (!currentKeyState && keyPressed && switchBack.getValue() && originalSlot != -1) {
-            mc.player.getInventory().selectedSlot = originalSlot;
+            if (mc.player.getInventory().selectedSlot == findShieldInHotbar()) {
+                mc.player.getInventory().selectedSlot = originalSlot;
+            }
             originalSlot = -1;
             isSwapping = false;
         }

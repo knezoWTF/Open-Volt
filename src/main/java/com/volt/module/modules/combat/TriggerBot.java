@@ -154,7 +154,7 @@ public final class TriggerBot extends Module {
 
 private boolean setPreferCrits() {
     if (!preferCrits.getValue()) return false;
-
+    if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) return false;
     assert mc.player != null;
 
     boolean isSneaking = mc.player.isSneaking();
