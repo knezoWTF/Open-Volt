@@ -157,11 +157,7 @@ public final class ClickGui extends Screen {
 
        
         String fullTitle = "Volt";
-        typedTitleElapsed = MathHelper.lerp(0.12f, typedTitleElapsed, animationManager.getGuiAnimation());
-        int charsToShow = (int) (fullTitle.length() * typedTitleElapsed + 0.001f);
-        if (charsToShow > fullTitle.length()) charsToShow = fullTitle.length();
-        String title = fullTitle.substring(0, charsToShow);
-
+        String title = fullTitle;
         int titleX = x + PADDING;
         int titleY = y + 15;
         int textAlpha = (int)(animationManager.getGuiAnimation() * 255);

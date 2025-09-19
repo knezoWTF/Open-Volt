@@ -4,6 +4,7 @@ import com.volt.IMinecraft;
 import com.volt.Volt;
 import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.Setting;
+import com.volt.utils.notification.NotificationManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
@@ -87,6 +88,7 @@ public abstract class Module implements IMinecraft {
             if (this.enabled) {
                 Volt.INSTANCE.getVoltEventBus().subscribe(this);
                 registered = true;
+                NotificationManager.getInstance().addModuleNotification(this, true);
             }
         } else {
             if (registered) {
@@ -94,6 +96,7 @@ public abstract class Module implements IMinecraft {
                 registered = false;
             }
             onDisable();
+            NotificationManager.getInstance().addModuleNotification(this, false);
         }
     }
 }

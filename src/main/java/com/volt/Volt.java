@@ -1,11 +1,11 @@
 package com.volt;
 
-
 import com.volt.command.CommandManager;
 import com.volt.module.ModuleManager;
 import com.volt.module.events.MouseModuleHandler;
 import com.volt.profiles.ProfileManager;
 import com.volt.utils.font.FontManager;
+import com.volt.utils.notification.NotificationManager;
 import io.github.racoondog.norbit.EventBus;
 import lombok.Getter;
 import meteordevelopment.orbit.IEventBus;
@@ -24,6 +24,7 @@ public final class Volt implements ModInitializer {
     public final ProfileManager profileManager;
     public final CommandManager commandManager;
     public final MouseModuleHandler mouseModuleHandler;
+    public final NotificationManager notificationManager;
 
     public Volt() {
         INSTANCE = this;
@@ -35,7 +36,9 @@ public final class Volt implements ModInitializer {
         profileManager = new ProfileManager();
         commandManager = new CommandManager();
         mouseModuleHandler = new MouseModuleHandler();
+        notificationManager = NotificationManager.getInstance();
         VoltEventBus.subscribe(mouseModuleHandler);
+        VoltEventBus.subscribe(notificationManager);
     }
 
     @Override
