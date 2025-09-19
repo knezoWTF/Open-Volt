@@ -34,13 +34,13 @@ public class CommandManager {
             case "deleteprofile" -> handleDeleteProfileCommand(args);
             case "help", "commands" -> handleHelpCommand();
             default ->
-                    ChatUtils.addChatMessage("§cUnknown command: " + command + ". Type .help for available commands.");
+                    ChatUtils.addChatMessage("<red>Unknown command: " + command + ". Type .help for available commands.</red>");
         }
     }
 
     private void handleSaveCommand(final String[] args) {
         if (args.length < 2) {
-            ChatUtils.addChatMessage("§cUsage: .save <profile_name> [-override]");
+            ChatUtils.addChatMessage("<red>Usage: .save <profile_name> [-override]</red>");
             return;
         }
 
@@ -53,7 +53,7 @@ public class CommandManager {
 
     private void handleLoadCommand(final String[] args) {
         if (args.length < 2) {
-            ChatUtils.addChatMessage("§cUsage: .load <profile_name>");
+            ChatUtils.addChatMessage("<red>Usage: .load <profile_name></red>");
             return;
         }
         final String profileName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
@@ -64,26 +64,26 @@ public class CommandManager {
         final File profileDir = profileManager.getProfileDir();
 
         if (!profileDir.exists() || !profileDir.isDirectory()) {
-            ChatUtils.addChatMessage("§cNo profiles directory found.");
+            ChatUtils.addChatMessage("<red>No profiles directory found.</red>");
             return;
         }
 
         final File[] profiles = profileDir.listFiles((dir, name) -> name.endsWith(".json"));
         if (profiles == null || profiles.length == 0) {
-            ChatUtils.addChatMessage("§eNo profiles found.");
+            ChatUtils.addChatMessage("<yellow>No profiles found.</yellow>");
             return;
         }
 
-        ChatUtils.addChatMessage("§bAvailable profiles:");
+        ChatUtils.addChatMessage("<aqua>Available profiles:</aqua>");
         for (File profile : profiles) {
-            ChatUtils.addChatMessage("§7- " + profile.getName().replace(".json", ""));
+            ChatUtils.addChatMessage("<gray>- " + profile.getName().replace(".json", "") + "</gray>");
         }
     }
 
 
     private void handleDeleteProfileCommand(final String[] args) {
         if (args.length < 2) {
-            ChatUtils.addChatMessage("§cUsage: .deleteprofile <profile_name>");
+            ChatUtils.addChatMessage("<red>Usage: .deleteprofile <profile_name></red>");
             return;
         }
 
@@ -91,24 +91,25 @@ public class CommandManager {
         final File profileFile = new File(profileManager.getProfileDir(), profileName + ".json");
 
         if (!profileFile.exists()) {
-            ChatUtils.addChatMessage("§cProfile '" + profileName + "' not found.");
+            ChatUtils.addChatMessage("<red>Profile '" + profileName + "' not found.</red>");
             return;
         }
 
         if (profileFile.delete()) {
-            ChatUtils.addChatMessage("§aProfile '" + profileName + "' deleted successfully!");
+            ChatUtils.addChatMessage("<green>Profile '" + profileName + "' deleted successfully!</green>");
         } else {
-            ChatUtils.addChatMessage("§cFailed to delete profile '" + profileName + "'.");
+            ChatUtils.addChatMessage("<red>Failed to delete profile '" + profileName + "'.</red>");
         }
     }
-
     private void handleHelpCommand() {
-        ChatUtils.addChatMessage("§b=== Volt Config Commands ===");
-        ChatUtils.addChatMessage("§7.save <name> §f- Save current config as profile");
-        ChatUtils.addChatMessage("§7.save <name> -override §f- Override existing profile");
-        ChatUtils.addChatMessage("§7.load <name> §f- Load a saved profile");
-        ChatUtils.addChatMessage("§7.profiles §f- List all saved profiles");
-        ChatUtils.addChatMessage("§7.deleteprofile <name> §f- Delete a profile");
-        ChatUtils.addChatMessage("§7.help §f- Show this help message");
+        String helpMessage = """
+        <aqua>=== Volt Config Commands ===</aqua>
+        <gray>.save <name></gray><white> - Save current config as profile</white>
+        <gray>.save <name> -override</gray><white> - Override existing profile</white>
+        <gray>.load <name></gray><white> - Load a saved profile</white>
+        <gray>.profiles</gray><white> - List all saved profiles</white>
+        <gray>.deleteprofile <name></gray><white> - Delete a profile</white>
+        <gray>.help</gray><white> - Show this help message</white>""";
+        ChatUtils.addChatMessage(helpMessage);
     }
 }

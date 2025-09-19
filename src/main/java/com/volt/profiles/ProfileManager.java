@@ -33,7 +33,7 @@ public final class ProfileManager {
 
     private void createProfileDirectoryIfNeeded() {
         if (profileDir != null && !profileDir.exists() && !profileDir.mkdirs()) {
-            ChatUtils.addChatMessage("§cFailed to create profile directory: " + profileDir.getAbsolutePath());
+            ChatUtils.addChatMessage("<red>Failed to create profile directory: " + profileDir.getAbsolutePath() + "</red>");
         }
     }
 
@@ -63,10 +63,10 @@ public final class ProfileManager {
             }
             ChatUtils.addChatMessage("Profile loaded successfully.");
         } catch (com.google.gson.JsonSyntaxException jse) {
-            ChatUtils.addChatMessage("§cFailed to parse profile (invalid JSON): " + profileFile.getName());
+            ChatUtils.addChatMessage("<red>Failed to parse profile (invalid JSON): " + profileFile.getName() + "</red>");
             jse.printStackTrace();
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to load profile: " + e.getMessage());
+            ChatUtils.addChatMessage("<red>Failed to load profile: " + e.getMessage() + "</red>");
         }
     }
 
@@ -128,10 +128,10 @@ public final class ProfileManager {
                         }
                     }
                 }
-                default -> ChatUtils.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
+                default -> ChatUtils.addChatMessage("<red>Unknown setting type: " + setting.getClass().getSimpleName() + "</red>");
             }
         } catch (Exception ex) {
-            ChatUtils.addChatMessage("§cFailed to load setting: " + name);
+            ChatUtils.addChatMessage("<red>Failed to load setting: " + name + "</red>");
         }
     }
 
@@ -143,20 +143,20 @@ public final class ProfileManager {
         if (profileName == null) return;
         final File profileFile = new File(profileDir, profileName + ".json");
         if (profileFile.exists() && !forceOverride) {
-            ChatUtils.addChatMessage("§eProfile '" + profileName + "' already exists. Use .save <name> -override to overwrite it.");
+            ChatUtils.addChatMessage("<yellow>Profile '" + profileName + "' already exists. Use .save <name> -override to overwrite it.</yellow>");
             return;
         }
 
         try {
             if (!profileFile.exists() && !profileFile.createNewFile()) {
-                ChatUtils.addChatMessage("§cFailed to create profile file: " + profileFile.getAbsolutePath());
+                ChatUtils.addChatMessage("<red>Failed to create profile file: " + profileFile.getAbsolutePath() + "</red>");
                 return;
             }
             ChatUtils.addChatMessage(forceOverride ?
-                    "§aProfile '" + profileName + "' overridden successfully." :
-                    "§aProfile '" + profileName + "' saved successfully.");
+                    "<green>Profile '" + profileName + "' overridden successfully.</green>" :
+                    "<green>Profile '" + profileName + "' saved successfully.</green>");
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to save profile: " + e.getMessage());
+            ChatUtils.addChatMessage("<red>Failed to save profile: " + e.getMessage() + "</red>");
             return;
         }
         writeProfileToFile(profileFile);
@@ -182,7 +182,7 @@ public final class ProfileManager {
         try (FileWriter writer = new FileWriter(profileFile, StandardCharsets.UTF_8)) {
             gson.toJson(json, writer);
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to write profile: " + e.getMessage());
+            ChatUtils.addChatMessage("<red>Failed to write profile: " + e.getMessage() + "</red>");
         }
     }
 
@@ -205,10 +205,10 @@ public final class ProfileManager {
                     if (colorSetting.isHasAlpha()) hex += String.format("%02X", colorSetting.getAlpha());
                     moduleJson.addProperty(name, hex);
                 }
-                default -> ChatUtils.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
+                default -> ChatUtils.addChatMessage("<red>Unknown setting type: " + setting.getClass().getSimpleName() + "</red>");
             }
         } catch (Exception e) {
-            ChatUtils.addChatMessage("§cFailed to save setting: " + name);
+            ChatUtils.addChatMessage("<red>Failed to save setting: " + name + "</red>");
         }
     }
 
