@@ -13,7 +13,7 @@ public class AnimationManager {
     private final Map<Module, Float> dropdownAnimations = new HashMap<>();
     private float sidebarAnimation = 0;
     private float contentAnimation = 0;
-    
+    private float categorySwitch = 1f;
 
     private float guiAnimation = 0f;
     private float scaleAnimation = 0f;
@@ -80,6 +80,15 @@ public class AnimationManager {
     public float getContentAnimation() {
         return contentAnimation;
     }
+
+    public float getCategorySwitch() {
+        return categorySwitch;
+    }
+
+    public void triggerCategorySwitch() {
+        this.categorySwitch = 0f;
+        this.contentAnimation = 0f;
+    }
     
     public void updateAnimations(float delta) {
     }
@@ -133,7 +142,6 @@ public class AnimationManager {
         } else {
 
             float targetGui = 1f;
-            float targetScale = 1f;
             
             float openingSpeed = 6.0f;
             
@@ -143,6 +151,8 @@ public class AnimationManager {
             float scaleProgress = Math.min(timeSinceOpen * 2f, 1f);
             float easeOutBack = 1f + 2.7f * (float)Math.pow(scaleProgress - 1f, 3f) + 1.7f * (float)Math.pow(scaleProgress - 1f, 2f);
             scaleAnimation = MathHelper.lerp(1.0f - (float)Math.exp(-openingSpeed * deltaTime), scaleAnimation, easeOutBack);
+            categorySwitch = MathHelper.lerp(0.12f, categorySwitch, 1f);
+            contentAnimation = MathHelper.lerp(0.12f, contentAnimation, 1f);
         }
     }
     

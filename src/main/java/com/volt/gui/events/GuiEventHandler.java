@@ -30,8 +30,6 @@ public class GuiEventHandler {
     private Category selectedCategory;
     private int scrollOffset = 0;
     private int maxScrollOffset = 0; 
-    private boolean dragging = false;
-    private double lastMouseY = 0;
     private String searchQuery = "";
     private boolean searchFocused = false;
     
@@ -137,12 +135,14 @@ public class GuiEventHandler {
                     
                     if (button == 1) {
                         if (hasSettings) {
-                            moduleExpanded.put(module, !moduleExpanded.get(module));
+                            boolean now = !moduleExpanded.get(module);
+                            moduleExpanded.put(module, now);
                             return true;
                         }
                     } else if (button == 0) {
                         if (hasSettings && mouseX >= contentX + contentWidth - PADDING - 30 && mouseX <= contentX + contentWidth - PADDING) {
-                            moduleExpanded.put(module, !moduleExpanded.get(module));
+                            boolean now = !moduleExpanded.get(module);
+                            moduleExpanded.put(module, now);
                             return true;
                         }
                         
@@ -332,7 +332,6 @@ public class GuiEventHandler {
     public boolean handleMouseRelease(double mouseX, double mouseY, int button) {
         if (button == 0) {
             sliderDragging.replaceAll((k, v) -> false);
-            dragging = false;
         }
         
         return false;

@@ -15,6 +15,7 @@ public final class NoJumpDelay extends Module {
     @EventHandler
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
+        if (mc.currentScreen != null) return;
         if (GLFW.glfwGetKey(mc.getWindow().getHandle(), GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS) {
             mc.options.jumpKey.setPressed(false);
             if (mc.player.isOnGround()) {

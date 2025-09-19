@@ -25,6 +25,7 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
@@ -34,21 +35,16 @@ import net.minecraft.item.SwordItem;
  */
 
 public final class TriggerBot extends Module {
-    public static final NumberSetting swordThresholdMax = new NumberSetting("Sword Threshold Max", 0.1, 1, 0.95, 0.01);
-    public static final NumberSetting swordThresholdMin = new NumberSetting("Sword Threshold Min", 0.1, 1, 0.90, 0.01);
-    public static final NumberSetting axeThresholdMax = new NumberSetting("Axe Threshold Max", 0.1, 1, 0.95, 0.01);
-    public static final NumberSetting axeThresholdMin = new NumberSetting("Axe Threshold Min", 0.1, 1, 0.90, 0.01);
-    public static final NumberSetting axePostDelayMax = new NumberSetting("Axe Post Max", 1, 500, 120, 0.5);
-    public static final NumberSetting axePostDelayMin = new NumberSetting("Axe Post Min", 1, 500, 120, 0.5);
-    public static final NumberSetting reactionTimeMax = new NumberSetting("Reaction Time Max", 1, 350, 95, 0.5);
-    public static final NumberSetting reactionTimeMin = new NumberSetting("Reaction Time Min", 1, 350, 20, 0.5);
+    public static final NumberSetting swordThreshold = new NumberSetting("Sword Threshold", 0.1, 1, 0.95, 0.01);
+    public static final NumberSetting axeThreshold = new NumberSetting("Axe Threshold", 0.1, 1, 0.95, 0.01);
+    public static final NumberSetting reactionTime = new NumberSetting("Reaction Time", 1, 350, 30, 0.5);
     public static final BooleanSetting intelligentCooldown = new BooleanSetting("Intelligent Cooldown", false);
     public static final BooleanSetting preferCrits = new BooleanSetting("Prefer Crits", false);
     public static final NumberSetting preferCritsMin = new NumberSetting("CritMin Cooldown", 0.1, 1, 0.90, 0.01);
     public static final BooleanSetting forcePreferCrits = new BooleanSetting("Force Prefer Crits", false);
-    public static final BooleanSetting ignorePassiveMobs = new BooleanSetting("No Passive", true);
-    public static final BooleanSetting ignoreInvisible = new BooleanSetting("No Invisible", true);
-    public static final BooleanSetting ignoreCrystals = new BooleanSetting("No Crystals", true);
+    public static final BooleanSetting ignorePassiveMobs = new BooleanSetting("No Passive", false);
+    public static final BooleanSetting ignoreInvisible = new BooleanSetting("No Invisible", false);
+    public static final BooleanSetting ignoreCrystals = new BooleanSetting("No Crystals", false);
     public static final BooleanSetting respectShields = new BooleanSetting("Ignore Shields", false);
     public static final BooleanSetting useOnlySwordOrAxe = new BooleanSetting("Only Sword/Axe", true);
     public static final BooleanSetting onlyWhenMouseDown = new BooleanSetting("Only Mouse Hold", false);
@@ -61,7 +57,6 @@ public final class TriggerBot extends Module {
     private boolean waitingForReaction = false;
     private long currentReactionDelay = 0;
     private float swordDelay = 0;
-    private float randomizedPostDelay = 0;
     private float randomizedThreshold = 0;
     private Entity target;
     private String lastTargetUUID = null;
@@ -70,7 +65,7 @@ public final class TriggerBot extends Module {
     public TriggerBot() {
         super("Trigger Bot", "Makes you automatically attack once aimed at a target", -1, Category.COMBAT);
         addSettings(
-                swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin, axePostDelayMax, axePostDelayMin,reactionTimeMax,reactionTimeMin,intelligentCooldown,ignorePassiveMobs,
+                swordThreshold, axeThreshold,reactionTime,intelligentCooldown,ignorePassiveMobs,
                 ignoreCrystals, respectShields, preferCrits,preferCritsMin,forcePreferCrits,  ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe, disableOnWorldChange, samePlayer
         );
     }
@@ -86,18 +81,6 @@ public final class TriggerBot extends Module {
     private void onTickEvent(TickEvent event) {
         if (isNull() || mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
-        if (axeThresholdMin.getValueFloat() >= axeThresholdMax.getValueFloat()) {
-            axeThresholdMin.setValue(axeThresholdMax.getValueFloat() - 0.05f);
-        }
-        if (swordThresholdMin.getValueFloat() >= swordThresholdMax.getValueFloat()) {
-            swordThresholdMin.setValue(swordThresholdMax.getValueFloat() - 0.05f);
-        }
-        if (axePostDelayMin.getValueFloat() >= axePostDelayMax.getValueFloat()) {
-            axePostDelayMin.setValue(axePostDelayMax.getValueFloat() - 0.5f);
-        }
-        if (reactionTimeMin.getValueFloat() >= reactionTimeMax.getValueFloat()) {
-            reactionTimeMin.setValue(reactionTimeMax.getValueFloat() - 0.5f);
-        }
         target = mc.targetedEntity;
         if (target == null) return;
         if (!isHoldingSwordOrAxe()) return;
@@ -125,8 +108,7 @@ public final class TriggerBot extends Module {
                 long elapsed = timer.getElapsedTime();
                 currentReactionDelay = (long) (Math.max(0, currentReactionDelay - elapsed) * multiplier);
             } else {
-                currentReactionDelay =
-                (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+                currentReactionDelay = reactionTime.getValueInt();
             }
         }
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
@@ -142,6 +124,7 @@ public final class TriggerBot extends Module {
 
     public boolean hasTarget(Entity en) {
         if (en == mc.player || en == mc.cameraEntity || !en.isAlive()) return false;
+        if (en instanceof WindChargeEntity) return false;
         if (en instanceof PlayerEntity player && FriendManager.isFriend(player.getUuid())) return false;
         if (Teams.isTeammate(en)) return false;
         return switch (en) {
@@ -154,15 +137,18 @@ public final class TriggerBot extends Module {
 
 private boolean setPreferCrits() {
     if (!preferCrits.getValue()) return false;
-    if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) return false;
-    assert mc.player != null;
+    if (mc.player == null) return false;
 
-    boolean isSneaking = mc.player.isSneaking();
-    boolean isUsingItem = mc.player.isUsingItem();
-    boolean hasBlindness = mc.player.hasStatusEffect(StatusEffects.BLINDNESS);
-    boolean isRiding = mc.player.getVehicle() != null;
-    boolean isInWater = mc.player.isTouchingWater();
-    boolean isInLava = mc.player.isInLava();
+    if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)
+        || mc.player.isSneaking()
+        || mc.player.isUsingItem()
+        || mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
+        || mc.player.getVehicle() != null
+        || mc.player.isTouchingWater()
+        || mc.player.isInLava()) {
+        return false;
+    }
+
     boolean isCooldownCharged = mc.player.getAttackCooldownProgress(0.0F) >= preferCritsMin.getValueFloat();
 
     boolean isFalling = mc.player.getVelocity().y < -0.08F;
@@ -171,16 +157,11 @@ private boolean setPreferCrits() {
             || mc.world.getBlockState(mc.player.getBlockPos().down()).getBlock() == Blocks.COBWEB;
     boolean isFallFlying = mc.player.isFallFlying();
 
-    return (isFalling || inCobweb || isFallFlying)
-            && !isSneaking
-            && !mc.player.isOnGround()
-            && !isUsingItem
-            && !hasBlindness
-            && !isRiding
-            && !isInWater
-            && !isInLava
-            && isCooldownCharged;
+    return isCooldownCharged
+            && (isFalling || inCobweb || isFallFlying)
+            && !mc.player.isOnGround();
 }
+
 
 
 
@@ -204,21 +185,18 @@ private boolean setPreferCrits() {
 
         if (heldItem instanceof AxeItem) {
             if (!waitingForDelay) {
-                randomizedThreshold = (float) MathUtils.randomDoubleBetween(axeThresholdMin.getValueFloat(), axeThresholdMax.getValueFloat());
-                randomizedPostDelay = (float) MathUtils.randomDoubleBetween(axePostDelayMin.getValueFloat(), axePostDelayMax.getValueFloat());
+                randomizedThreshold = axeThreshold.getValueFloat();
                 waitingForDelay = true;
             }
             if (cooldown >= randomizedThreshold) {
-                if (timer.hasElapsedTime((long) randomizedPostDelay, true)) {
                     waitingForDelay = false;
                     return true;
-                }
             } else {
                 timer.reset();
             }
             return false;
         } else {
-            swordDelay = (float) MathUtils.randomDoubleBetween(swordThresholdMin.getValueFloat(), swordThresholdMax.getValueFloat());
+            swordDelay = swordThreshold.getValueFloat();
             return cooldown >= swordDelay;
         }
     }

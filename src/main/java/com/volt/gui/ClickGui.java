@@ -46,6 +46,7 @@ public final class ClickGui extends Screen {
     
     private final AnimationManager animationManager;
     private final GuiEventHandler eventHandler;
+    private float typedTitleElapsed = 0f;
     private long lastCursorBlink = 0;
     
     private String configName = "";
@@ -123,7 +124,7 @@ public final class ClickGui extends Screen {
         
         int alpha = (int)(animationManager.getGuiAnimation() * 240);
         context.fill(containerX, containerY, containerX + containerWidth, containerY + containerHeight, 
-            new Color(25, 25, 35, alpha).getRGB());
+            new Color(12, 12, 12, alpha).getRGB());
         
         renderSidebar(context, containerX, containerY, containerHeight, mouseX, mouseY);
         
@@ -143,24 +144,32 @@ public final class ClickGui extends Screen {
     
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        int backgroundAlpha = (int)(animationManager.getGuiAnimation() * 120);
+        int backgroundAlpha = (int)(animationManager.getGuiAnimation() * 160);
         RenderUtils.drawGradientRect(context, 0, 0, width, height, 
-            new Color(0, 0, 0, backgroundAlpha).getRGB(), new Color(0, 0, 0, (int)(backgroundAlpha * 0.67f)).getRGB());
+            new Color(0, 0, 0, backgroundAlpha).getRGB(), new Color(8, 8, 10, (int)(backgroundAlpha * 0.67f)).getRGB());
     }
     
     private void renderHeader(DrawContext context, int x, int y, int width, int mouseX, int mouseY) {
         int headerAlpha = (int)(animationManager.getGuiAnimation() * 255);
         context.fill(x, y, x + width, y + HEADER_HEIGHT, 
-            new Color(35, 35, 50, headerAlpha).getRGB());
-        
+            new Color(18, 18, 20, headerAlpha).getRGB());
         MatrixStack matrices = context.getMatrices();
-        
-        String title = "Volt";
+
+       
+        String fullTitle = "Volt";
+        typedTitleElapsed = MathHelper.lerp(0.12f, typedTitleElapsed, animationManager.getGuiAnimation());
+        int charsToShow = (int) (fullTitle.length() * typedTitleElapsed + 0.001f);
+        if (charsToShow > fullTitle.length()) charsToShow = fullTitle.length();
+        String title = fullTitle.substring(0, charsToShow);
+
         int titleX = x + PADDING;
         int titleY = y + 15;
         int textAlpha = (int)(animationManager.getGuiAnimation() * 255);
-        titleFont.drawString(matrices, title, 
-            titleX, titleY, new Color(255, 255, 255, textAlpha));
+        titleFont.drawString(matrices, title, titleX, titleY, new Color(255, 255, 255, textAlpha));
+        String ver = "v2";
+        int verX = titleX + (int)titleFont.getStringWidth(fullTitle) + 8;
+        int verY = titleY + 6;
+        smallFont.drawString(matrices, ver, verX, verY, new Color(180, 180, 200, textAlpha));
         
         renderSearchBar(context, x, y, width);
     }
@@ -182,7 +191,7 @@ public final class ClickGui extends Screen {
             clippedText = clippedText.substring(0, clippedText.length() - 1);
         }
         context.fill(searchX, searchY, searchX + SEARCH_BAR_WIDTH, (searchY + SEARCH_BAR_HEIGHT) - 2, 
-            new Color(40, 40, 50, 200).getRGB());
+            new Color(24, 24, 28, 220).getRGB());
         smallFont.drawString(matrices, clippedText, textX, textY - 4, textColor);
         
         if (eventHandler.isSearchFocused() && !eventHandler.getSearchQuery().isEmpty()) {
@@ -197,9 +206,9 @@ public final class ClickGui extends Screen {
     private void renderSidebar(DrawContext context, int x, int y, int height, int mouseX, int mouseY) {
         int sidebarAlpha = (int)(animationManager.getGuiAnimation() * 255);
         context.fill(x, y + HEADER_HEIGHT, x + SIDEBAR_WIDTH, y + height - 12, 
-            new Color(30, 30, 40, sidebarAlpha).getRGB());
+            new Color(16, 16, 18, sidebarAlpha).getRGB());
         context.fill(x + 12, y + height - 12, x + SIDEBAR_WIDTH, y + height, 
-            new Color(30, 30, 40, sidebarAlpha).getRGB());
+            new Color(16, 16, 18, sidebarAlpha).getRGB());
         
         int sidebarX = x;
         int sidebarY = y + HEADER_HEIGHT;
@@ -216,7 +225,7 @@ public final class ClickGui extends Screen {
             float currentAnimation = animationManager.getCategoryAnimation(category);
             float newAnimation = MathHelper.lerp(0.15f, currentAnimation, targetAnimation);
             animationManager.setCategoryAnimation(category, newAnimation);
-            Color textColor = isSelected ? Color.WHITE : new Color(180, 180, 180);
+            Color textColor = isSelected ? Color.WHITE : new Color(190, 190, 190);
             regularFont.drawString(matrices, category.getName(), sidebarX + 20, categoryY + 13, textColor);
             
             categoryY += 45;
@@ -224,15 +233,13 @@ public final class ClickGui extends Screen {
     }
     
     private void renderContent(DrawContext context, int x, int y, int width, int height, int mouseX, int mouseY) {
-        int contentAlpha = (int)(animationManager.getGuiAnimation() * 255);
+        int contentAlpha = (int)(animationManager.getGuiAnimation() * animationManager.getCategorySwitch() * 255);
         context.fill(x, y + HEADER_HEIGHT, x + width, y + height - 12, 
-            new Color(20, 20, 30, contentAlpha).getRGB());
+            new Color(12, 12, 12, contentAlpha).getRGB());
         context.fill(x, y + height - 12, x + width - 12, y + height, 
-            new Color(20, 20, 30, contentAlpha).getRGB());
+            new Color(12, 12, 12, contentAlpha).getRGB());
         
-        MatrixStack matrices = context.getMatrices();
-        
-        context.enableScissor(x, y + HEADER_HEIGHT, x + width, y + height);
+    context.enableScissor(x, y + HEADER_HEIGHT, x + width, y + height);
         
         if (eventHandler.getSelectedCategory() == Category.CONFIG) {
             renderConfigContent(context, x, y, width, height, mouseX, mouseY);
@@ -287,13 +294,13 @@ public final class ClickGui extends Screen {
             float newDropdown = MathHelper.lerp(0.15f, currentDropdown, targetDropdown);
             animationManager.setDropdownAnimation(module, newDropdown);
             
-			Color bgColor = isHovered ? new Color(40, 40, 50, 200) : new Color(25, 25, 35, 100);
-			context.fill(x + PADDING, moduleY, x + width - PADDING, moduleY + MODULE_HEIGHT, bgColor.getRGB());
-			int indicatorAlpha = isEnabled ? (int)(newAnimation * 255) : 0;
-			if (indicatorAlpha > 0) {
-				Color indicator = new Color(150, 100, 255, indicatorAlpha);
-				context.fill(x + PADDING, moduleY, x + PADDING + 4, moduleY + MODULE_HEIGHT, indicator.getRGB());
-			}
+            Color bgColor = isHovered ? new Color(28, 28, 32, 220) : new Color(18, 18, 20, 140);
+            context.fill(x + PADDING, moduleY, x + width - PADDING, moduleY + MODULE_HEIGHT, bgColor.getRGB());
+            int indicatorAlpha = isEnabled ? (int)(newAnimation * 255) : 0;
+            if (indicatorAlpha > 0) {
+                Color indicator = new Color(124, 77, 255, indicatorAlpha);
+                context.fill(x + PADDING, moduleY, x + PADDING + 4, moduleY + MODULE_HEIGHT, indicator.getRGB());
+            }
             Color textColor = isEnabled ? Color.WHITE : new Color(160, 160, 160);
             regularFont.drawString(matrices, module.getName(), x + PADDING + 10, moduleY + 8, textColor);
             if (hasSettings) {
@@ -367,8 +374,8 @@ public final class ClickGui extends Screen {
                               mouseY >= currentY && mouseY <= currentY + 25;
             boolean isSelected = config.equals(selectedConfig);
             
-            Color bgColor = isSelected ? new Color(100, 50, 150, 150) : 
-                          (isHovered ? new Color(60, 60, 70, 150) : new Color(40, 40, 50, 100));
+                Color bgColor = isSelected ? new Color(124, 77, 255, 170) : 
+                          (isHovered ? new Color(40, 40, 48, 160) : new Color(24, 24, 28, 120));
             context.fill(x + PADDING, currentY, x + width - PADDING, currentY + 25, bgColor.getRGB());
             
             Color itemTextColor = isSelected ? Color.WHITE : new Color(200, 200, 200);

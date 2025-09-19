@@ -26,6 +26,7 @@ public final class FastEXP extends Module {
     @EventHandler
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
+        if (mc.currentScreen != null) return;
 
         ItemStack heldItem = mc.player.getMainHandStack();
         if (heldItem.isEmpty() || heldItem.getItem() != Items.EXPERIENCE_BOTTLE) return;
