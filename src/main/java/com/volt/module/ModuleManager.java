@@ -54,7 +54,8 @@ public final class ModuleManager {
                 new AutoMace(), new TotemHit(), new TriggerBot(), new Velocity(),
                 new ShieldBreaker(), new ThrowPot(), new ElytraHotSwap(),
                 new AntiMiss(), new WTap(), new STap(),
-                new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new SwordSwap(), new BreachSwap());
+                new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new SwordSwap(), new BreachSwap(),
+                new KeyCrystal(), new KeyAnchor());
         // Movement
         add(new Sprint(), new AutoFirework(), new AutoHeadHitter(), new NoJumpDelay());
 
