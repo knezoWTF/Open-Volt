@@ -19,8 +19,8 @@ import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 
 public final class ShieldBreaker extends Module {
-    private final NumberSetting hitDelay = new NumberSetting("Hit Delay", 0, 20, 0, 1);
-    private final NumberSetting slotDelay = new NumberSetting("Slot Delay", 0, 20, 0, 1);
+    private final NumberSetting hitDelay = new NumberSetting("Hit Delay", 1, 20, 0, 1);
+    private final NumberSetting slotDelay = new NumberSetting("Slot Delay", 1, 20, 0, 1);
     private final NumberSetting cpsLimit = new NumberSetting("CPS", 1, 15, 3, 1);
 
     private final BooleanSetting revertSlot = new BooleanSetting("Go back to original slot", true);
