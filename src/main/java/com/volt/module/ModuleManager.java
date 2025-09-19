@@ -69,7 +69,8 @@ public final class ModuleManager {
         add(
                 new ContainerSlots(), new FullBright(), new HUD(), new PlayerESP(),
                 new SwingSpeed(), new OreESP(), new Trajectory(), new FpsCounter(),
-                new SkeletonESP(), new EntityESP(), new ShaderESP(), new Trail());
+                new SkeletonESP(), new EntityESP(), new ShaderESP(), new Trail(), 
+                new JumpCircles(), new HitOrbs(), new HitParticles(), new CircleESP());
 
         // Misc
         add(

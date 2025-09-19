@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.volt.event.impl.render.EventRender3D;
 import com.volt.module.Category;
 import com.volt.module.Module;
-import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
+import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ModeSetting;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.render.OutlineVertexConsumerProvider;
@@ -21,12 +21,11 @@ public final class ShaderESP extends Module {
 
     private final ModeSetting targets = new ModeSetting("Targets", "Players", "Players", "Living", "All");
     private final ColorSetting color = new ColorSetting("Color", new Color(0, 255, 255, 200));
-    private final BooleanSetting throughWalls = new BooleanSetting("Through Walls", true);
     private final BooleanSetting showSelf = new BooleanSetting("Show Self", false);
 
     public ShaderESP() {
         super("Shader ESP", "Chams pretty much", -1, Category.RENDER);
-        addSettings(targets, color, throughWalls, showSelf);
+        addSettings(targets, color, showSelf);
     }
 
     @EventHandler
@@ -36,8 +35,7 @@ public final class ShaderESP extends Module {
         MatrixStack matrices = event.getMatrixStack();
         float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
 
-        boolean disableDepth = throughWalls.getValue();
-        if (disableDepth) RenderSystem.disableDepthTest();
+        RenderSystem.disableDepthTest();
 
         OutlineVertexConsumerProvider outlines = mc.getBufferBuilders().getOutlineVertexConsumers();
         Color c = color.getValue();
@@ -48,7 +46,7 @@ public final class ShaderESP extends Module {
         }
         outlines.draw();
 
-        if (disableDepth) RenderSystem.enableDepthTest();
+        RenderSystem.enableDepthTest();
     }
 
     private boolean shouldRender(Entity entity) {

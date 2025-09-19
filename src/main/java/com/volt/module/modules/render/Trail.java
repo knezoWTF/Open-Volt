@@ -5,7 +5,6 @@ import com.volt.event.impl.player.TickEvent;
 import com.volt.event.impl.render.EventRender3D;
 import com.volt.module.Category;
 import com.volt.module.Module;
-import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
@@ -41,13 +40,12 @@ public final class Trail extends Module {
     private final NumberSetting seconds = new NumberSetting("Seconds", 0.2, 5.0, 2.0, 0.1);
     private final NumberSetting maxPoints = new NumberSetting("Max Points", 16, 256, 96, 1);
     private final ColorSetting color = new ColorSetting("Color", new Color(0, 200, 255, 160));
-    private final BooleanSetting throughWalls = new BooleanSetting("Through Walls", true);
 
     private final Map<UUID, Deque<TrailPoint>> trails = new HashMap<>();
 
     public Trail() {
         super("Trail", "Trail behind players", -1, Category.RENDER);
-        addSettings(targets, width, seconds, maxPoints, color, throughWalls);
+        addSettings(targets, width, seconds, maxPoints, color);
     }
 
     @EventHandler
@@ -79,7 +77,7 @@ public final class Trail extends Module {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         Vec3d cam = mc.gameRenderer.getCamera().getPos();
 
-        if (throughWalls.getValue()) RenderSystem.disableDepthTest();
+        RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -136,7 +134,7 @@ public final class Trail extends Module {
             BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
 
-        if (throughWalls.getValue()) RenderSystem.enableDepthTest();
+        RenderSystem.enableDepthTest();
     }
 
     private static void addQuad(BufferBuilder buffer, Matrix4f matrix, Vec3d v0, Vec3d v1, Vec3d v2, Vec3d v3,
