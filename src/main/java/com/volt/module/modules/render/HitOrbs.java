@@ -31,27 +31,61 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class HitOrbs extends Module {
 
-    private static final class TrailPoint { final Vec3d pos; final long time; TrailPoint(Vec3d pos, long time) { this.pos = pos; this.time = time; } }
-    private static final class OrbTrail { final Deque<TrailPoint> points = new ArrayDeque<>(); final double thetaOffset; final double phiOffset; OrbTrail(double to, double po) { this.thetaOffset = to; this.phiOffset = po; } }
-    private static final class Effect { final int entityId; final long start; final List<OrbTrail> orbs; Effect(int entityId, long start, List<OrbTrail> orbs) { this.entityId = entityId; this.start = start; this.orbs = orbs; } }
+    private static final class SmokeParticle { 
+        final Vec3d pos; 
+        final Vec3d velocity; 
+        final long spawnTime; 
+        final float initialSize; 
+        final float maxSize; 
+        final double rotationSpeed;
+        final double rotation;
+        
+        SmokeParticle(Vec3d pos, Vec3d velocity, long spawnTime, float initialSize, float maxSize, double rotationSpeed) { 
+            this.pos = pos; 
+            this.velocity = velocity; 
+            this.spawnTime = spawnTime; 
+            this.initialSize = initialSize; 
+            this.maxSize = maxSize; 
+            this.rotationSpeed = rotationSpeed;
+            this.rotation = ThreadLocalRandom.current().nextDouble(0, Math.PI * 2.0);
+        } 
+    }
+    
+    private static final class SmokeTrail { 
+        final Deque<SmokeParticle> particles = new ArrayDeque<>(); 
+        final double thetaOffset; 
+        final double phiOffset; 
+        
+        SmokeTrail(double to, double po) { 
+            this.thetaOffset = to; 
+            this.phiOffset = po; 
+        } 
+    }
+    
+    private static final class Effect { 
+        final int entityId; 
+        final long start; 
+        final List<SmokeTrail> orbs; 
+        
+        Effect(int entityId, long start, List<SmokeTrail> orbs) { 
+            this.entityId = entityId; 
+            this.start = start; 
+            this.orbs = orbs; 
+        } 
+    }
 
     private final NumberSetting duration = new NumberSetting("Duration", 0.1, 3.0, 0.9, 0.05);
     private final NumberSetting count = new NumberSetting("Orbs", 1, 6, 3, 1);
     private final NumberSetting orbitRadius = new NumberSetting("Orbit Radius", 0.2, 2.5, 0.9, 0.05);
     private final NumberSetting orbSize = new NumberSetting("Orb Size", 0.05, 0.8, 0.25, 0.01);
-    private final NumberSetting heightOffset = new NumberSetting("Height Offset", 0.0, 2.0, 0.9, 0.05);
-    private final NumberSetting angularSpeed = new NumberSetting("Angular Speed", 90.0, 720.0, 240.0, 5.0);
-    private final NumberSetting segments = new NumberSetting("Segments", 8, 64, 28, 1);
-    private final NumberSetting verticalSpeed = new NumberSetting("Vertical Speed", 30.0, 360.0, 120.0, 5.0);
-    private final NumberSetting trailSeconds = new NumberSetting("Trail Seconds", 0.0, 2.0, 0.6, 0.05);
-    private final NumberSetting trailWidth = new NumberSetting("Trail Width", 0.01, 0.3, 0.06, 0.005);
+    private final NumberSetting smokeIntensity = new NumberSetting("Smoke Intensity", 0.0, 2.0, 1.0, 0.1);
     private final ColorSetting color = new ColorSetting("Color", new Color(120, 240, 255, 220));
 
     private final List<Effect> effects = new ArrayList<>();
 
     public HitOrbs() {
         super("Hit Orbs", "Spawns orbs orbiting a target on hit", -1, Category.RENDER);
-        addSettings(duration, count, orbitRadius, orbSize, heightOffset, angularSpeed, segments, verticalSpeed, trailSeconds, trailWidth, color);
+        addSettings(duration, count, orbitRadius, orbSize, smokeIntensity, color);
     }
 
     @EventHandler
@@ -59,11 +93,11 @@ public final class HitOrbs extends Module {
         Entity t = e.getTarget();
         if (t instanceof LivingEntity) {
             int n = Math.max(1, count.getValueInt());
-            List<OrbTrail> trails = new ArrayList<>(n);
+            List<SmokeTrail> trails = new ArrayList<>(n);
             for (int i = 0; i < n; i++) {
                 double theta0 = ThreadLocalRandom.current().nextDouble(0, Math.PI * 2.0);
                 double phi0 = ThreadLocalRandom.current().nextDouble(0, Math.PI * 2.0);
-                trails.add(new OrbTrail(theta0, phi0));
+                trails.add(new SmokeTrail(theta0, phi0));
             }
             effects.add(new Effect(t.getId(), System.currentTimeMillis(), trails));
         }
@@ -85,13 +119,16 @@ public final class HitOrbs extends Module {
         long now = System.currentTimeMillis();
         float size = orbSize.getValueFloat();
         float radius = orbitRadius.getValueFloat();
-        float yOff = heightOffset.getValueFloat();
-        float speedDeg = angularSpeed.getValueFloat();
-        float vSpeedDeg = verticalSpeed.getValueFloat();
-        int segs = Math.max(8, segments.getValueInt());
+        float intensity = smokeIntensity.getValueFloat();
+        float yOff = 0.9f;
+        float speedDeg = 240.0f;
+        float vSpeedDeg = 120.0f;
+        int segs = 28;
         Color c = color.getValue();
-        long trailTTL = (long) (trailSeconds.getValue() * 1000.0);
-        float ribbonWidth = trailWidth.getValueFloat();
+        long smokeTTL = (long) (intensity * 1200.0);
+        int particlesPerFrame = Math.max(1, (int)(intensity * 6));
+        float expansion = 1.0f + intensity;
+        float drift = intensity * 0.3f;
 
         Iterator<Effect> it = effects.iterator();
         while (it.hasNext()) {
@@ -111,9 +148,9 @@ public final class HitOrbs extends Module {
 
             int orbCount = fx.orbs.size();
             for (int i = 0; i < orbCount; i++) {
-                OrbTrail ot = fx.orbs.get(i);
-                double theta = baseAngle + ot.thetaOffset;
-                double phi = (Math.toRadians(vSpeedDeg) * (now - fx.start) / 1000.0) + ot.phiOffset;
+                SmokeTrail st = fx.orbs.get(i);
+                double theta = baseAngle + st.thetaOffset;
+                double phi = (Math.toRadians(vSpeedDeg) * (now - fx.start) / 1000.0) + st.phiOffset;
                 double sinPhi = (Math.sin(phi) * 0.5) + 0.5;
                 double cxr = radius * sinPhi;
                 double oy = radius * (1.0 - sinPhi) - radius * 0.5;
@@ -132,15 +169,29 @@ public final class HitOrbs extends Module {
                 drawOrbBillboard(matrices, size, segs, c);
                 matrices.pop();
 
-                if (trailTTL > 1) {
-                    Deque<TrailPoint> pts = ot.points;
-                    pts.addLast(new TrailPoint(pos, now));
-                    while (!pts.isEmpty() && now - pts.peekFirst().time > trailTTL) pts.removeFirst();
+                if (smokeTTL > 50) {
+                    Deque<SmokeParticle> particles = st.particles;
+                    
+                    for (int p = 0; p < particlesPerFrame; p++) {
+                        Vec3d smokeVel = new Vec3d(
+                            (ThreadLocalRandom.current().nextDouble() - 0.5) * drift * 0.15,
+                            (ThreadLocalRandom.current().nextDouble() - 0.3) * drift * 0.12,
+                            (ThreadLocalRandom.current().nextDouble() - 0.5) * drift * 0.15
+                        );
+                        
+                        float initialSize = size * 0.3f;
+                        float maxSize = size * expansion;
+                        double rotSpeed = (ThreadLocalRandom.current().nextDouble() - 0.5) * 2.0;
+                        
+                        particles.addLast(new SmokeParticle(pos, smokeVel, now, initialSize, maxSize, rotSpeed));
+                    }
+                    
+                    while (!particles.isEmpty() && now - particles.peekFirst().spawnTime > smokeTTL) {
+                        particles.removeFirst();
+                    }
 
-                    if (pts.size() >= 3) {
-                        BufferBuilder rb = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
-                        boolean emitted = addRibbon(rb, pts, ribbonWidth, c, cam, now, trailTTL);
-                        if (emitted) BufferRenderer.drawWithGlobalProgram(rb.end());
+                    if (!particles.isEmpty()) {
+                        renderSmokeParticles(particles, cam, now, smokeTTL, c);
                     }
                 }
             }
@@ -175,47 +226,77 @@ public final class HitOrbs extends Module {
         BufferRenderer.drawWithGlobalProgram(buf.end());
     }
 
-    private static boolean addRibbon(BufferBuilder buffer, Deque<TrailPoint> pts, float width, Color color, Vec3d cam, long now, long ttl) {
+    private void renderSmokeParticles(Deque<SmokeParticle> particles, Vec3d cam, long now, long ttl, Color color) {
         float r = color.getRed() / 255.0f;
         float g = color.getGreen() / 255.0f;
         float b = color.getBlue() / 255.0f;
-        float aBase = color.getAlpha() / 255.0f;
+        float baseAlpha = color.getAlpha() / 255.0f * 0.6f;
 
-        TrailPoint prev = null;
-        Vec3d prevLeft = null;
-        Vec3d prevRight = null;
-        boolean emitted = false;
-
-        for (TrailPoint tp : pts) {
-            if (prev != null) {
-                Vec3d seg = tp.pos.subtract(prev.pos);
-                if (seg.lengthSquared() < 1.0E-6) { prev = tp; continue; }
-                Vec3d cameraDir = tp.pos.subtract(cam).normalize();
-                Vec3d perp = seg.crossProduct(cameraDir).normalize().multiply(width);
-
-                Vec3d left = tp.pos.add(perp);
-                Vec3d right = tp.pos.subtract(perp);
-
-                float a0 = aBase * (float) Math.max(0.0, Math.min(1.0, 1.0 - (now - prev.time) / (double) ttl));
-                float a1 = aBase * (float) Math.max(0.0, Math.min(1.0, 1.0 - (now - tp.time) / (double) ttl));
-
-                if (prevLeft != null && prevRight != null) {
-                    buffer.vertex((float) (prevLeft.x - cam.x), (float) (prevLeft.y - cam.y), (float) (prevLeft.z - cam.z)).color(r, g, b, a0);
-                    buffer.vertex((float) (prevRight.x - cam.x), (float) (prevRight.y - cam.y), (float) (prevRight.z - cam.z)).color(r, g, b, a0);
-                    buffer.vertex((float) (right.x - cam.x), (float) (right.y - cam.y), (float) (right.z - cam.z)).color(r, g, b, a1);
-
-                    buffer.vertex((float) (prevLeft.x - cam.x), (float) (prevLeft.y - cam.y), (float) (prevLeft.z - cam.z)).color(r, g, b, a0);
-                    buffer.vertex((float) (right.x - cam.x), (float) (right.y - cam.y), (float) (right.z - cam.z)).color(r, g, b, a1);
-                    buffer.vertex((float) (left.x - cam.x), (float) (left.y - cam.y), (float) (left.z - cam.z)).color(r, g, b, a1);
-                    emitted = true;
-                }
-
-                prevLeft = left;
-                prevRight = right;
-            }
-            prev = tp;
+        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+        
+        for (SmokeParticle particle : particles) {
+            long age = now - particle.spawnTime;
+            double ageNorm = (double) age / ttl;
+            
+            if (ageNorm >= 1.0) continue;
+            
+            Vec3d gravity = new Vec3d(0, -0.001 * ageNorm, 0);
+            Vec3d wind = new Vec3d(
+                Math.sin(now * 0.001 + particle.rotation) * 0.002,
+                0,
+                Math.cos(now * 0.001 + particle.rotation) * 0.002
+            );
+            Vec3d totalVel = particle.velocity.add(gravity).add(wind);
+            Vec3d currentPos = particle.pos.add(totalVel.multiply(age / 1000.0));
+            
+            float sizeProgress = (float) Math.min(1.0, ageNorm * 2.0);
+            float currentSize = particle.initialSize + (particle.maxSize - particle.initialSize) * sizeProgress;
+            
+            float alpha = baseAlpha * (float) (1.0 - Math.pow(ageNorm, 1.5));
+            
+            double currentRotation = particle.rotation + particle.rotationSpeed * (age / 1000.0);
+            
+            renderSmokeParticle(buf, currentPos, currentSize, alpha, currentRotation, r, g, b, cam);
         }
-        return emitted;
+        
+        BufferRenderer.drawWithGlobalProgram(buf.end());
+    }
+    
+    private void renderSmokeParticle(BufferBuilder buf, Vec3d pos, float size, float alpha, double rotation, float r, float g, float b, Vec3d cam) {
+        float x = (float) (pos.x - cam.x);
+        float y = (float) (pos.y - cam.y);
+        float z = (float) (pos.z - cam.z);
+        
+        float cos = (float) Math.cos(rotation);
+        float sin = (float) Math.sin(rotation);
+        
+        float x1 = (-size * cos - -size * sin);
+        float y1 = (-size * sin + -size * cos);
+        float x2 = (size * cos - -size * sin);
+        float y2 = (size * sin + -size * cos);
+        float x3 = (size * cos - size * sin);
+        float y3 = (size * sin + size * cos);
+        float x4 = (-size * cos - size * sin);
+        float y4 = (-size * sin + size * cos);
+        
+        float centerAlpha = alpha;
+        float edgeAlpha = alpha * 0.1f;
+        
+        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x + x1, y + y1, z).color(r, g, b, edgeAlpha);
+        buf.vertex(x + x2, y + y2, z).color(r, g, b, edgeAlpha);
+        
+        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x + x2, y + y2, z).color(r, g, b, edgeAlpha);
+        buf.vertex(x + x3, y + y3, z).color(r, g, b, edgeAlpha);
+        
+        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x + x3, y + y3, z).color(r, g, b, edgeAlpha);
+        buf.vertex(x + x4, y + y4, z).color(r, g, b, edgeAlpha);
+        
+        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x + x4, y + y4, z).color(r, g, b, edgeAlpha);
+        buf.vertex(x + x1, y + y1, z).color(r, g, b, edgeAlpha);
     }
 }
 
