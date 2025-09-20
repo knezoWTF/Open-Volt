@@ -2,6 +2,7 @@ package com.volt.module.modules.combat;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.volt.event.impl.player.EventAttack;
 import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
@@ -11,6 +12,7 @@ import com.volt.utils.mc.MouseSimulation;
 import meteordevelopment.orbit.EventHandler;
 
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MaceItem;
@@ -33,6 +35,25 @@ public final class BreachSwap extends Module {
     public BreachSwap() {
         super("Breach Swap", "Switches to a Breach enchanted mace when attacking", Category.COMBAT);
         addSettings(switchDelay);
+    }
+
+    @EventHandler
+    public void onAttack(EventAttack event) {
+        if (isNull()) return;
+        
+        if (!(event.getTarget() instanceof LivingEntity)) return;
+        
+        int maceSlot = findBreachMaceSlot();
+        if (maceSlot == -1) return;
+        
+        if (originalSlot == -1) {
+            originalSlot = mc.player.getInventory().selectedSlot;
+        }
+        
+        mc.player.getInventory().selectedSlot = maceSlot;
+        
+        shouldSwitchBack = true;
+        switchTime = System.currentTimeMillis();
     }
 
     @EventHandler
