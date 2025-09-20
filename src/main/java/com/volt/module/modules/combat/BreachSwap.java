@@ -1,18 +1,13 @@
 package com.volt.module.modules.combat;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.volt.event.impl.player.EventAttack;
 import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.mc.MouseSimulation;
 import com.volt.utils.mc.EnchantmentUtil;
-
 import meteordevelopment.orbit.EventHandler;
-
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -28,7 +23,6 @@ public final class BreachSwap extends Module {
     private int originalSlot = -1;
     private boolean shouldSwitchBack = false;
     private long switchTime = 0;
-    private boolean attackPressedLastTick = false;
     private boolean isSwappingAttack = false;
 
     public BreachSwap() {
@@ -36,29 +30,27 @@ public final class BreachSwap extends Module {
         addSettings(switchDelay);
     }
 
+    @EventHandler
+    public void onAttack(EventAttack event) {
+        if (isNull() || isSwappingAttack) return;
+        if (!(event.getTarget() instanceof LivingEntity)) return;
 
-@EventHandler
-public void onAttack(EventAttack event) {
-    if (isNull() || isSwappingAttack) return;
-    if (!(event.getTarget() instanceof LivingEntity)) return;
+        int maceSlot = findBreachMaceSlot();
+        if (maceSlot == -1) return;
 
-    int maceSlot = findBreachMaceSlot();
-    if (maceSlot == -1) return;
+        if (originalSlot == -1) {
+            originalSlot = mc.player.getInventory().selectedSlot;
+        }
 
-    if (originalSlot == -1) {
-        originalSlot = mc.player.getInventory().selectedSlot;
+        mc.player.getInventory().selectedSlot = maceSlot;
+
+        isSwappingAttack = true;
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        isSwappingAttack = false;
+
+        shouldSwitchBack = true;
+        switchTime = System.currentTimeMillis();
     }
-
-    mc.player.getInventory().selectedSlot = maceSlot;
-
-    isSwappingAttack = true;
-    ((MinecraftClientAccessor) mc).invokeDoAttack();
-    isSwappingAttack = false;
-
-    shouldSwitchBack = true;
-    switchTime = System.currentTimeMillis();
-}
-
 
     @EventHandler
     public void onTick(TickEvent event) {
@@ -72,28 +64,21 @@ public void onAttack(EventAttack event) {
             shouldSwitchBack = false;
         }
 
-        boolean attackPressed = mc.options.attackKey.isPressed();
-        if (attackPressed && !attackPressedLastTick) {
+        if (mc.options.attackKey.isPressed()) {
             HitResult hitResult = mc.crosshairTarget;
-            if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-                var entity = ((EntityHitResult) hitResult).getEntity();
-                if (entity instanceof LivingEntity) {
-                    int maceSlot = findBreachMaceSlot();
-                    if (maceSlot != -1) {
-                        originalSlot = mc.player.getInventory().selectedSlot;
-                        mc.player.getInventory().selectedSlot = maceSlot;
+            if (hitResult instanceof EntityHitResult ehr && ehr.getEntity() instanceof LivingEntity) {
+                int maceSlot = findBreachMaceSlot();
+                if (maceSlot != -1) {
+                    originalSlot = mc.player.getInventory().selectedSlot;
+                    mc.player.getInventory().selectedSlot = maceSlot;
 
-                        ((MinecraftClientAccessor) mc).invokeDoAttack();
-                        MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                        MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                    ((MinecraftClientAccessor) mc).invokeDoAttack();
 
-                        switchTime = System.currentTimeMillis();
-                        shouldSwitchBack = true;
-                    }
+                    switchTime = System.currentTimeMillis();
+                    shouldSwitchBack = true;
                 }
             }
         }
-        attackPressedLastTick = attackPressed;
     }
 
     private int findBreachMaceSlot() {
@@ -111,6 +96,10 @@ public void onAttack(EventAttack event) {
         return EnchantmentUtil.hasEnchantment(stack, mc.world, Enchantments.BREACH);
     }
 
+    public boolean isSwapping() {
+        return shouldSwitchBack || isSwappingAttack;
+    }
+
     @Override
     public void onDisable() {
         if (originalSlot != -1) {
@@ -118,6 +107,6 @@ public void onAttack(EventAttack event) {
             originalSlot = -1;
         }
         shouldSwitchBack = false;
-        attackPressedLastTick = false;
+        isSwappingAttack = false;
     }
 }
