@@ -15,6 +15,7 @@ import com.volt.utils.mc.MouseSimulation;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.Items;
+import net.minecraft.item.SwordItem;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +28,7 @@ public final class KeyCrystal extends Module {
     private final NumberSetting delay = new NumberSetting("Delay (MS)", 1, 100, 10, 1);
     private final BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
     private final BooleanSetting mouseSimulation = new BooleanSetting("Mouse Simulation", true);
+    private final BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
 
     private final TimerUtil timer = new TimerUtil();
     private final TimerUtil attackTimer = new TimerUtil();
@@ -38,7 +40,7 @@ public final class KeyCrystal extends Module {
 
     public KeyCrystal() {
         super("Key Crystal", "Automatically places and explodes crystals and obsidian for PvP", -1, Category.COMBAT);
-        this.addSettings(crystalKeybind, delay, antiSuicide, mouseSimulation);
+        this.addSettings(crystalKeybind, delay, antiSuicide, mouseSimulation, antiWeakness);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(crystalKeybind));
     }
 
@@ -95,6 +97,9 @@ public final class KeyCrystal extends Module {
             if (entityHit.getEntity() instanceof EndCrystalEntity crystal) {
 
                 if (mc.player.getPos().distanceTo(crystal.getPos()) <= 6.0 && attackTimer.hasElapsedTime(150)) {
+                    if (antiWeakness.getValue() && mc.player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS)) {
+                            InventoryUtil.swapToWeapon(SwordItem.class);
+                    }
                     if (mouseSimulation.getValue()) {
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                     }

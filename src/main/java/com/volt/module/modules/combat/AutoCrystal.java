@@ -14,6 +14,7 @@ import com.volt.utils.mc.MouseSimulation;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.Items;
+import net.minecraft.item.SwordItem;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -35,13 +36,15 @@ public final class AutoCrystal extends Module {
 
     private final BooleanSetting switchBack = new BooleanSetting("Switch Back", true);
 
+    private final BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
+
     private final TimerUtil timer = new TimerUtil();
 
     private int originalSlot = -1;
 
     public AutoCrystal() {
         super("Auto Crystal", "Hold key to spam crystals", -1, Category.COMBAT);
-        this.addSettings(crystalKey, delay, antiSuicide, autoSwitch, switchBack);
+        this.addSettings(crystalKey, delay, antiSuicide, autoSwitch, switchBack, antiWeakness);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(crystalKey));
     }
 
@@ -60,15 +63,17 @@ public final class AutoCrystal extends Module {
 
     private void processCrystal() {
         if (antiSuicide.getValue() && !mc.player.isOnGround()) return;
-
         if (mc.crosshairTarget instanceof EntityHitResult entityHit) {
             if (entityHit.getEntity() instanceof EndCrystalEntity crystal) {
                 if (crystal != null
                         && !crystal.isRemoved()
                         && crystal.isAlive()
                         && mc.world.getEntityById(crystal.getId()) != null) {
-
+                    
                     if (mc.player.getPos().distanceTo(crystal.getPos()) <= 4.5) {
+                        if (antiWeakness.getValue() && mc.player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS)) {
+                            InventoryUtil.swapToWeapon(SwordItem.class);
+                        }
                         ((MinecraftClientAccessor) mc).invokeDoAttack();
                         MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                     }
