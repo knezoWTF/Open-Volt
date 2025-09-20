@@ -162,10 +162,9 @@ public final class ClickGui extends Screen {
         int titleY = y + 15;
         int textAlpha = (int)(animationManager.getGuiAnimation() * 255);
         titleFont.drawString(matrices, title, titleX, titleY, new Color(255, 255, 255, textAlpha));
-        String ver = "v2";
         int verX = titleX + (int)titleFont.getStringWidth(fullTitle) + 8;
         int verY = titleY + 6;
-        smallFont.drawString(matrices, ver, verX, verY, new Color(180, 180, 200, textAlpha));
+        smallFont.drawString(matrices, Volt.CLIENT_VERSION, verX, verY, new Color(180, 180, 200, textAlpha));
         
         renderSearchBar(context, x, y, width);
     }

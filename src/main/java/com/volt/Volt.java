@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandles;
 
 @Getter
 public final class Volt implements ModInitializer {
+    public static final String CLIENT_VERSION = "v2";
     public static Volt INSTANCE;
     public static MinecraftClient mc;
     public final IEventBus VoltEventBus;
@@ -25,7 +26,6 @@ public final class Volt implements ModInitializer {
     public final CommandManager commandManager;
     public final MouseModuleHandler mouseModuleHandler;
     public final NotificationManager notificationManager;
-
     public Volt() {
         INSTANCE = this;
         mc = MinecraftClient.getInstance();
