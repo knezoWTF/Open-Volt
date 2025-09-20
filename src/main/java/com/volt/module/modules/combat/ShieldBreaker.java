@@ -28,16 +28,21 @@ public final class ShieldBreaker extends Module {
     private final BooleanSetting requireAxe = new BooleanSetting("Require Axe", false);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
     private final BooleanSetting requireClick = new BooleanSetting("Require Click", false);
-	private final BooleanSetting ignoreIfUsingItem = new BooleanSetting("Ignore if using item", true);
+    private final BooleanSetting ignoreIfUsingItem = new BooleanSetting("Ignore if using item", true);
 
     private final TimerUtil hitDelayTimer = new TimerUtil();
     private final TimerUtil slotTimer = new TimerUtil();
+
     public boolean breakingShieldFuckNigga = false;
     private int savedSlot = -1;
 
     public ShieldBreaker() {
         super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-        this.addSettings(hitDelay, slotDelay, cpsLimit, revertSlot, autoStun, requireAxe, rayTraceCheck, requireClick, ignoreIfUsingItem);
+        this.addSettings(
+            hitDelay, slotDelay, cpsLimit,
+            revertSlot, autoStun, requireAxe,
+            rayTraceCheck, requireClick, ignoreIfUsingItem
+        );
     }
 
     @EventHandler
@@ -50,24 +55,30 @@ public final class ShieldBreaker extends Module {
 
         var entity = entityHit.getEntity();
         if (!(entity instanceof PlayerEntity player)) return;
-		if (ignoreIfUsingItem.getValue() && mc.player.isUsingItem()) return;
+        if (ignoreIfUsingItem.getValue() && mc.player.isUsingItem()) return;
         if (rayTraceCheck.getValue() && CombatUtil.isShieldFacingAway((LivingEntity) entity)) return;
+
         if (!player.isHolding(Items.SHIELD) || !player.isBlocking()) {
             if (savedSlot != -1) {
-                if (revertSlot.getValue()) mc.player.getInventory().selectedSlot = savedSlot;
+                if (revertSlot.getValue()) {
+                    mc.player.getInventory().selectedSlot = savedSlot;
+                }
                 savedSlot = -1;
             }
             return;
         }
 
-        if (savedSlot == -1) savedSlot = mc.player.getInventory().selectedSlot;
+        if (savedSlot == -1) {
+            savedSlot = mc.player.getInventory().selectedSlot;
+        }
+
         if (!slotTimer.hasElapsedTime(slotDelay.getValueInt() * 50)) return;
+
         breakingShieldFuckNigga = true;
         InventoryUtil.swapToWeapon(AxeItem.class);
 
         int minClickDelay = 1000 / cpsLimit.getValueInt();
         if (!hitDelayTimer.hasElapsedTime(minClickDelay)) return;
-
         if (!hitDelayTimer.hasElapsedTime(hitDelay.getValueInt() * 50)) return;
 
         ((MinecraftClientAccessor) mc).invokeDoAttack();
@@ -81,6 +92,11 @@ public final class ShieldBreaker extends Module {
         hitDelayTimer.reset();
         slotTimer.reset();
         breakingShieldFuckNigga = false;
+
+        if (revertSlot.getValue() && savedSlot != -1) {
+            mc.player.getInventory().selectedSlot = savedSlot;
+            savedSlot = -1; 
+        }
     }
 
     @Override
