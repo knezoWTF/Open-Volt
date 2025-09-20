@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MaceItem;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-
+import com.volt.Volt;
 public final class BreachSwap extends Module {
 
     private final NumberSetting switchDelay = new NumberSetting("Switch Delay", 10, 100, 30, 1);
@@ -33,6 +33,8 @@ public final class BreachSwap extends Module {
     @EventHandler
     public void onAttack(EventAttack event) {
         if (isNull() || isSwappingAttack) return;
+        ShieldBreaker shieldBreaker = (ShieldBreaker) Volt.INSTANCE.getModuleManager().getModule(ShieldBreaker.class).get();
+        if (shieldBreaker != null && shieldBreaker.breakingShieldFuckNigga) return;
         if (!(event.getTarget() instanceof LivingEntity)) return;
 
         int maceSlot = findBreachMaceSlot();
