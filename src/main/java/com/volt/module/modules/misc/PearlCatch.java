@@ -6,6 +6,7 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.KeybindSetting;
+import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.MouseSimulation;
@@ -18,6 +19,7 @@ import org.lwjgl.glfw.GLFW;
 public final class PearlCatch extends Module {
     private final KeybindSetting pearlChargeKeybind = new KeybindSetting("Pearl Charge Key", GLFW.GLFW_KEY_H, true);
     private final BooleanSetting silentMode = new BooleanSetting("Silent", true);
+    private final NumberSetting windDelayMs = new NumberSetting("Wind Delay (ms)", 0, 2000, 200, 1);
     
     private final TimerUtil pearlDelayTimer = new TimerUtil();
     private boolean keyPressed = false;
@@ -27,7 +29,7 @@ public final class PearlCatch extends Module {
 
     public PearlCatch() {
         super("Pearl Catch", "Throws pearl then windcharge", -1, Category.MISC);
-        this.addSettings(pearlChargeKeybind, silentMode);
+        this.addSettings(pearlChargeKeybind, silentMode, windDelayMs);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(pearlChargeKeybind));
     }
 
@@ -42,7 +44,7 @@ public final class PearlCatch extends Module {
             handlePearlChargeSequence();
         }
 
-        if (pearlThrown && pearlDelayTimer.hasElapsedTime(200)) {
+        if (pearlThrown && pearlDelayTimer.hasElapsedTime(windDelayMs.getValueInt())) {
             throwWindCharge();
             pearlThrown = false;
         }
