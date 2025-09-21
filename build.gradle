@@ -20,6 +20,7 @@ repositories {
 		name = "meteor-maven"
 		url = "https://maven.meteordev.org/releases"
 	}
+	mavenCentral()
 }
 
 fabricApi {
@@ -43,6 +44,12 @@ dependencies {
 
 	include implementation("meteordevelopment:orbit:${project.orbit_version}")
 	include implementation("io.github.racoondog:norbit:${project.norbit_version}")
+
+	// Kyori Adventure for rich text components and MiniMessage
+	include implementation('net.kyori:adventure-api:4.24.0')
+	include implementation('net.kyori:adventure-text-minimessage:4.24.0')
+	include implementation('net.kyori:adventure-text-serializer-gson:4.24.0')
+	include implementation('net.kyori:adventure-text-serializer-plain:4.24.0')
 }
 
 processResources {

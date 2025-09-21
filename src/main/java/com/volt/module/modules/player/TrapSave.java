@@ -22,6 +22,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.text.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.joml.Matrix4f;
 
 import java.awt.*;
@@ -33,7 +37,7 @@ import java.util.function.Predicate;
 public final class TrapSave extends Module {
     private static final int SCAN_INTERVAL_MS = 500;
     private static final int WARNING_DURATION_MS = 3000;
-    private static final String CHAT_PREFIX = "§c[TrapSave] §f";
+    private static final String CHAT_PREFIX = "<red>[TrapSave]</red> ";
 
     private static final Box REDSTONE_WIRE_BOUNDS = new Box(0, 0, 0, 1, 0.0625, 1);
     private static final Box TORCH_BOUNDS = new Box(0.375, 0, 0.375, 0.625, 0.625, 0.625);
@@ -296,8 +300,15 @@ public final class TrapSave extends Module {
         final int warningHeight = 40;
 
         final int backgroundX = centerX - warningWidth / 2;
-        final String warningText = "§c§lTRAP DETECTED!";
-        final String detailText = "§f" + detectedTrapType + " (" + trapCount + " traps)";
+
+        final Component warningComponent = MiniMessage.miniMessage().deserialize("<red><bold>TRAP DETECTED!</bold></red>");
+        final Component detailComponent = MiniMessage.miniMessage().deserialize("<white>" + (detectedTrapType == null ? "" : detectedTrapType) + " (" + trapCount + " traps)</white>");
+
+        final String warningJson = GsonComponentSerializer.gson().serialize(warningComponent);
+        final String detailJson = GsonComponentSerializer.gson().serialize(detailComponent);
+
+        final Text warningText = Text.Serialization.fromJson(warningJson, mc.world.getRegistryManager());
+        final Text detailText = Text.Serialization.fromJson(detailJson, mc.world.getRegistryManager());
 
         event.getContext().fill(backgroundX - 10, warningY - 10, backgroundX + warningWidth, warningY + warningHeight, 0x80FF0000);
         event.getContext().drawText(mc.textRenderer, warningText, backgroundX, warningY, 0xFFFFFF, true);
