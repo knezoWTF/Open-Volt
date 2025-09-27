@@ -11,6 +11,7 @@ import com.volt.module.modules.movement.AutoHeadHitter;
 import com.volt.module.modules.movement.NoJumpDelay;
 import com.volt.module.modules.movement.Sprint;
 import com.volt.module.modules.player.*;
+import com.volt.module.modules.player.AutoMLG;
 import com.volt.module.modules.render.*;
 import lombok.Getter;
 
@@ -64,7 +65,7 @@ public final class ModuleManager {
                 new AutoExtinguish(), new AutoTool(), new AutoWeb(), new AutoRefill(),
                 new AutoDrain(), new AutoCrafter(), new FastPlace(), new FastEXP(),
                 new Eagle(), new TrapSave(), new PingSpoof(), new AutoDoubleHand(),
-                new FastMine());
+                new AutoMLG(), new FastMine());
 
         // Render
         add(
