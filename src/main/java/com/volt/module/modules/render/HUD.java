@@ -36,6 +36,9 @@ public class HUD extends Module {
     public static final BooleanSetting hideVisuals = new BooleanSetting("Hide visuals", true);
     public static final BooleanSetting lowercase = new BooleanSetting("Lowercase", false);
     public static final ModeSetting backBarMode = new ModeSetting("Backbar Mode", "None", "None", "Full", "Rise");
+    public static final BooleanSetting waveAnimation = new BooleanSetting("Wave Animation", false);
+    public static final NumberSetting waveSpeed = new NumberSetting("Wave Speed", 0.1, 5.0, 1.5, 0.1);
+    public static final NumberSetting waveSpread = new NumberSetting("Wave Spread", 0.1, 5.0, 0.6, 0.1);
     public static final NumberSetting padding = new NumberSetting("Offset", 0, 40, 5, 1);
     public static final NumberSetting opacity = new NumberSetting("BG Opacity", 0, 255, 80, 1);
     public static final BooleanSetting info = new BooleanSetting("Info", true);
@@ -47,7 +50,7 @@ public class HUD extends Module {
 
     public HUD() {
         super("HUD", "Renders information", -1, Category.RENDER);
-        addSettings(watermark, watermarkMode, watermarkText, watermarkSimpleFontMode, watermarkScale, arrayList, arrayListScale, colorMode, customColor, fontMode, suffixMode, hideVisuals, lowercase, backBarMode, padding, opacity, info, bpsCounter, fpsCounter, scale);
+        addSettings(watermark, watermarkMode, watermarkText, watermarkSimpleFontMode, watermarkScale, arrayList, arrayListScale, colorMode, customColor, fontMode, suffixMode, hideVisuals, lowercase, backBarMode, waveAnimation, waveSpeed, waveSpread, padding, opacity, info, bpsCounter, fpsCounter, scale);
     }
 
     @EventHandler
@@ -170,6 +173,8 @@ public class HUD extends Module {
              }
 
             i = padding.getValueInt();
+            double waveTime = (System.currentTimeMillis() / 1000.0) * waveSpeed.getValue();
+            int moduleIndex = 0;
 
             for (Module m : enabledModules) {
                 String fullName = getFullName(m);
@@ -179,6 +184,13 @@ public class HUD extends Module {
                     case "Custom" -> getCustomColor().getRGB();
                     default -> 0;
                 };
+
+                int textColor = color;
+                if (waveAnimation.getValue()) {
+                    double wavePhase = waveTime + moduleIndex * waveSpread.getValue();
+                    double waveValue = (Math.sin(wavePhase) + 1.0) * 0.5;
+                    textColor = applyWaveColor(color, waveValue);
+                }
 
                 int moduleWidth;
                 int moduleHeight;
@@ -213,12 +225,13 @@ public class HUD extends Module {
                 }
 
                 if (fontMode.getMode().equals("MC")) {
-                    event.getContext().drawText(mc.textRenderer, fullName, totalWidth - moduleWidth - padding.getValueInt(), i, color, true);
+                    event.getContext().drawText(mc.textRenderer, fullName, totalWidth - moduleWidth - padding.getValueInt(), i, textColor, true);
                 } else {
-                    customRenderer.drawString(event.getContext().getMatrices(), fullName, totalWidth - moduleWidth - padding.getValueInt(), i, new Color(color));
+                    customRenderer.drawString(event.getContext().getMatrices(), fullName, totalWidth - moduleWidth - padding.getValueInt(), i, new Color(textColor));
                 }
 
                 i += moduleHeight + (int) (3 * arrayListScale.getValue());
+                moduleIndex++;
             }
         }
 
@@ -318,6 +331,14 @@ public class HUD extends Module {
             }
         }
         return "";
+    }
+
+    private int applyWaveColor(int baseColor, double waveValue) {
+        Color base = new Color(baseColor, true);
+        float[] hsb = Color.RGBtoHSB(base.getRed(), base.getGreen(), base.getBlue(), null);
+        float brightness = Math.min(1f, Math.max(0f, (float) (hsb[2] * (0.6 + waveValue * 0.4))));
+        int rgb = Color.HSBtoRGB(hsb[0], hsb[1], brightness);
+        return (base.getAlpha() << 24) | (rgb & 0xFFFFFF);
     }
 
     public static int getAstolfo(int offset) {
