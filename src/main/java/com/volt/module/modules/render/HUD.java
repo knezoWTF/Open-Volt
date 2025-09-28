@@ -171,46 +171,55 @@ public class HUD extends Module {
 
             i = padding.getValueInt();
 
-             for (Module m : enabledModules) {
-                 int color = switch (colorMode.getMode()) {
-                     case "Astolfo" -> getAstolfo(i * 3);
-                     case "Theme" -> getThemeColor().getRGB();
-                     case "Custom" -> getCustomColor().getRGB();
-                     default -> 0;
-                 };
+            for (Module m : enabledModules) {
+                String fullName = getFullName(m);
+                int color = switch (colorMode.getMode()) {
+                    case "Astolfo" -> getAstolfo(i * 3);
+                    case "Theme" -> getThemeColor().getRGB();
+                    case "Custom" -> getCustomColor().getRGB();
+                    default -> 0;
+                };
 
-                 int moduleWidth;
-                 int moduleHeight;
+                int moduleWidth;
+                int moduleHeight;
+                FontRenderer customRenderer = null;
 
-                 if (fontMode.getMode().equals("MC")) {
-                     moduleWidth = mc.textRenderer.getWidth(getFullName(m));
-                     moduleHeight = mc.textRenderer.fontHeight;
-                 } else {
-                     moduleWidth = (int) getCustomFontRenderer(fontMode.getMode()).getStringWidth(getFullName(m));
-                     moduleHeight = (int) getCustomFontRenderer(fontMode.getMode()).getStringHeight(getFullName(m));
-                 }
+                if (fontMode.getMode().equals("MC")) {
+                    moduleWidth = mc.textRenderer.getWidth(fullName);
+                    moduleHeight = mc.textRenderer.fontHeight;
+                } else {
+                    customRenderer = getCustomFontRenderer(fontMode.getMode());
+                    moduleWidth = (int) customRenderer.getStringWidth(fullName);
+                    moduleHeight = (int) customRenderer.getStringHeight(fullName);
+                }
 
-                 int scaledPadding2 = (int) (2 * arrayListScale.getValue());
-                 int scaledPadding1 = (int) (1 * arrayListScale.getValue());
-                 int scaledPadding3 = (int) (3 * arrayListScale.getValue());
-                 int scaledPadding5 = (int) (5 * arrayListScale.getValue());
+                int scaledPadding1 = (int) (1 * arrayListScale.getValue());
+                int scaledPadding2 = (int) (2 * arrayListScale.getValue());
+                int scaledPadding3 = (int) (3 * arrayListScale.getValue());
+                int scaledPadding5 = (int) (5 * arrayListScale.getValue());
 
-                 switch (backBarMode.getMode()) {
-                     case "Full":
-                         event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding2, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight + scaledPadding1, color);
-                         break;
-                     case "Rise":
-                         event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding1, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight, color);
-                         break;
-                 }
+                if (opacity.getValueInt() > 0) {
+                    int backgroundColor = new Color(0, 0, 0, opacity.getValueInt()).getRGB();
+                    int backgroundLeft = totalWidth - moduleWidth - padding.getValueInt() - scaledPadding3;
+                    int backgroundTop = i - scaledPadding2;
+                    int backgroundRight = totalWidth - padding.getValueInt() + scaledPadding5;
+                    int backgroundBottom = i + moduleHeight + scaledPadding1;
+                    event.getContext().fill(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundColor);
+                }
 
-                 if (fontMode.getMode().equals("MC")) {
-                     event.getContext().drawText(mc.textRenderer, getFullName(m), totalWidth - moduleWidth - padding.getValueInt(), i, color, true);
-                 } else {
-                     getCustomFontRenderer(fontMode.getMode()).drawString(event.getContext().getMatrices(), getFullName(m), totalWidth - moduleWidth - padding.getValueInt(), i, new Color(color));
-                 }
-                 i += moduleHeight + (int) (3 * arrayListScale.getValue());
-             }
+                switch (backBarMode.getMode()) {
+                    case "Full" -> event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding2, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight + scaledPadding1, color);
+                    case "Rise" -> event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding1, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight, color);
+                }
+
+                if (fontMode.getMode().equals("MC")) {
+                    event.getContext().drawText(mc.textRenderer, fullName, totalWidth - moduleWidth - padding.getValueInt(), i, color, true);
+                } else {
+                    customRenderer.drawString(event.getContext().getMatrices(), fullName, totalWidth - moduleWidth - padding.getValueInt(), i, new Color(color));
+                }
+
+                i += moduleHeight + (int) (3 * arrayListScale.getValue());
+            }
         }
 
         if (info.getValue()) {
