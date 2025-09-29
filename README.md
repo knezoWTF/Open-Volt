@@ -13,8 +13,6 @@ The client was originally meant to be paid, but I decided to make it FOSS. Hopef
 
 Lvstrng (1037070137041375412) – Client base + Click Simulation
 
-Walper (957343617272414230) – One of the best people I’ve met in this community
-
 Koi (1227992566339731479) – The best person I could have met, helped a lot with Volt and knows 1.9 combat better than I do
 
 Etho (1383737664645369926) – Moral support & Walmart Solutions
