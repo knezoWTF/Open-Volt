@@ -46,6 +46,8 @@ public final class AutoDoubleHand extends Module {
     
     private boolean shouldHoldTotem() {
         if (isNull()) return false;
+
+        if (mc.currentScreen != null && !inventorySwitch.getValue()) return false;
         
         if (inventorySwitch.getValue() && mc.currentScreen instanceof InventoryScreen) {
             return true;

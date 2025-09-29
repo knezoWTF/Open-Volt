@@ -26,7 +26,6 @@ public class AimAssist extends Module {
     private final NumberSetting pitchSpeed = new NumberSetting("Pitch Speed", 0.1, 5.0, 2.0, 0.1);
     private final NumberSetting yawSpeed = new NumberSetting("Yaw Speed", 0.1, 5.0, 2.0, 0.1);
     private final NumberSetting smoothing = new NumberSetting("Smoothing", 1.0, 20.0, 10.0, 0.5);
-    private final NumberSetting noiseSpeed = new NumberSetting("Noise Speed", 0, 5.0, 0, 0.5);
 
     private final BooleanSetting targetPlayers = new BooleanSetting("Target Players", true);
     private final BooleanSetting targetMobs = new BooleanSetting("Target Mobs", false);
@@ -40,7 +39,7 @@ public class AimAssist extends Module {
     public AimAssist() {
         super("Aim Assist", "Gives you assistance on your aim", Category.COMBAT);
         addSettings(
-                speed, fov, range, pitchSpeed, yawSpeed, smoothing, noiseSpeed,
+                speed, fov, range, pitchSpeed, yawSpeed, smoothing,
                 targetPlayers, targetMobs, weaponsOnly, throughWalls
         );
     }
@@ -123,11 +122,6 @@ private void onRender3D(EventRender3D event) {
         return Math.sqrt(yawDiff * yawDiff + pitchDiff * pitchDiff);
     }
 
-    private float humanNoise(float t) {
-        return (float) ((Math.random() * 0.01) +
-                (Math.sin(t * 1.3) * 0.005) +
-                (Math.sin(t * 0.7 + 2.1) * 0.003));
-    }
 
 private void applySmoothAiming(float targetYaw, float targetPitch) {
     long currentTime = System.currentTimeMillis();
@@ -146,10 +140,6 @@ private void applySmoothAiming(float targetYaw, float targetPitch) {
 
     float yawStep = yawDiff * ease;
     float pitchStep = pitchDiff * ease;
-
-    noiseTime += deltaTime * noiseSpeed.getValueFloat();
-    yawStep += humanNoise(noiseTime);
-    pitchStep += humanNoise(noiseTime + 50f);
 
     yawStep = MathHelper.clamp(yawStep * yawSpeed.getValueFloat() * deltaTime, -10f, 10f);
     pitchStep = MathHelper.clamp(pitchStep * pitchSpeed.getValueFloat() * deltaTime, -10f, 10f);

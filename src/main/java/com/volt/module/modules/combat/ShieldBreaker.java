@@ -48,6 +48,9 @@ public final class ShieldBreaker extends Module {
     @EventHandler
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
+        if (slotDelay.getValue() < hitDelay.getValue()) {
+            hitDelay.setValue(slotDelay.getValue());
+        }
         if (mc.currentScreen != null) return;
         if (requireAxe.getValue() && !(mc.player.getMainHandStack().getItem() instanceof AxeItem)) return;
         if (requireClick.getValue() && !mc.mouse.wasLeftButtonClicked()) return;

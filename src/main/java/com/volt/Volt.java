@@ -16,7 +16,7 @@ import java.lang.invoke.MethodHandles;
 
 @Getter
 public final class Volt implements ModInitializer {
-    public static final String CLIENT_VERSION = "v2";
+    public static final String CLIENT_VERSION = "v2.1";
     public static Volt INSTANCE;
     public static MinecraftClient mc;
     public final IEventBus VoltEventBus;
