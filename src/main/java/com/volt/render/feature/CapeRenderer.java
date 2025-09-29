@@ -11,15 +11,12 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 import java.util.Optional;
 
 public final class CapeRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-    private static final Identifier CAPE_TEXTURE = Identifier.of("volt", "capes/269788df6305de37f5f62f2431b2b0c3.png");
-
     public CapeRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context) {
         super(context);
     }
@@ -51,7 +48,7 @@ public final class CapeRenderer extends FeatureRenderer<AbstractClientPlayerEnti
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f + forwardSwing / 2.0f + heightOffset));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(sidewaysSwing / 2.0f));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - sidewaysSwing / 2.0f));
-        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntitySolid(CAPE_TEXTURE));
+        VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntitySolid(module.getSelectedTexture()));
         PlayerEntityModel<AbstractClientPlayerEntity> model = getContextModel();
         model.renderCape(matrices, consumer, light, OverlayTexture.DEFAULT_UV);
         matrices.pop();
