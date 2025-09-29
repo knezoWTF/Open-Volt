@@ -14,6 +14,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Items;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
@@ -60,6 +61,7 @@ public final class ShieldBreaker extends Module {
         if (!(entity instanceof PlayerEntity player)) return;
         if (ignoreIfUsingItem.getValue() && mc.player.isUsingItem()) return;
         if (rayTraceCheck.getValue() && CombatUtil.isShieldFacingAway((LivingEntity) entity)) return;
+        if (player.getActiveItem().getItem() instanceof EnderPearlItem) return;
 
         if (!player.isHolding(Items.SHIELD) || !player.isBlocking()) {
             if (savedSlot != -1) {
