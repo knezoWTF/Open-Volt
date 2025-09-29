@@ -25,6 +25,7 @@
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "HandledScreenAccessor",
-    "LightmapTextureManagerMixin"
+    "LightmapTextureManagerMixin",
+    "PlayerEntityRendererMixin"
   ]
 }
