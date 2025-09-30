@@ -34,7 +34,6 @@ public class AimAssist extends Module {
 
     private Entity currentTarget = null;
     private long lastUpdateTime = 0;
-    private float noiseTime = 0f;
 
     public AimAssist() {
         super("Aim Assist", "Gives you assistance on your aim", Category.COMBAT);
@@ -149,9 +148,6 @@ private void applySmoothAiming(float targetYaw, float targetPitch) {
     mc.player.setYaw(mc.player.getYaw() + yawStep);
     mc.player.setPitch(MathHelper.clamp(mc.player.getPitch() + pitchStep, -89f, 89f));
 }
-
-
-
 
 
     private boolean isHoldingWeapon() {
