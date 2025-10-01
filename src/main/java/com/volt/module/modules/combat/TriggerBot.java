@@ -1,12 +1,13 @@
 package com.volt.module.modules.combat;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.volt.event.impl.player.TickEvent;
+import com.volt.event.impl.render.EventRender2D;
+import com.volt.event.impl.render.EventRender3D;
 import com.volt.event.impl.world.WorldChangeEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
+import com.volt.module.modules.misc.Teams;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
@@ -14,12 +15,9 @@ import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
-import com.volt.utils.mc.MouseSimulation;
-import com.volt.module.modules.misc.Teams;
-
+import com.volt.utils.simulation.ClickSimulator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -54,6 +52,7 @@ public final class TriggerBot extends Module {
     private final TimerUtil timerReactionTime = new TimerUtil();
 
     public boolean waitingForDelay = false;
+    boolean cooldownCharged = false;
     private boolean waitingForReaction = false;
     private long currentReactionDelay = 0;
     private float swordDelay = 0;
@@ -61,12 +60,12 @@ public final class TriggerBot extends Module {
     private float randomizedThreshold = 0;
     private Entity target;
     private String lastTargetUUID = null;
-    boolean cooldownCharged = false;
+
     public TriggerBot() {
         super("Trigger Bot", "Makes you automatically attack once aimed at a target", -1, Category.COMBAT);
         addSettings(
                 swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin, axePostDelayMax, axePostDelayMin,
-                reactionTimeMax, reactionTimeMin, cooldownMode,critMode, ignorePassiveMobs, ignoreCrystals, respectShields,
+                reactionTimeMax, reactionTimeMin, cooldownMode, critMode, ignorePassiveMobs, ignoreCrystals, respectShields,
                 ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe, disableOnWorldChange, samePlayer
         );
     }
@@ -79,7 +78,7 @@ public final class TriggerBot extends Module {
     }
 
     @EventHandler
-    private void onTickEvent(TickEvent event) {
+    private void render(EventRender2D event) {
         if (isNull() || mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
 
@@ -107,13 +106,13 @@ public final class TriggerBot extends Module {
 
         if (respectShields.getValue()) {
             Item item = mc.player.getMainHandStack().getItem();
-            if (target instanceof PlayerEntity playerTarget && CombatUtil.isShieldFacingAway(((LivingEntity) playerTarget)) && item instanceof SwordItem) {
+            if (target instanceof PlayerEntity playerTarget && CombatUtil.isShieldFacingAway(playerTarget) && item instanceof SwordItem) {
                 return;
             }
         }
 
         if (setPreferCrits()) {
-            ((MinecraftClientAccessor) mc).invokeDoAttack();
+            ClickSimulator.leftClick();
             return;
         }
 
@@ -168,48 +167,43 @@ public final class TriggerBot extends Module {
         };
     }
 
-private boolean setPreferCrits() {
-    String mode = critMode.getMode();
+    private boolean setPreferCrits() {
+        String mode = critMode.getMode();
 
-    if (mode.equals("None")) {
-        return false;
+        if (mode.equals("None")) {
+            return false;
+        }
+        if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) {
+            return false;
+        }
+
+        boolean canCrit = !mc.player.isOnGround()
+                && mc.player.fallDistance > -0.02F
+                && !mc.player.isClimbing()
+                && !mc.player.isTouchingWater()
+                && !mc.player.isInLava()
+                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
+                && !mc.player.isSneaking()
+                && mc.player.getVehicle() == null;
+
+        boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
+
+        return switch (mode) {
+            case "Strict" -> canCrit && cooldownCharged;
+            default -> false;
+        };
     }
-    if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) {
-        return false;
-    }
 
-    boolean canCrit = !mc.player.isOnGround()
-        && mc.player.fallDistance > 0.0F
-        && !mc.player.isClimbing()
-        && !mc.player.isTouchingWater()
-        && !mc.player.isInLava()
-        && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
-        && !mc.player.isSneaking()
-        && mc.player.getVehicle() == null;
-
-    boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
-
-    System.out.println("[Crit] Mode: " + mode);
-    System.out.println("[Crit] fallDistance: " + mc.player.fallDistance);
-    System.out.println("[Crit] isOnGround: " + mc.player.isOnGround());
-    System.out.println("[Crit] canCrit: " + canCrit);
-    System.out.println("[Crit] cooldownCharged: " + cooldownCharged);
-
-    return switch (mode) {
-        case "Strict" -> canCrit && cooldownCharged;
-        default -> false;
-    };
-}
-private boolean samePlayerCheck(Entity entity) {
+    private boolean samePlayerCheck(Entity entity) {
         if (!samePlayer.getValue()) return true;
         if (entity == null) return false;
 
-if (lastTargetUUID == null || samePlayerTimer.hasElapsedTime(3000, false)) {
-    lastTargetUUID = entity.getUuidAsString();
-    samePlayerTimer.reset();
-    return true;
-}
-return entity.getUuidAsString().equals(lastTargetUUID);
+        if (lastTargetUUID == null || samePlayerTimer.hasElapsedTime(3000, false)) {
+            lastTargetUUID = entity.getUuidAsString();
+            samePlayerTimer.reset();
+            return true;
+        }
+        return entity.getUuidAsString().equals(lastTargetUUID);
     }
 
 
@@ -248,16 +242,15 @@ return entity.getUuidAsString().equals(lastTargetUUID);
     }
 
     public void attack() {
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+        ClickSimulator.leftClick();
 
-    if (samePlayer.getValue() && target != null) {
-        lastTargetUUID = target.getUuidAsString();
-        samePlayerTimer.reset();
+        if (samePlayer.getValue() && target != null) {
+            lastTargetUUID = target.getUuidAsString();
+            samePlayerTimer.reset();
+        }
+
+        waitingForDelay = false;
     }
-
-    waitingForDelay = false;
-}
 
     @Override
     public void onEnable() {

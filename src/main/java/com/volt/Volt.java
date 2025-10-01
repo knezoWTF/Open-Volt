@@ -26,6 +26,7 @@ public final class Volt implements ModInitializer {
     public final CommandManager commandManager;
     public final MouseModuleHandler mouseModuleHandler;
     public final NotificationManager notificationManager;
+    public static final boolean shouldUseMouseEvent = System.getProperty("os.name").toLowerCase().contains("windows");
     public Volt() {
         INSTANCE = this;
         mc = MinecraftClient.getInstance();

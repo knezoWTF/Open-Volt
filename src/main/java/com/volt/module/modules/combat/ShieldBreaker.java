@@ -34,7 +34,7 @@ public final class ShieldBreaker extends Module {
     private final TimerUtil hitDelayTimer = new TimerUtil();
     private final TimerUtil slotTimer = new TimerUtil();
 
-    public boolean breakingShieldFuckNigga = false;
+    public boolean breakingShield = false;
     private int savedSlot = -1;
 
     public ShieldBreaker() {
@@ -79,7 +79,7 @@ public final class ShieldBreaker extends Module {
 
         if (!slotTimer.hasElapsedTime(slotDelay.getValueInt() * 50)) return;
 
-        breakingShieldFuckNigga = true;
+        breakingShield = true;
         InventoryUtil.swapToWeapon(AxeItem.class);
 
         int minClickDelay = 1000 / cpsLimit.getValueInt();
@@ -96,7 +96,7 @@ public final class ShieldBreaker extends Module {
 
         hitDelayTimer.reset();
         slotTimer.reset();
-        breakingShieldFuckNigga = false;
+        breakingShield = false;
 
         if (revertSlot.getValue() && savedSlot != -1) {
             mc.player.getInventory().selectedSlot = savedSlot;
@@ -110,7 +110,7 @@ public final class ShieldBreaker extends Module {
             mc.player.getInventory().selectedSlot = savedSlot;
         }
         savedSlot = -1;
-        breakingShieldFuckNigga = false;
+        breakingShield = false;
         super.onDisable();
     }
 }

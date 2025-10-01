@@ -35,11 +35,10 @@ public class MinecraftClientMixin implements IMinecraft {
         if (optionalClientModule.isPresent()) {
             Client client = optionalClientModule.get();
             if (client.isEnabled() && client.getTitle()) {
-                cir.setReturnValue("Volt 1.21");
+                cir.setReturnValue("Volt 1.21.1");
             }
         }
     }
-
     @Inject(method = "run", at = @At("HEAD"))
     public void runInject(CallbackInfo ci) {
         if (Volt.INSTANCE != null) {
