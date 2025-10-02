@@ -52,10 +52,8 @@ public final class TriggerBot extends Module {
     private final TimerUtil timerReactionTime = new TimerUtil();
 
     public boolean waitingForDelay = false;
-    boolean cooldownCharged = false;
     private boolean waitingForReaction = false;
     private long currentReactionDelay = 0;
-    private float swordDelay = 0;
     private float randomizedPostDelay = 0;
     private float randomizedThreshold = 0;
     private Entity target;
@@ -78,8 +76,9 @@ public final class TriggerBot extends Module {
     }
 
     @EventHandler
-    private void render(EventRender2D event) {
-        if (isNull() || mc.player.isUsingItem()) return;
+    private void render(TickEvent event) {
+        if (isNull()) return;
+        if (mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
 
         if (axeThresholdMin.getValueFloat() >= axeThresholdMax.getValueFloat()) {
@@ -112,7 +111,7 @@ public final class TriggerBot extends Module {
         }
 
         if (setPreferCrits()) {
-            ClickSimulator.leftClick();
+            ((MinecraftClientAccessor)mc).invokeDoAttack();
             return;
         }
 
@@ -128,17 +127,10 @@ public final class TriggerBot extends Module {
                     double maxDistance = 3.0;
                     double multiplier = distance < maxDistance / 2 ? 0.66 : 1.0;
                     delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
-                    delay *= multiplier;
+                    delay *= (long) multiplier;
                 }
-                case "Strict" -> {
-                    delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
-                }
-                case "None" -> {
-                    delay = 0;
-                }
-                default -> {
-                    delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
-                }
+                case "None" -> delay = 0;
+                default -> delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
             }
 
             currentReactionDelay = delay;
@@ -160,9 +152,9 @@ public final class TriggerBot extends Module {
         if (Teams.isTeammate(en)) return false;
 
         return switch (en) {
-            case EndCrystalEntity endCrystalEntity when ignoreCrystals.getValue() -> false;
-            case Tameable tameable -> false;
-            case PassiveEntity passiveEntity when ignorePassiveMobs.getValue() -> false;
+            case EndCrystalEntity ignored when ignoreCrystals.getValue() -> false;
+            case Tameable ignored -> false;
+            case PassiveEntity ignored when ignorePassiveMobs.getValue() -> false;
             default -> !ignoreInvisible.getValue() || !en.isInvisible();
         };
     }
@@ -178,7 +170,7 @@ public final class TriggerBot extends Module {
         }
 
         boolean canCrit = !mc.player.isOnGround()
-                && mc.player.fallDistance > -0.02F
+                && mc.player.fallDistance < -0.02F
                 && !mc.player.isClimbing()
                 && !mc.player.isTouchingWater()
                 && !mc.player.isInLava()
@@ -229,7 +221,7 @@ public final class TriggerBot extends Module {
             }
             return false;
         } else {
-            swordDelay = (float) MathUtils.randomDoubleBetween(swordThresholdMin.getValueFloat(), swordThresholdMax.getValueFloat());
+            float swordDelay = (float) MathUtils.randomDoubleBetween(swordThresholdMin.getValueFloat(), swordThresholdMax.getValueFloat());
             return cooldown >= swordDelay;
         }
     }
@@ -242,8 +234,7 @@ public final class TriggerBot extends Module {
     }
 
     public void attack() {
-        ClickSimulator.leftClick();
-
+        ((MinecraftClientAccessor)mc).invokeDoAttack();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
