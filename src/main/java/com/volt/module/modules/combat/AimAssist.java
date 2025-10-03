@@ -124,26 +124,39 @@ private void onRender3D(EventRender3D event) {
 
 private void applySmoothAiming(float targetYaw, float targetPitch) {
     long currentTime = System.currentTimeMillis();
+    
+    if (lastUpdateTime == 0) {
+        lastUpdateTime = currentTime;
+        return;
+    }
+    
     float deltaTime = Math.min((currentTime - lastUpdateTime) / 1000.0f, 0.05f);
     lastUpdateTime = currentTime;
+    
+    if (deltaTime < 0.001f) return;
 
     float yawDiff = MathHelper.wrapDegrees(targetYaw - mc.player.getYaw());
     float pitchDiff = targetPitch - mc.player.getPitch();
 
     float distance = (float) Math.hypot(yawDiff, pitchDiff);
-    if (distance < 0.1f) return;
-    float t = MathHelper.clamp(distance / 90f, 0f, 1f);
-    float ease = t < 0.5f ? 4f * t * t * t : 1f - (float)Math.pow(-2f * t + 2f, 3f) / 2f;
-
-    float minStep = 0.15f;
-
-    float yawStep = yawDiff * ease;
-    float pitchStep = pitchDiff * ease;
-
-    yawStep = MathHelper.clamp(yawStep * yawSpeed.getValueFloat() * deltaTime, -10f, 10f);
-    pitchStep = MathHelper.clamp(pitchStep * pitchSpeed.getValueFloat() * deltaTime, -10f, 10f);
-    if (Math.abs(yawStep) < minStep) yawStep = Math.copySign(minStep, yawStep);
-    if (Math.abs(pitchStep) < minStep) pitchStep = Math.copySign(minStep, pitchStep);
+    
+    if (distance < 0.3f) return;
+    
+    float speedFactor = speed.getValueFloat() * 0.1f;
+    float smoothingFactor = smoothing.getValueFloat();
+    
+    float baseInterpolation = speedFactor / smoothingFactor;
+    
+    float yawStep = yawDiff * baseInterpolation * yawSpeed.getValueFloat();
+    float pitchStep = pitchDiff * baseInterpolation * pitchSpeed.getValueFloat();
+    
+    float frameCorrection = deltaTime * 60.0f;
+    yawStep *= frameCorrection;
+    pitchStep *= frameCorrection;
+    
+    float maxStep = speedFactor * 3.0f;
+    yawStep = MathHelper.clamp(yawStep, -maxStep, maxStep);
+    pitchStep = MathHelper.clamp(pitchStep, -maxStep, maxStep);
 
     mc.player.setYaw(mc.player.getYaw() + yawStep);
     mc.player.setPitch(MathHelper.clamp(mc.player.getPitch() + pitchStep, -89f, 89f));
