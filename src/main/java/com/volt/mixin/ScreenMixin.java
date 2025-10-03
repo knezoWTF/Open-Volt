@@ -19,7 +19,7 @@ public class ScreenMixin {
     protected MinecraftClient client;
 
     @Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
-    private void dontRenderBackground(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void renderBackgroundInject(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (client == null) return;
         if (client.currentScreen instanceof ClickGui) {
             ci.cancel();

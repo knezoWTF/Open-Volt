@@ -18,7 +18,7 @@ public class WorldRendererMixin {
 
     @Inject(method = "renderChunkDebugInfo", at = @At("HEAD"))
     public void renderChunkDebugInfoInject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, CallbackInfo ci) {
-        if (Volt.INSTANCE == null || Volt.INSTANCE.getVoltEventBus() == null) return;
+        if (Volt.INSTANCE == null) return;
 
         RendererUtils.lastProjMat.set(RenderSystem.getProjectionMatrix());
         RendererUtils.lastModMat.set(RenderSystem.getModelViewMatrix());

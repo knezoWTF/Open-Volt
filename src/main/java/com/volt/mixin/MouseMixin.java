@@ -20,7 +20,7 @@ public class MouseMixin {
 
     @Inject(method = "onMouseButton", at = @At("HEAD"))
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-        if (Volt.INSTANCE == null || Volt.INSTANCE.getVoltEventBus() == null) return;
+        if (Volt.INSTANCE == null) return;
         if (window != client.getWindow().getHandle()) return;
         if (client.currentScreen != null) return;
 

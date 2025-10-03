@@ -1,8 +1,6 @@
 package com.volt.module.modules.combat;
 
 import com.volt.event.impl.player.TickEvent;
-import com.volt.event.impl.render.EventRender2D;
-import com.volt.event.impl.render.EventRender3D;
 import com.volt.event.impl.world.WorldChangeEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
@@ -15,7 +13,6 @@ import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
-import com.volt.utils.simulation.ClickSimulator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Tameable;
