@@ -1,6 +1,7 @@
 package com.volt.module.modules.combat;
 
 import com.volt.event.impl.player.TickEvent;
+import com.volt.event.impl.render.EventRender2D;
 import com.volt.event.impl.world.WorldChangeEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
@@ -13,6 +14,7 @@ import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
+import com.volt.utils.simulation.ClickSimulator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Tameable;
@@ -74,7 +76,7 @@ public final class TriggerBot extends Module {
     }
 
     @EventHandler
-    private void render(TickEvent event) {
+    private void render(EventRender2D event) {
         if (isNull()) return;
         if (mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
@@ -114,7 +116,7 @@ public final class TriggerBot extends Module {
         }
 
         if (setPreferCrits()) {
-            ((MinecraftClientAccessor) mc).invokeDoAttack();
+            ClickSimulator.leftClick();
             return;
         }
 
@@ -174,12 +176,11 @@ public final class TriggerBot extends Module {
         }
 
         boolean canCrit = !mc.player.isOnGround()
-                && mc.player.fallDistance < -0.02F
+                && mc.player.fallDistance < 0F
                 && !mc.player.isClimbing()
                 && !mc.player.isTouchingWater()
                 && !mc.player.isInLava()
                 && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
-                && !mc.player.isSneaking()
                 && mc.player.getVehicle() == null;
 
         boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
@@ -238,7 +239,7 @@ public final class TriggerBot extends Module {
     }
 
     public void attack() {
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        ClickSimulator.leftClick();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
