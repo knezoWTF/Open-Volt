@@ -7,7 +7,6 @@ import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.mc.InventoryUtil;
-import com.volt.utils.mc.MouseSimulation;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +70,6 @@ public final class AutoMLG extends Module {
         if (ticks % 2 != 0) return;
         InventoryUtil.swapToSlot(Items.WATER_BUCKET);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         stage = pickUp.getValue() ? 2 : 3;
         ticks = 0;
     }
@@ -82,7 +80,6 @@ public final class AutoMLG extends Module {
         if (ticks < 3) return;
         InventoryUtil.swapToSlot(Items.BUCKET);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         stage = 3;
     }
 

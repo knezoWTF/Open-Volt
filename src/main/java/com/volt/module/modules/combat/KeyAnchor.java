@@ -9,7 +9,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
@@ -26,7 +25,6 @@ public final class KeyAnchor extends Module {
     private final KeybindSetting anchorKeybind = new KeybindSetting("Anchor Key", GLFW.GLFW_KEY_X, false);
     private final NumberSetting delay = new NumberSetting("Delay (MS)", 1, 500, 50, 1);
     private final NumberSetting restoreDelayTicks = new NumberSetting("Restore Delay", 1, 20, 2, 1);
-    private final BooleanSetting mouseSimulation = new BooleanSetting("Mouse Simulation", true);
 
     private final TimerUtil timer = new TimerUtil();
     private boolean keyPressed = false;
@@ -38,7 +36,7 @@ public final class KeyAnchor extends Module {
 
     public KeyAnchor() {
         super("Key Anchor", "Automatically places and explodes respawn anchors for PvP", -1, Category.COMBAT);
-        this.addSettings(anchorKeybind, delay, restoreDelayTicks, mouseSimulation);
+        this.addSettings(anchorKeybind, delay, restoreDelayTicks);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(anchorKeybind));
     }
 
@@ -96,60 +94,38 @@ public final class KeyAnchor extends Module {
     }
 
     private void processAnchorPvP() {
-        if (mc.crosshairTarget instanceof BlockHitResult blockHit) {
-            BlockPos targetBlock = blockHit.getBlockPos();
-            var blockState = mc.world.getBlockState(targetBlock);
+        if (!(mc.crosshairTarget instanceof BlockHitResult blockHit)) return;
 
-            if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
-                int charges = blockState.get(RespawnAnchorBlock.CHARGES);
+        BlockPos targetBlock = blockHit.getBlockPos();
+        var blockState = mc.world.getBlockState(targetBlock);
 
-                if (charges == 0) {
-                    if (swapToItem(Items.GLOWSTONE)) {
-                        hasPlacedThisCycle = true;
-                        if (mouseSimulation.getValue()) {
-                            ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        } else {
-                            ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        }
-                    }
-                } else {
-                    if (swapToSword()) {
-                        if (mouseSimulation.getValue()) {
-                            ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        } else {
-                            ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        }
-                        scheduleRestoreOriginalSlot();
-                    } else if (swapToItem(Items.TOTEM_OF_UNDYING)) {
-                        if (mouseSimulation.getValue()) {
-                            ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        } else {
-                            ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        }
-                        scheduleRestoreOriginalSlot();
-                    }
+        if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
+            int charges = blockState.get(RespawnAnchorBlock.CHARGES);
+            if (charges > 0) {
+                if (swapToSword() || swapToItem(Items.TOTEM_OF_UNDYING)) {
+                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+                    scheduleRestoreOriginalSlot();
                     hasPlacedThisCycle = true;
                 }
-                return;
+            } else {
+                if (swapToItem(Items.GLOWSTONE)) {
+                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+                    hasPlacedThisCycle = true;
+                }
             }
+            return;
+        }
 
-            BlockPos placementPos = targetBlock.offset(blockHit.getSide());
-            if (isValidAnchorPosition(placementPos) && !hasPlacedThisCycle) {
-                if (swapToItem(Items.RESPAWN_ANCHOR)) {
-                    hasPlacedThisCycle = true;
-                    if (mouseSimulation.getValue()) {
-                        ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    } else {
-                        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    }
-                }
+        BlockPos placementPos = targetBlock.offset(blockHit.getSide());
+        if (isValidAnchorPosition(placementPos) && !hasPlacedThisCycle) {
+            if (swapToItem(Items.RESPAWN_ANCHOR)) {
+                hasPlacedThisCycle = true;
+                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+
             }
         }
     }
+
 
     private boolean isValidAnchorPosition(BlockPos pos) {
         if (mc.world == null || mc.player == null) return false;

@@ -8,7 +8,6 @@ import com.volt.gui.ClickGui;
 import com.volt.module.modules.client.ClickGUIModule;
 import com.volt.module.modules.client.Client;
 import com.volt.profiles.ProfileManager;
-import com.volt.utils.mc.MouseSimulation;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -63,31 +62,7 @@ public class MinecraftClientMixin implements IMinecraft {
             }
         }
     }
-    
 
-	@Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
-	private void onItemUse(CallbackInfo ci) {
-		if (MouseSimulation.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
-			MouseSimulation.mouseButtons.put(GLFW.GLFW_MOUSE_BUTTON_RIGHT, false);
-			ci.cancel();
-		}
-	}
-
-	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
-	private void onAttack(CallbackInfoReturnable<Boolean> cir) {
-		if (MouseSimulation.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_1)) {
-			MouseSimulation.mouseButtons.put(GLFW.GLFW_MOUSE_BUTTON_1, false);
-			cir.setReturnValue(false);
-		}
-	}
-
-	@Inject(method = "handleBlockBreaking", at = @At("HEAD"), cancellable = true)
-	private void onBlockBreaking(boolean breaking, CallbackInfo ci) {
-		if (MouseSimulation.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_1)) {
-			MouseSimulation.mouseButtons.put(GLFW.GLFW_MOUSE_BUTTON_1, false);
-			ci.cancel();
-		}
-	}
 
     @Inject(method = "stop", at = @At("HEAD"))
     public void stopInject(CallbackInfo ci) {

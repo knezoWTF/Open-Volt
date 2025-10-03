@@ -10,7 +10,6 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.InventoryUtil;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -27,7 +26,6 @@ public final class KeyCrystal extends Module {
     private final KeybindSetting crystalKeybind = new KeybindSetting("Crystal Key", GLFW.GLFW_MOUSE_BUTTON_4, false);
     private final NumberSetting delay = new NumberSetting("Delay (MS)", 1, 100, 10, 1);
     private final BooleanSetting antiSuicide = new BooleanSetting("Anti Suicide", true);
-    private final BooleanSetting mouseSimulation = new BooleanSetting("Mouse Simulation", true);
     private final BooleanSetting antiWeakness = new BooleanSetting("Anti Weakness", true);
 
     private final TimerUtil timer = new TimerUtil();
@@ -40,7 +38,7 @@ public final class KeyCrystal extends Module {
 
     public KeyCrystal() {
         super("Key Crystal", "Automatically places and explodes crystals and obsidian for PvP", -1, Category.COMBAT);
-        this.addSettings(crystalKeybind, delay, antiSuicide, mouseSimulation, antiWeakness);
+        this.addSettings(crystalKeybind, delay, antiSuicide, antiWeakness);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(crystalKeybind));
     }
 
@@ -100,9 +98,6 @@ public final class KeyCrystal extends Module {
                     if (antiWeakness.getValue() && mc.player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS)) {
                             InventoryUtil.swapToWeapon(SwordItem.class);
                     }
-                    if (mouseSimulation.getValue()) {
-                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                    }
                     ((MinecraftClientAccessor) mc).invokeDoAttack();
                     attackTimer.reset();
                 }
@@ -117,24 +112,15 @@ public final class KeyCrystal extends Module {
             if (isObsidianOrBedrock(targetBlock) && isValidCrystalPosition(placementPos)) {
                 if (hasItemInHotbar(Items.END_CRYSTAL)) {
                     InventoryUtil.swapToSlot(Items.END_CRYSTAL);
-                    if (mouseSimulation.getValue()) {
-                        ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                    } else {
-                        ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                    }
+                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+
                 }
             } else if (isValidPosition(placementPos) && !hasPlacedObsidian) {
                 BlockPos below = placementPos.down();
                 if (!mc.world.getBlockState(below).isAir()) {
                     if (hasItemInHotbar(Items.OBSIDIAN)) {
                         InventoryUtil.swapToSlot(Items.OBSIDIAN);
-                        if (mouseSimulation.getValue()) {
-                            ((MinecraftClientAccessor) mc).setItemUseCooldown(0);
-                            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-                        } else {
-                            ((MinecraftClientAccessor) mc).invokeDoItemUse();
-                        }
+                        ((MinecraftClientAccessor) mc).invokeDoItemUse();
                         hasPlacedObsidian = true;
                     }
                 }

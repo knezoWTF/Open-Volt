@@ -10,7 +10,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
@@ -82,7 +81,6 @@ public final class AutoWeb extends Module {
 
         if (websPlaced < targetWebCount) {
             ((MinecraftClientAccessor) mc).invokeDoItemUse();
-            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
             websPlaced++;
             clickTimer.reset();
         } else {

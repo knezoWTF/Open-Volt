@@ -9,7 +9,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
@@ -77,7 +76,6 @@ public final class PearlCatch extends Module {
         mc.player.getInventory().selectedSlot = windChargeSlot;
         
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         
         needsSlotRestore = true;
     }
@@ -87,7 +85,6 @@ public final class PearlCatch extends Module {
         mc.player.getInventory().selectedSlot = windChargeSlot;
         
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         
         needsSlotRestore = true;
     }
@@ -109,7 +106,6 @@ public final class PearlCatch extends Module {
         
         mc.player.swingHand(Hand.MAIN_HAND);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         
         mc.player.getInventory().selectedSlot = currentSlot;
     }
@@ -119,7 +115,6 @@ public final class PearlCatch extends Module {
         
         mc.player.swingHand(Hand.MAIN_HAND);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
     }
 
     private int findWindChargeInHotbar() {

@@ -7,7 +7,6 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.ItemStack;
@@ -37,8 +36,6 @@ public final class FastEXP extends Module {
 
         if (chance.getValue() >= Math.random() * 100) {
             ((MinecraftClientAccessor) mc).invokeDoItemUse();
-            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
         }
     }
 } 

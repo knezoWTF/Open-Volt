@@ -9,7 +9,6 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
 import com.volt.utils.mc.InventoryUtil;
-import com.volt.utils.mc.MouseSimulation;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
@@ -62,10 +61,8 @@ public final class ShieldBreaker extends Module {
                     }
                 }
             }
-            if (mc.player.getMainHandStack().getItem() instanceof AxeItem
-                    && attackTimer.hasElapsedTime(attackDelay.getValueInt())) {
+            if (mc.player.getMainHandStack().getItem() instanceof AxeItem && attackTimer.hasElapsedTime(attackDelay.getValueInt())) {
                 ((MinecraftClientAccessor) mc).invokeDoAttack();
-                MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                 attackTimer.reset();
                 swapBackTimer.reset();
                 breakingShield = false;

@@ -8,7 +8,6 @@ import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.mc.MouseSimulation;
 
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.AxeItem;
@@ -61,8 +60,6 @@ public class SwordSwap extends Module {
                             originalSlot = mc.player.getInventory().selectedSlot;
                             mc.player.getInventory().selectedSlot = swordSlot;
                             ((MinecraftClientAccessor) mc).invokeDoAttack();
-                            MouseSimulation.mousePress(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-                            MouseSimulation.mouseRelease(GLFW.GLFW_MOUSE_BUTTON_LEFT);
                             switchTime = System.currentTimeMillis();
                             shouldSwitchBack = true;
                         }

@@ -10,7 +10,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.utils.mc.MouseSimulation;
 
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
@@ -116,7 +115,6 @@ public final class AutoCobweb extends Module {
         lookAtBlockTop(targetBlockPos);
 
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
     }
 
     private void startPlacing() {

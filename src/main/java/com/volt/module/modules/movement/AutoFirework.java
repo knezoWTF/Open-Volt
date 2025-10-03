@@ -20,7 +20,6 @@ public final class AutoFirework extends Module {
     private final BooleanSetting respectArmor = new BooleanSetting("Respect Armor", true);
     private final BooleanSetting autoSwitchBack = new BooleanSetting("Auto Switch Back", true);
     private final NumberSetting switchBackDelay = new NumberSetting("Switch Back Delay", 25, 1000, 100, 25);
-    private final BooleanSetting silentMode = new BooleanSetting("Silent", false);
 
     private final TimerUtil switchBackTimer = new TimerUtil();
     private boolean wasRightClickPressed = false;
@@ -30,7 +29,7 @@ public final class AutoFirework extends Module {
 
     public AutoFirework() {
         super("Auto Firework", "Automatically uses firework rockets while elytra flying", -1, Category.MOVEMENT);
-        this.addSettings(onlyWhenFlying, respectGapples, respectArmor, autoSwitchBack, switchBackDelay, silentMode);
+        this.addSettings(onlyWhenFlying, respectGapples, respectArmor, autoSwitchBack, switchBackDelay);
     }
 
     @EventHandler
