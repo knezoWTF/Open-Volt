@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MaceItem;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import com.volt.Volt;
 import com.volt.module.setting.BooleanSetting;
 public final class BreachSwap extends Module {
 
@@ -37,8 +36,7 @@ public final class BreachSwap extends Module {
     public void onAttack(EventAttack event) {
         if (isNull() || isSwappingAttack) return;
         if (onlyOnGround.getValue() && !mc.player.isOnGround()) return;
-        ShieldBreaker shieldBreaker = (ShieldBreaker) Volt.INSTANCE.getModuleManager().getModule(ShieldBreaker.class).get();
-        if (shieldBreaker != null && shieldBreaker.breakingShield) return;
+        if (ShieldBreaker.breakingShield) return;
         if (!(event.getTarget() instanceof LivingEntity)) return;
 
         int maceSlot = findBreachMaceSlot();

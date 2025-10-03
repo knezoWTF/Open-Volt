@@ -6,101 +6,78 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
+import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
 import com.volt.utils.mc.InventoryUtil;
 import com.volt.utils.mc.MouseSimulation;
-import com.volt.utils.math.TimerUtil;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
-import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Items;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 
 public final class ShieldBreaker extends Module {
-    private final NumberSetting hitDelay = new NumberSetting("Hit Delay", 1, 20, 0, 1);
-    private final NumberSetting slotDelay = new NumberSetting("Slot Delay", 1, 20, 0, 1);
-    private final NumberSetting cpsLimit = new NumberSetting("CPS", 1, 15, 3, 1);
+    private final NumberSetting reactionDelay = new NumberSetting("Reaction Delay", 0, 250, 50, 5);
+    private final NumberSetting swapDelay = new NumberSetting("Swap Delay", 0, 500, 100, 10);
+    private final NumberSetting attackDelay = new NumberSetting("Attack Delay", 0, 500, 100, 10);
+    private final NumberSetting swapBackDelay = new NumberSetting("Swap Back Delay", 0, 500, 150, 10);
 
-    private final BooleanSetting revertSlot = new BooleanSetting("Go back to original slot", true);
-    private final BooleanSetting autoStun = new BooleanSetting("Auto Stun", false);
-    private final BooleanSetting requireAxe = new BooleanSetting("Require Axe", false);
+    private final BooleanSetting revertSlot = new BooleanSetting("Revert Slot", true);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
-    private final BooleanSetting requireClick = new BooleanSetting("Require Click", false);
-    private final BooleanSetting ignoreIfUsingItem = new BooleanSetting("Ignore if using item", true);
+    private final BooleanSetting disableIfUsingItem = new BooleanSetting("Disable if using item", true);
 
-    private final TimerUtil hitDelayTimer = new TimerUtil();
-    private final TimerUtil slotTimer = new TimerUtil();
+    private final TimerUtil reactionTimer = new TimerUtil();
+    private final TimerUtil swapTimer = new TimerUtil();
+    private final TimerUtil attackTimer = new TimerUtil();
+    private final TimerUtil swapBackTimer = new TimerUtil();
+    public static boolean breakingShield = false;
 
-    public boolean breakingShield = false;
     private int savedSlot = -1;
 
     public ShieldBreaker() {
         super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-        this.addSettings(
-            hitDelay, slotDelay, cpsLimit,
-            revertSlot, autoStun, requireAxe,
-            rayTraceCheck, requireClick, ignoreIfUsingItem
-        );
+        this.addSettings(reactionDelay, swapDelay, attackDelay, swapBackDelay, revertSlot, rayTraceCheck, disableIfUsingItem);
     }
 
     @EventHandler
     private void onTickEvent(TickEvent event) {
-        if (isNull()) return;
-        if (slotDelay.getValue() < hitDelay.getValue()) {
-            hitDelay.setValue(slotDelay.getValue());
-        }
-        if (mc.currentScreen != null) return;
-        if (requireAxe.getValue() && !(mc.player.getMainHandStack().getItem() instanceof AxeItem)) return;
-        if (requireClick.getValue() && !mc.mouse.wasLeftButtonClicked()) return;
+        if (isNull() || mc.currentScreen != null) return;
+        if (!InventoryUtil.hasWeapon(AxeItem.class)) return;
+        if (mc.player.isUsingItem() && disableIfUsingItem.getValue()) return;
         if (!(mc.crosshairTarget instanceof EntityHitResult entityHit)) return;
+        if (!(entityHit.getEntity() instanceof PlayerEntity target)) return;
 
-        var entity = entityHit.getEntity();
-        if (!(entity instanceof PlayerEntity player)) return;
-        if (ignoreIfUsingItem.getValue() && mc.player.isUsingItem()) return;
-        if (rayTraceCheck.getValue() && CombatUtil.isShieldFacingAway((LivingEntity) entity)) return;
-        if (player.getActiveItem().getItem() instanceof EnderPearlItem) return;
+        boolean isBlocking = target.isBlocking() && target.isHolding(Items.SHIELD);
+        boolean canBreak = !rayTraceCheck.getValue() || !CombatUtil.isShieldFacingAway(target);
 
-        if (!player.isHolding(Items.SHIELD) || !player.isBlocking()) {
-            if (savedSlot != -1) {
+        if (isBlocking && canBreak) {
+            if (!(mc.player.getMainHandStack().getItem() instanceof AxeItem)) {
+                if (reactionTimer.hasElapsedTime(reactionDelay.getValueInt())) {
+                    if (savedSlot == -1 && swapTimer.hasElapsedTime(swapDelay.getValueInt())) {
+                        breakingShield = true;
+                        savedSlot = mc.player.getInventory().selectedSlot;
+                        InventoryUtil.swapToWeapon(AxeItem.class);
+                        attackTimer.reset();
+                    }
+                }
+            }
+            if (mc.player.getMainHandStack().getItem() instanceof AxeItem
+                    && attackTimer.hasElapsedTime(attackDelay.getValueInt())) {
+                ((MinecraftClientAccessor) mc).invokeDoAttack();
+                MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                attackTimer.reset();
+                swapBackTimer.reset();
+                breakingShield = false;
+            }
+        } else {
+            reactionTimer.reset();
+            if (savedSlot != -1 && swapBackTimer.hasElapsedTime(swapBackDelay.getValueInt())) {
                 if (revertSlot.getValue()) {
                     mc.player.getInventory().selectedSlot = savedSlot;
                 }
                 savedSlot = -1;
             }
-            return;
-        }
-
-        if (savedSlot == -1) {
-            savedSlot = mc.player.getInventory().selectedSlot;
-        }
-
-        if (!slotTimer.hasElapsedTime(slotDelay.getValueInt() * 50)) return;
-
-        breakingShield = true;
-        InventoryUtil.swapToWeapon(AxeItem.class);
-
-        int minClickDelay = 1000 / cpsLimit.getValueInt();
-        if (!hitDelayTimer.hasElapsedTime(minClickDelay)) return;
-        if (!hitDelayTimer.hasElapsedTime(hitDelay.getValueInt() * 50)) return;
-
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
-        MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-
-        if (autoStun.getValue()) {
-            ((MinecraftClientAccessor) mc).invokeDoAttack();
-            MouseSimulation.mouseClick(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-        }
-
-        hitDelayTimer.reset();
-        slotTimer.reset();
-        breakingShield = false;
-
-        if (revertSlot.getValue() && savedSlot != -1) {
-            mc.player.getInventory().selectedSlot = savedSlot;
-            savedSlot = -1; 
         }
     }
 
@@ -114,3 +91,4 @@ public final class ShieldBreaker extends Module {
         super.onDisable();
     }
 }
+

@@ -4,8 +4,6 @@ import com.volt.IMinecraft;
 import lombok.experimental.UtilityClass;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.profiling.jfr.event.PacketEvent;
-
 import java.util.Objects;
 
 @UtilityClass
@@ -26,6 +24,16 @@ public final class InventoryUtil implements IMinecraft {
         for (byte i = 0; i < Objects.requireNonNull(mc.player).getInventory().size(); i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
             if (stack.getItem() == item) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasWeapon(Class<? extends Item> weaponClass) {
+        for (byte i = 0; i < Objects.requireNonNull(mc.player).getInventory().size(); i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (weaponClass.isInstance(stack.getItem())) {
                 return true;
             }
         }

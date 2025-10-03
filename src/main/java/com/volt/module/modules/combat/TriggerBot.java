@@ -23,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
+import org.lwjgl.glfw.GLFW;
 
 public final class TriggerBot extends Module {
     public static final NumberSetting swordThresholdMax = new NumberSetting("Sword Threshold Max", 0.1, 1, 0.95, 0.01);
@@ -97,7 +98,12 @@ public final class TriggerBot extends Module {
         target = mc.targetedEntity;
         if (target == null) return;
         if (!isHoldingSwordOrAxe()) return;
-        if (onlyWhenMouseDown.getValue() && !mc.options.attackKey.isPressed()) return;
+        if (onlyWhenMouseDown.getValue()
+                && GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_LEFT)
+                != GLFW.GLFW_PRESS) {
+            return;
+        }
+
         if (!hasTarget(target)) return;
 
         if (respectShields.getValue()) {
@@ -108,7 +114,7 @@ public final class TriggerBot extends Module {
         }
 
         if (setPreferCrits()) {
-            ((MinecraftClientAccessor)mc).invokeDoAttack();
+            ((MinecraftClientAccessor) mc).invokeDoAttack();
             return;
         }
 
@@ -127,7 +133,8 @@ public final class TriggerBot extends Module {
                     delay *= (long) multiplier;
                 }
                 case "None" -> delay = 0;
-                default -> delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+                default ->
+                        delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
             }
 
             currentReactionDelay = delay;
@@ -231,7 +238,7 @@ public final class TriggerBot extends Module {
     }
 
     public void attack() {
-        ((MinecraftClientAccessor)mc).invokeDoAttack();
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
