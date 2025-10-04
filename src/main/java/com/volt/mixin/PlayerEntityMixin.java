@@ -1,13 +1,16 @@
 package com.volt.mixin;
 
 import com.volt.Volt;
+import com.volt.module.modules.movement.KeepSprint;
 import com.volt.module.modules.player.FastMine;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
@@ -30,5 +33,13 @@ public class PlayerEntityMixin {
 
         float modifiedSpeed = cir.getReturnValue() * fastMine.getSpeed();
         cir.setReturnValue(modifiedSpeed);
+    }
+    @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"), cancellable = true)
+    private void attackInject(Entity target, CallbackInfo ci) {
+        Optional<KeepSprint> keep = Volt.INSTANCE.getModuleManager().getModule(KeepSprint.class);
+        KeepSprint keepSprint = keep.get();
+        if (keepSprint.isEnabled()) {
+            ci.cancel();
+        }
     }
 }

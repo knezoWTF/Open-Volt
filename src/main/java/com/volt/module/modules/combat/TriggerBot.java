@@ -1,6 +1,6 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.render.EventRender2D;
+import com.volt.event.impl.render.EventRender3D;
 import com.volt.event.impl.world.WorldChangeEvent;
 import com.volt.module.Category;
 import com.volt.module.Module;
@@ -23,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
+import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 
 public final class TriggerBot extends Module {
@@ -56,13 +57,16 @@ public final class TriggerBot extends Module {
     private float randomizedThreshold = 0;
     private Entity target;
     private String lastTargetUUID = null;
+    private boolean hasAttacked = false;
 
     public TriggerBot() {
         super("Trigger Bot", "Makes you automatically attack once aimed at a target", -1, Category.COMBAT);
         addSettings(
-                swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin, axePostDelayMax, axePostDelayMin,
-                reactionTimeMax, reactionTimeMin, cooldownMode, critMode, ignorePassiveMobs, ignoreCrystals, respectShields,
-                ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe, disableOnWorldChange, samePlayer
+                swordThresholdMax, swordThresholdMin, axeThresholdMax, axeThresholdMin,
+                axePostDelayMax, axePostDelayMin, reactionTimeMax, reactionTimeMin,
+                cooldownMode, critMode, ignorePassiveMobs, ignoreCrystals, respectShields,
+                ignoreInvisible, onlyWhenMouseDown, useOnlySwordOrAxe,
+                disableOnWorldChange, samePlayer
         );
     }
 
@@ -74,7 +78,7 @@ public final class TriggerBot extends Module {
     }
 
     @EventHandler
-    private void render(EventRender2D event) {
+    private void render(EventRender3D event) {
         if (isNull()) return;
         if (mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
@@ -98,9 +102,9 @@ public final class TriggerBot extends Module {
         target = mc.targetedEntity;
         if (target == null) return;
         if (!isHoldingSwordOrAxe()) return;
-        if (onlyWhenMouseDown.getValue()
-                && GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_LEFT)
-                != GLFW.GLFW_PRESS) {
+
+        if (onlyWhenMouseDown.getValue() &&
+                GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_LEFT) != GLFW.GLFW_PRESS) {
             return;
         }
 
@@ -108,14 +112,28 @@ public final class TriggerBot extends Module {
 
         if (respectShields.getValue()) {
             Item item = mc.player.getMainHandStack().getItem();
-            if (target instanceof PlayerEntity playerTarget && CombatUtil.isShieldFacingAway(playerTarget) && item instanceof SwordItem) {
+            if (target instanceof PlayerEntity playerTarget &&
+                    CombatUtil.isShieldFacingAway(playerTarget) &&
+                    item instanceof SwordItem) {
                 return;
             }
         }
 
         if (setPreferCrits()) {
-            ClickSimulator.leftClick();
+            if (!hasAttacked) {
+                attack();
+                hasAttacked = true;
+            }
             return;
+        }
+
+        if (target != null && (!target.getUuidAsString().equals(lastTargetUUID))) {
+            hasAttacked = false;
+            lastTargetUUID = target.getUuidAsString();
+        }
+
+        if (mc.player.getAttackCooldownProgress(0.0f) >= 1.0f) {
+            hasAttacked = false;
         }
 
         if (!waitingForReaction) {
@@ -123,7 +141,6 @@ public final class TriggerBot extends Module {
             timerReactionTime.reset();
 
             long delay;
-
             switch (cooldownMode.getMode()) {
                 case "Smart" -> {
                     double distance = mc.player.distanceTo(target);
@@ -133,8 +150,7 @@ public final class TriggerBot extends Module {
                     delay *= (long) multiplier;
                 }
                 case "None" -> delay = 0;
-                default ->
-                        delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+                default -> delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
             }
 
             currentReactionDelay = delay;
@@ -143,50 +159,14 @@ public final class TriggerBot extends Module {
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
             if (hasElapsedDelay()) {
                 if (hasTarget(target) && samePlayerCheck(target)) {
-                    attack();
-                    waitingForReaction = false;
+                    if (!hasAttacked) {
+                        attack();
+                        hasAttacked = true;
+                        waitingForReaction = false;
+                    }
                 }
             }
         }
-    }
-
-    public boolean hasTarget(Entity en) {
-        if (en == mc.player || en == mc.cameraEntity || !en.isAlive()) return false;
-        if (en instanceof PlayerEntity player && FriendManager.isFriend(player.getUuid())) return false;
-        if (Teams.isTeammate(en)) return false;
-
-        return switch (en) {
-            case EndCrystalEntity ignored when ignoreCrystals.getValue() -> false;
-            case Tameable ignored -> false;
-            case PassiveEntity ignored when ignorePassiveMobs.getValue() -> false;
-            default -> !ignoreInvisible.getValue() || !en.isInvisible();
-        };
-    }
-
-    private boolean setPreferCrits() {
-        String mode = critMode.getMode();
-
-        if (mode.equals("None")) {
-            return false;
-        }
-        if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) {
-            return false;
-        }
-
-        boolean canCrit = !mc.player.isOnGround()
-                && mc.player.fallDistance < 0F
-                && !mc.player.isClimbing()
-                && !mc.player.isTouchingWater()
-                && !mc.player.isInLava()
-                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
-                && mc.player.getVehicle() == null;
-
-        boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
-
-        return switch (mode) {
-            case "Strict" -> canCrit && cooldownCharged;
-            default -> false;
-        };
     }
 
     private boolean samePlayerCheck(Entity entity) {
@@ -201,6 +181,27 @@ public final class TriggerBot extends Module {
         return entity.getUuidAsString().equals(lastTargetUUID);
     }
 
+    private boolean setPreferCrits() {
+        String mode = critMode.getMode();
+
+        if (mode.equals("None")) return false;
+        if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) return false;
+        if (!(mc.crosshairTarget instanceof EntityHitResult entityHitResult)) return false;
+        if (entityHitResult.getEntity() != target) return false;
+        if (!hasTarget(entityHitResult.getEntity())) return false;
+
+        boolean canCrit = !mc.player.isOnGround()
+                && mc.player.fallDistance < 0F
+                && !mc.player.isClimbing()
+                && !mc.player.isTouchingWater()
+                && !mc.player.isInLava()
+                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
+                && mc.player.getVehicle() == null;
+
+        boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
+
+        return mode.equals("Strict") && canCrit && cooldownCharged;
+    }
 
     private boolean hasElapsedDelay() {
         if (setPreferCrits()) return false;
@@ -231,7 +232,6 @@ public final class TriggerBot extends Module {
 
     private boolean isHoldingSwordOrAxe() {
         if (!useOnlySwordOrAxe.getValue()) return true;
-        assert mc.player != null;
         Item item = mc.player.getMainHandStack().getItem();
         return item instanceof AxeItem || item instanceof SwordItem;
     }
@@ -242,8 +242,20 @@ public final class TriggerBot extends Module {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
         }
-
         waitingForDelay = false;
+    }
+
+    public boolean hasTarget(Entity en) {
+        if (en == mc.player || en == mc.cameraEntity || !en.isAlive()) return false;
+        if (en instanceof PlayerEntity player && FriendManager.isFriend(player.getUuid())) return false;
+        if (Teams.isTeammate(en)) return false;
+
+        return switch (en) {
+            case EndCrystalEntity ignored when ignoreCrystals.getValue() -> false;
+            case Tameable ignored -> false;
+            case PassiveEntity ignored when ignorePassiveMobs.getValue() -> false;
+            default -> !ignoreInvisible.getValue() || !en.isInvisible();
+        };
     }
 
     @Override
@@ -252,6 +264,7 @@ public final class TriggerBot extends Module {
         timerReactionTime.reset();
         waitingForReaction = false;
         waitingForDelay = false;
+        hasAttacked = false;
         super.onEnable();
     }
 
@@ -261,6 +274,7 @@ public final class TriggerBot extends Module {
         timerReactionTime.reset();
         waitingForReaction = false;
         waitingForDelay = false;
+        hasAttacked = false;
         super.onDisable();
     }
 }
