@@ -8,6 +8,7 @@ import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
+import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import meteordevelopment.orbit.EventHandler;
@@ -61,7 +62,7 @@ public final class AutoMace extends Module {
         updateFallTracking();
 
         currentTarget = mc.targetedEntity;
-
+        if (FriendManager.isFriend(currentTarget.getUuid())) return;
         boolean isAirborne = !mc.player.isOnGround();
         boolean isFalling = mc.player.getVelocity().y < -0.1;
         double currentFallDistance = getCurrentFallDistance();

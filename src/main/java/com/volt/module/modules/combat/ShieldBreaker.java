@@ -6,6 +6,7 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
+import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
 import com.volt.utils.mc.InventoryUtil;
@@ -24,6 +25,7 @@ public final class ShieldBreaker extends Module {
     private final BooleanSetting revertSlot = new BooleanSetting("Revert Slot", true);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
     private final BooleanSetting disableIfUsingItem = new BooleanSetting("Disable if using item", true);
+    private final BooleanSetting ignoreFriends = new BooleanSetting("Ignore friends", false);
     private final TimerUtil reactionTimer = new TimerUtil();
     private final TimerUtil swapTimer = new TimerUtil();
     private final TimerUtil attackTimer = new TimerUtil();
@@ -32,7 +34,7 @@ public final class ShieldBreaker extends Module {
 
     public ShieldBreaker() {
         super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-        this.addSettings(reactionDelay, swapDelay, attackDelay, swapBackDelay, revertSlot, rayTraceCheck, disableIfUsingItem);
+        this.addSettings(reactionDelay, swapDelay, attackDelay, swapBackDelay, revertSlot, rayTraceCheck, disableIfUsingItem, ignoreFriends);
     }
 
     @EventHandler
@@ -42,7 +44,7 @@ public final class ShieldBreaker extends Module {
         if (mc.player.isUsingItem() && disableIfUsingItem.getValue()) return;
         if (!(mc.crosshairTarget instanceof EntityHitResult entityHit)) return;
         if (!(entityHit.getEntity() instanceof PlayerEntity target)) return;
-
+        if (FriendManager.isFriend(target.getUuid())) return;
         boolean isBlocking = target.isBlocking() && target.isHolding(Items.SHIELD);
         boolean canBreak = !rayTraceCheck.getValue() || !CombatUtil.isShieldFacingAway(target);
 
