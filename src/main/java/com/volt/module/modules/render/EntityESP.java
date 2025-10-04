@@ -95,29 +95,22 @@ public final class EntityESP extends Module {
         if (entity == mc.player) return false;
         if (mc.player.distanceTo(entity) > range.getValue()) return false;
 
-        if (entity instanceof PlayerEntity) {
-            return false;
-        } else if (entity instanceof VillagerEntity) {
-            return showVillagers.getValue();
-        } else if (entity instanceof HostileEntity) {
-            return showHostile.getValue();
-        } else if (entity instanceof PassiveEntity) {
-            return showPassive.getValue();
-        } else {
-            return showOther.getValue();
-        }
+        return switch (entity) {
+            case PlayerEntity ignored1 -> false;
+            case VillagerEntity ignored -> showVillagers.getValue();
+            case HostileEntity ignored -> showHostile.getValue();
+            case PassiveEntity ignored -> showPassive.getValue();
+            default -> showOther.getValue();
+        };
     }
 
     private Color getEntityColor(Entity entity) {
-        if (entity instanceof VillagerEntity) {
-            return villagerColor.getValue();
-        } else if (entity instanceof HostileEntity) {
-            return hostileColor.getValue();
-        } else if (entity instanceof PassiveEntity) {
-            return passiveColor.getValue();
-        } else {
-            return otherColor.getValue();
-        }
+        return switch (entity) {
+            case VillagerEntity ignored -> villagerColor.getValue();
+            case HostileEntity ignored -> hostileColor.getValue();
+            case PassiveEntity ignored -> passiveColor.getValue();
+            case null, default -> otherColor.getValue();
+        };
     }
 
     private void renderEntityESP(MatrixStack matrices, Entity entity, float partialTicks) {

@@ -11,6 +11,7 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.font.util.RendererUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.ChatUtils;
+import lombok.Getter;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -64,31 +65,29 @@ public final class TrapSave extends Module {
 
     @EventHandler
     private void onEventRender3D(EventRender3D event) {
-        if (!isValidGameState() || detectedTraps.isEmpty()) return;
+        if (isValidGameState() || detectedTraps.isEmpty()) return;
 
         renderTrapOutlines(event.getMatrixStack(), mc.gameRenderer.getCamera().getPos());
     }
 
-    ;
     private boolean trapDetected;
     private String detectedTrapType = "";
     private int trapCount;
 
     @EventHandler
     private void onEventRender2D(EventRender2D event) {
-        if (!isValidGameState() || !showWarning.getValue() || !trapDetected) return;
+        if (isValidGameState() || !showWarning.getValue() || !trapDetected) return;
 
         renderWarningOverlay(event);
     }
 
-    ;
     private BlockPos lastScanPosition;
     private int lastScanRadius;
     private int lastScanHeight;
 
     @EventHandler
     private void onTickEvent(TickEvent event) {
-        if (!isValidGameState()) return;
+        if (isValidGameState()) return;
 
         if (scanTimer.hasElapsedTime(SCAN_INTERVAL_MS)) {
             performTrapScan();
@@ -100,8 +99,6 @@ public final class TrapSave extends Module {
         }
     }
 
-    ;
-
     public TrapSave() {
         super("Trap Save", "Detects trap blocks and armor stands around the player", -1, Category.PLAYER);
         this.addSettings(scanRadius, scanHeight, maxExpansion, soundAlert, showWarning, outlineWidth,
@@ -109,7 +106,7 @@ public final class TrapSave extends Module {
     }
 
     private boolean isValidGameState() {
-        return mc.player != null && mc.world != null && isEnabled();
+        return mc.player == null || mc.world == null || !isEnabled();
     }
 
     private void performTrapScan() {
@@ -203,6 +200,7 @@ public final class TrapSave extends Module {
             if (trapType != TrapType.NONE && isRelatedTrapType(startType, trapType)) {
                 cluster.addBlock(current, trapType);
 
+                assert current != null;
                 for (BlockPos neighbor : getNeighbors(current)) {
                     if (!clusterScanned.contains(neighbor)) {
                         toExpand.offer(neighbor);
@@ -278,7 +276,7 @@ public final class TrapSave extends Module {
 
     private void handleTrapDetection(List<TrapCluster> traps) {
         trapDetected = true;
-        detectedTrapType = traps.get(0).getPrimaryType().getDisplayName();
+        detectedTrapType = traps.getFirst().getPrimaryType().getDisplayName();
         trapCount = traps.size();
         warningTimer.reset();
 
@@ -328,9 +326,7 @@ public final class TrapSave extends Module {
             renderBlockOutline(matrices, blockPos, block, clusterColor, cameraPos);
         });
 
-        cluster.getArmorStands().forEach(armorStand -> {
-            renderArmorStandOutline(matrices, armorStand, clusterColor, cameraPos);
-        });
+        cluster.getArmorStands().forEach(armorStand -> renderArmorStandOutline(matrices, armorStand, clusterColor, cameraPos));
     }
 
     private void renderBlockOutline(MatrixStack matrices, BlockPos blockPos, Block block, Color color, Vec3d cameraPos) {
@@ -356,25 +352,16 @@ public final class TrapSave extends Module {
 
     private Color getCustomColor(TrapType trapType) {
         final int alpha = 200;
-        switch (trapType) {
-            case TNT:
-                return new Color(tntColor.getValueInt() | (alpha << 24), true);
-            case REDSTONE:
-                return new Color(redstoneColor.getValueInt() | (alpha << 24), true);
-            case PISTON:
-                return new Color(pistonColor.getValueInt() | (alpha << 24), true);
-            case LEVER:
-            case PRESSURE_PLATE:
-                return new Color(leverColor.getValueInt() | (alpha << 24), true);
-            case ARMOR_STAND:
-                return new Color(armorStandColor.getValueInt() | (alpha << 24), true);
-            case TRIPWIRE:
-                return new Color(0x800080 | (alpha << 24), true);
-            case DISPENSER:
-                return new Color(0x696969 | (alpha << 24), true);
-            default:
-                return new Color(0xFFFFFF | (alpha << 24), true);
-        }
+        return switch (trapType) {
+            case TNT -> new Color(tntColor.getValueInt() | (alpha << 24), true);
+            case REDSTONE -> new Color(redstoneColor.getValueInt() | (alpha << 24), true);
+            case PISTON -> new Color(pistonColor.getValueInt() | (alpha << 24), true);
+            case LEVER, PRESSURE_PLATE -> new Color(leverColor.getValueInt() | (alpha << 24), true);
+            case ARMOR_STAND -> new Color(armorStandColor.getValueInt() | (alpha << 24), true);
+            case TRIPWIRE -> new Color(0x800080 | (alpha << 24), true);
+            case DISPENSER -> new Color(0x696969 | (alpha << 24), true);
+            default -> new Color(0xFFFFFF | (alpha << 24), true);
+        };
     }
 
     private Vec3d getRelativePosition(BlockPos blockPos, Vec3d cameraPos) {
@@ -457,6 +444,7 @@ public final class TrapSave extends Module {
         super.onDisable();
     }
 
+    @Getter
     private enum TrapType {
         NONE("", Color.WHITE),
         TNT("TNT", Color.ORANGE),
@@ -469,18 +457,14 @@ public final class TrapSave extends Module {
         ARMOR_STAND("Armor Stand", Color.CYAN);
 
         private final String displayName;
-        private final Color defaultColor;
 
         TrapType(String displayName, Color defaultColor) {
             this.displayName = displayName;
-            this.defaultColor = defaultColor;
         }
 
-        public String getDisplayName() {
-            return displayName;
-        }
     }
 
+    @Getter
     private static class TrapCluster {
         private final TrapType primaryType;
         private final Map<BlockPos, TrapType> blocks = new HashMap<>();
@@ -496,18 +480,6 @@ public final class TrapSave extends Module {
 
         public void addArmorStand(ArmorStandEntity armorStand) {
             armorStands.add(armorStand);
-        }
-
-        public TrapType getPrimaryType() {
-            return primaryType;
-        }
-
-        public Map<BlockPos, TrapType> getBlocks() {
-            return blocks;
-        }
-
-        public List<ArmorStandEntity> getArmorStands() {
-            return armorStands;
         }
 
         public boolean isEmpty() {

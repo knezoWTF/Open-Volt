@@ -3,6 +3,7 @@ package com.volt.utils.font.util;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import net.minecraft.client.util.math.MatrixStack;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -10,7 +11,6 @@ import org.joml.Quaternionf;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.Objects;
 
 /**
  * A reimplementation of {@link MatrixStack}, containing a few optimizations.
@@ -110,43 +110,14 @@ public class FastMStack extends MatrixStack {
         top.normalMatrix.identity();
     }
 
-    static final class Entry {
-        private final Matrix4f positionMatrix;
-        private final Matrix3f normalMatrix;
-
-        Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
-            this.positionMatrix = positionMatrix;
-            this.normalMatrix = normalMatrix;
-        }
-
-        public Matrix4f positionMatrix() {
-            return positionMatrix;
-        }
-
-        public Matrix3f normalMatrix() {
-            return normalMatrix;
-        }
+    record Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (Entry) obj;
-            return Objects.equals(this.positionMatrix, that.positionMatrix) &&
-                    Objects.equals(this.normalMatrix, that.normalMatrix);
-        }
+            public @NotNull String toString() {
+                return "Entry[" +
+                        "positionMatrix=" + positionMatrix + ", " +
+                        "normalMatrix=" + normalMatrix + ']';
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(positionMatrix, normalMatrix);
         }
-
-        @Override
-        public String toString() {
-            return "Entry[" +
-                    "positionMatrix=" + positionMatrix + ", " +
-                    "normalMatrix=" + normalMatrix + ']';
-        }
-
-    }
 }

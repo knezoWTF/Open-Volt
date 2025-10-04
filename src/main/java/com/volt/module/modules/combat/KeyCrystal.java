@@ -64,8 +64,6 @@ public final class KeyCrystal extends Module {
         }
     }
 
-    ;
-
     private void startCrystalPvP() {
         if (isActive)
             return;
@@ -130,11 +128,9 @@ public final class KeyCrystal extends Module {
 
     private boolean hasItemInHotbar(net.minecraft.item.Item item) {
         for (int i = 0; i < 9; i++) {
-            if (i >= 0 && i < 9) {
-                var stack = mc.player.getInventory().getStack(i);
-                if (!stack.isEmpty() && stack.getItem() == item) {
-                    return true;
-                }
+            var stack = mc.player.getInventory().getStack(i);
+            if (!stack.isEmpty() && stack.getItem() == item) {
+                return true;
             }
         }
         return false;

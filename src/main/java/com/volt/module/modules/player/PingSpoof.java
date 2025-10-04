@@ -9,6 +9,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public final class PingSpoof extends Module {
@@ -26,7 +27,7 @@ public final class PingSpoof extends Module {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
                     Thread.sleep(msDelay.getValueInt());
-                    mc.getNetworkHandler().getConnection().send(new KeepAliveC2SPacket(packet.getId()));
+                    Objects.requireNonNull(mc.getNetworkHandler()).getConnection().send(new KeepAliveC2SPacket(packet.getId()));
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -35,5 +36,4 @@ public final class PingSpoof extends Module {
         }
     }
 
-    ;
 }

@@ -100,10 +100,6 @@ public final class BreachSwap extends Module {
         return EnchantmentUtil.hasEnchantment(stack, mc.world, Enchantments.BREACH);
     }
 
-    public boolean isSwapping() {
-        return shouldSwitchBack || isSwappingAttack;
-    }
-
     @Override
     public void onDisable() {
         if (originalSlot != -1) {

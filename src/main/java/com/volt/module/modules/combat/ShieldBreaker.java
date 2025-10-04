@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Items;
 import net.minecraft.util.hit.EntityHitResult;
-import org.lwjgl.glfw.GLFW;
 
 public final class ShieldBreaker extends Module {
     private final NumberSetting reactionDelay = new NumberSetting("Reaction Delay", 0, 250, 50, 5);

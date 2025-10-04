@@ -41,8 +41,6 @@ public final class Eagle extends Module {
         mc.options.sneakKey.setPressed(onEdge);
     }
 
-    ;
-
     private boolean isAir(double x, double y, double z) {
         BlockPos pos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         assert mc.world != null;

@@ -62,9 +62,7 @@ public final class AutoDoubleHand extends Module {
         }
         
         if (healthSwitch.getValue()) {
-            if (mc.player.getHealth() <= healthThreshold.getValue()) {
-                return true;
-            }
+            return mc.player.getHealth() <= healthThreshold.getValue();
         }
         
         return false;
@@ -109,11 +107,9 @@ public final class AutoDoubleHand extends Module {
         if (isNull()) return -1;
         
         for (int i = 0; i < 9; i++) {
-            if (i >= 0 && i < 9) {
-                ItemStack stack = mc.player.getInventory().getStack(i);
-                if (!stack.isEmpty() && stack.getItem() == Items.TOTEM_OF_UNDYING) {
-                    return i;
-                }
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (!stack.isEmpty() && stack.getItem() == Items.TOTEM_OF_UNDYING) {
+                return i;
             }
         }
         return -1;

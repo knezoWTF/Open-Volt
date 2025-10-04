@@ -24,15 +24,10 @@ import org.joml.Matrix4f;
 import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 
 public final class JumpCircles extends Module {
 
-    private static final class Ring {
-        final Vec3d origin;
-        final long startTime;
-        final boolean self;
-        Ring(Vec3d origin, long startTime, boolean self) { this.origin = origin; this.startTime = startTime; this.self = self; }
+    private record Ring(Vec3d origin, long startTime, boolean self) {
     }
 
     private final ModeSetting targets = new ModeSetting("Targets", "Self", "Self", "Players");
@@ -116,15 +111,14 @@ public final class JumpCircles extends Module {
     private void renderRingsNormal(Matrix4f matrix, Vec3d cam, long now, long life, float maxR, float thick, int segs, float r, float g, float b, float aBase) {
         BufferBuilder buffer = null;
 
-        Iterator<Ring> it = rings.iterator();
-        while (it.hasNext()) {
-            Ring ring = it.next();
+        for (Ring ring : rings) {
             float t = (float) Math.max(0.0, Math.min(1.0, (now - ring.startTime) / (double) life));
             float radius = maxR * t;
             float alpha = aBase * (1.0f - t);
             if (alpha <= 0.01f) continue;
 
-            if (buffer == null) buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+            if (buffer == null)
+                buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
 
             renderRingGeometry(buffer, matrix, ring, radius, thick, segs, r, g, b, alpha, cam);
         }
@@ -163,21 +157,19 @@ public final class JumpCircles extends Module {
                     RenderSystem.blendFunc(770, 1);
                     break;
                 case 4:
-                    passAlpha = 1.0f;
                     passThickness = thick;
                     RenderSystem.defaultBlendFunc();
                     break;
             }
 
-            Iterator<Ring> it = rings.iterator();
-            while (it.hasNext()) {
-                Ring ring = it.next();
+            for (Ring ring : rings) {
                 float t = (float) Math.max(0.0, Math.min(1.0, (now - ring.startTime) / (double) life));
                 float radius = maxR * t;
                 float alpha = aBase * (1.0f - t) * passAlpha;
                 if (alpha <= 0.005f) continue;
 
-                if (buffer == null) buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+                if (buffer == null)
+                    buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
 
                 renderRingGeometry(buffer, matrix, ring, radius, passThickness, segs, r, g, b, alpha, cam);
             }

@@ -61,17 +61,8 @@ public final class HitOrbs extends Module {
             this.phiOffset = po; 
         } 
     }
-    
-    private static final class Effect { 
-        final int entityId; 
-        final long start; 
-        final List<SmokeTrail> orbs; 
-        
-        Effect(int entityId, long start, List<SmokeTrail> orbs) { 
-            this.entityId = entityId; 
-            this.start = start; 
-            this.orbs = orbs; 
-        } 
+
+    private record Effect(int entityId, long start, List<SmokeTrail> orbs) {
     }
 
     private final NumberSetting duration = new NumberSetting("Duration", 0.1, 3.0, 0.9, 0.05);
@@ -278,23 +269,22 @@ public final class HitOrbs extends Module {
         float y3 = (size * sin + size * cos);
         float x4 = (-size * cos - size * sin);
         float y4 = (-size * sin + size * cos);
-        
-        float centerAlpha = alpha;
+
         float edgeAlpha = alpha * 0.1f;
         
-        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x, y, z).color(r, g, b, alpha);
         buf.vertex(x + x1, y + y1, z).color(r, g, b, edgeAlpha);
         buf.vertex(x + x2, y + y2, z).color(r, g, b, edgeAlpha);
         
-        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x, y, z).color(r, g, b, alpha);
         buf.vertex(x + x2, y + y2, z).color(r, g, b, edgeAlpha);
         buf.vertex(x + x3, y + y3, z).color(r, g, b, edgeAlpha);
         
-        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x, y, z).color(r, g, b, alpha);
         buf.vertex(x + x3, y + y3, z).color(r, g, b, edgeAlpha);
         buf.vertex(x + x4, y + y4, z).color(r, g, b, edgeAlpha);
         
-        buf.vertex(x, y, z).color(r, g, b, centerAlpha);
+        buf.vertex(x, y, z).color(r, g, b, alpha);
         buf.vertex(x + x4, y + y4, z).color(r, g, b, edgeAlpha);
         buf.vertex(x + x1, y + y1, z).color(r, g, b, edgeAlpha);
     }

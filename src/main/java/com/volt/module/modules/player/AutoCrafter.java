@@ -130,8 +130,6 @@ public final class AutoCrafter extends Module {
         }
     }
 
-    ;
-
     private boolean isValidState() {
         return mc.player != null && mc.world != null && mc.currentScreen instanceof CraftingScreen;
     }
@@ -151,7 +149,7 @@ public final class AutoCrafter extends Module {
 
     private Recipe findCraftableRecipe() {
         if (craftApples.getValue()) {
-            Recipe appleRecipe = getRecipeByResult(Items.GOLDEN_APPLE);
+            Recipe appleRecipe = getRecipeByResult();
             if (appleRecipe != null && canCraftRecipe(appleRecipe)) {
                 return appleRecipe;
             }
@@ -297,8 +295,8 @@ public final class AutoCrafter extends Module {
         return getItemCount(item) > 0;
     }
 
-    private Recipe getRecipeByResult(Item result) {
-        return RECIPES.stream().filter(r -> r.result == result).findFirst().orElse(null);
+    private Recipe getRecipeByResult() {
+        return RECIPES.stream().filter(r -> r.result == Items.GOLDEN_APPLE).findFirst().orElse(null);
     }
 
     private boolean usesGold(Recipe recipe) {
@@ -362,25 +360,10 @@ public final class AutoCrafter extends Module {
         craftTimer.reset();
     }
 
-    private static class Recipe {
-        final Item result;
-        final Item material1;
-        final int count1;
-        final Item material2;
-        final int count2;
-        final int[] pattern;
+    private record Recipe(Item result, Item material1, int count1, Item material2, int count2, int[] pattern) {
+            Recipe(Item result, Item material1, int count1, int[] pattern) {
+                this(result, material1, count1, null, 0, pattern);
+            }
 
-        Recipe(Item result, Item material1, int count1, int[] pattern) {
-            this(result, material1, count1, null, 0, pattern);
-        }
-
-        Recipe(Item result, Item material1, int count1, Item material2, int count2, int[] pattern) {
-            this.result = result;
-            this.material1 = material1;
-            this.count1 = count1;
-            this.material2 = material2;
-            this.count2 = count2;
-            this.pattern = pattern;
-        }
     }
 } 

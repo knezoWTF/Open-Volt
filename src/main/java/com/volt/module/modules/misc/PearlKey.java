@@ -43,8 +43,6 @@ public final class PearlKey extends Module {
         keyPressed = currentKeyState;
     }
 
-    ;
-
     private void handlePearlThrow() {
         if (!throwTimer.hasElapsedTime(throwDelayMS.getValueInt(), false)) {
             return;

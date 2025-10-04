@@ -1,7 +1,5 @@
 package com.volt.module.modules.combat;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.volt.event.impl.player.TickEvent;
 import meteordevelopment.orbit.EventHandler;
 import com.volt.mixin.MinecraftClientAccessor;

@@ -38,18 +38,18 @@ public class Trajectory extends Module {
     Item item = heldItem.getItem();
 
     if (item == Items.ENDER_PEARL && showPearls.getValue()) {
-      renderTrajectory(event.getMatrixStack(), 1.5, 0.03, 0.99);
+      renderTrajectory(event.getMatrixStack(), 1.5, 0.03);
     } else if (item == Items.BOW && showBows.getValue()) {
       double bowVelocity = calculateBowVelocity(heldItem);
       if (bowVelocity > 0) {
-        renderTrajectory(event.getMatrixStack(), bowVelocity, 0.05, 0.99);
+        renderTrajectory(event.getMatrixStack(), bowVelocity, 0.05);
       }
     } else if (item == Items.CROSSBOW && showBows.getValue()) {
-      renderTrajectory(event.getMatrixStack(), 3.15, 0.05, 0.99);
+      renderTrajectory(event.getMatrixStack(), 3.15, 0.05);
     }
   }
 
-  private void renderTrajectory(MatrixStack matrices, double velocity, double gravity, double drag) {
+  private void renderTrajectory(MatrixStack matrices, double velocity, double gravity) {
     Vec3d startPos =
         mc.player.getCameraPosVec(1.0f).add(mc.player.getRotationVector().multiply(0.16));
 
@@ -82,7 +82,7 @@ public class Trajectory extends Module {
       }
 
       pos = nextPos;
-      motion = motion.multiply(drag).add(0, -gravity, 0);
+      motion = motion.multiply(0.99).add(0, -gravity, 0);
     }
 
     if (points.size() < 2) return;
@@ -112,8 +112,8 @@ public class Trajectory extends Module {
 
     BufferRenderer.drawWithGlobalProgram(buffer.end());
 
-    if (showLandingPoint.getValue() && points.size() > 1) {
-      renderLandingPoint(matrices, points.get(points.size() - 1), cameraPos);
+    if (showLandingPoint.getValue()) {
+      renderLandingPoint(matrices, points.getLast(), cameraPos);
     }
 
     RenderSystem.enableDepthTest();

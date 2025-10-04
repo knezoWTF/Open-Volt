@@ -10,7 +10,6 @@ import com.volt.utils.mc.InventoryUtil;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.glfw.GLFW;
 
 public final class AutoMLG extends Module {
     private final NumberSetting fallDistance = new NumberSetting("Fall Distance", 3, 40, 8, 1);

@@ -95,8 +95,6 @@ public final class AutoRefill extends Module {
         }
     }
 
-    ;
-
     public AutoRefill() {
         super("Auto Refill", "Automatically refills hotbar with health potions from inventory", -1, Category.PLAYER);
         this.addSettings(refillKeybind, refillDelay, reactionDelayMin, reactionDelayMax, minStackCount,
@@ -224,6 +222,7 @@ public final class AutoRefill extends Module {
             }
             currentState = RefillState.REFILLING;
         } else {
+            assert mc.player != null;
             mc.setScreen(new InventoryScreen(mc.player));
             reactionTimer.reset();
         }

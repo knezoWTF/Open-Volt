@@ -66,8 +66,6 @@ public final class WindChargeKey extends Module {
         keyPressed = currentKeyState;
     }
 
-    ;
-
     private void handleWindChargeThrow() {
         if (!firstThrow && !throwTimer.hasElapsedTime(throwDelayMS.getValueInt())) {
             return;

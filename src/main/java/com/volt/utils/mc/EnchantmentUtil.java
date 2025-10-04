@@ -30,7 +30,6 @@ public final class EnchantmentUtil {
         if (stack == null || world == null || enchantmentKey == null) return false;
         Registry<Enchantment> reg = world.getRegistryManager().get(RegistryKeys.ENCHANTMENT);
         var opt = reg.getEntry(enchantmentKey);
-        if (opt.isEmpty()) return false;
-        return hasEnchantment(stack, world, opt.get());
+        return opt.filter(enchantmentReference -> hasEnchantment(stack, world, enchantmentReference)).isPresent();
     }
 }

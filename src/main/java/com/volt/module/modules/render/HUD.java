@@ -144,12 +144,12 @@ public class HUD extends Module {
         }
 
         if (arrayList.getValue()) {
-             List<Module> enabledModules = new ArrayList<>();
-             for (Module module : Volt.INSTANCE.getModuleManager().getModules()) {
-                 if (!module.isEnabled()) continue;
-                 if (hideVisuals.getValue() && module.getModuleCategory() == Category.RENDER) continue;
-                 enabledModules.add(module);
-             }
+            List<Module> enabledModules = new ArrayList<>();
+            for (Module module : Volt.INSTANCE.getModuleManager().getModules()) {
+                if (!module.isEnabled()) continue;
+                if (hideVisuals.getValue() && module.getModuleCategory() == Category.RENDER) continue;
+                enabledModules.add(module);
+            }
 
             if (fontMode.getMode().equals("MC")) {
                 enabledModules.sort(Comparator.comparingDouble(ri -> -mc.textRenderer.getWidth(getFullName(ri))));

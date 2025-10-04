@@ -17,13 +17,13 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.Closeable;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A simple font renderer. Supports multiple fonts, passed in as {@link Font} instances.
@@ -329,75 +329,18 @@ public class FontRenderer implements Closeable {
         allGlyphs.clear();
     }
 
-    static final class DrawEntry {
-        private final float atX;
-        private final float atY;
-        private final float r;
-        private final float g;
-        private final float b;
-        private final Glyph toDraw;
-
-        DrawEntry(float atX, float atY, float r, float g, float b, Glyph toDraw) {
-            this.atX = atX;
-            this.atY = atY;
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.toDraw = toDraw;
-        }
-
-        public float atX() {
-            return atX;
-        }
-
-        public float atY() {
-            return atY;
-        }
-
-        public float r() {
-            return r;
-        }
-
-        public float g() {
-            return g;
-        }
-
-        public float b() {
-            return b;
-        }
-
-        public Glyph toDraw() {
-            return toDraw;
-        }
+    record DrawEntry(float atX, float atY, float r, float g, float b, Glyph toDraw) {
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (DrawEntry) obj;
-            return Float.floatToIntBits(this.atX) == Float.floatToIntBits(that.atX) &&
-                    Float.floatToIntBits(this.atY) == Float.floatToIntBits(that.atY) &&
-                    Float.floatToIntBits(this.r) == Float.floatToIntBits(that.r) &&
-                    Float.floatToIntBits(this.g) == Float.floatToIntBits(that.g) &&
-                    Float.floatToIntBits(this.b) == Float.floatToIntBits(that.b) &&
-                    Objects.equals(this.toDraw, that.toDraw);
-        }
+            public @NotNull String toString() {
+                return "DrawEntry[" +
+                        "atX=" + atX + ", " +
+                        "atY=" + atY + ", " +
+                        "r=" + r + ", " +
+                        "g=" + g + ", " +
+                        "b=" + b + ", " +
+                        "toDraw=" + toDraw + ']';
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(atX, atY, r, g, b, toDraw);
         }
-
-        @Override
-        public String toString() {
-            return "DrawEntry[" +
-                    "atX=" + atX + ", " +
-                    "atY=" + atY + ", " +
-                    "r=" + r + ", " +
-                    "g=" + g + ", " +
-                    "b=" + b + ", " +
-                    "toDraw=" + toDraw + ']';
-        }
-
-    }
 }

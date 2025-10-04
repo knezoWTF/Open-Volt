@@ -75,8 +75,6 @@ public final class PlayerESP extends Module {
         RendererUtils.endRender();
     }
 
-    ;
-
     @Override
     public void onEnable() {
         super.onEnable();

@@ -29,10 +29,7 @@ import java.util.UUID;
 
 public final class Trail extends Module {
 
-    private static final class TrailPoint {
-        final Vec3d pos;
-        final long time;
-        TrailPoint(Vec3d pos, long time) { this.pos = pos; this.time = time; }
+    private record TrailPoint(Vec3d pos, long time) {
     }
 
     private final ModeSetting targets = new ModeSetting("Targets", "Players", "Players", "Self");
@@ -139,18 +136,14 @@ public final class Trail extends Module {
 
     private static void addQuad(BufferBuilder buffer, Matrix4f matrix, Vec3d v0, Vec3d v1, Vec3d v2, Vec3d v3,
                                 float r, float g, float b, float aStart, float aEnd, Vec3d cam) {
-        float a0 = aStart;
-        float a1 = aStart;
-        float a2 = aEnd;
-        float a3 = aEnd;
 
-        buffer.vertex(matrix, (float) (v0.x - cam.x), (float) (v0.y - cam.y), (float) (v0.z - cam.z)).color(r, g, b, a0);
-        buffer.vertex(matrix, (float) (v1.x - cam.x), (float) (v1.y - cam.y), (float) (v1.z - cam.z)).color(r, g, b, a1);
-        buffer.vertex(matrix, (float) (v2.x - cam.x), (float) (v2.y - cam.y), (float) (v2.z - cam.z)).color(r, g, b, a2);
+        buffer.vertex(matrix, (float) (v0.x - cam.x), (float) (v0.y - cam.y), (float) (v0.z - cam.z)).color(r, g, b, aStart);
+        buffer.vertex(matrix, (float) (v1.x - cam.x), (float) (v1.y - cam.y), (float) (v1.z - cam.z)).color(r, g, b, aStart);
+        buffer.vertex(matrix, (float) (v2.x - cam.x), (float) (v2.y - cam.y), (float) (v2.z - cam.z)).color(r, g, b, aEnd);
 
-        buffer.vertex(matrix, (float) (v0.x - cam.x), (float) (v0.y - cam.y), (float) (v0.z - cam.z)).color(r, g, b, a0);
-        buffer.vertex(matrix, (float) (v2.x - cam.x), (float) (v2.y - cam.y), (float) (v2.z - cam.z)).color(r, g, b, a2);
-        buffer.vertex(matrix, (float) (v3.x - cam.x), (float) (v3.y - cam.y), (float) (v3.z - cam.z)).color(r, g, b, a3);
+        buffer.vertex(matrix, (float) (v0.x - cam.x), (float) (v0.y - cam.y), (float) (v0.z - cam.z)).color(r, g, b, aStart);
+        buffer.vertex(matrix, (float) (v2.x - cam.x), (float) (v2.y - cam.y), (float) (v2.z - cam.z)).color(r, g, b, aEnd);
+        buffer.vertex(matrix, (float) (v3.x - cam.x), (float) (v3.y - cam.y), (float) (v3.z - cam.z)).color(r, g, b, aEnd);
     }
 
     private boolean shouldTrack(PlayerEntity p) {

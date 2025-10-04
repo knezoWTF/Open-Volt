@@ -87,7 +87,6 @@ for (var ent : mc.world.getEntities()) {
         double aMid = (a0 + a1) * 0.5;
         float sideFactor = (float) Math.abs(Math.sin(aMid));
         float aSeg = baseAlpha * (1.0f - (float) sideFade.getValue() * sideFactor);
-        float aIn = aSeg;
         float aOut = aSeg * 0.2f;
 
         float x0i = (float) (cx + x0 * rad);
@@ -99,11 +98,11 @@ for (var ent : mc.world.getEntities()) {
         float x1o = (float) (cx + x1 * (rad + thick));
         float z1o = (float) (cz + z1 * (rad + thick));
 
-        buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aIn);
-        buf.vertex(m, x1i, (float) cy, z1i).color(r, g, b, aIn);
+        buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aSeg);
+        buf.vertex(m, x1i, (float) cy, z1i).color(r, g, b, aSeg);
         buf.vertex(m, x1o, (float) cy, z1o).color(r, g, b, aOut);
 
-        buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aIn);
+        buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aSeg);
         buf.vertex(m, x1o, (float) cy, z1o).color(r, g, b, aOut);
         buf.vertex(m, x0o, (float) cy, z0o).color(r, g, b, aOut);
     }

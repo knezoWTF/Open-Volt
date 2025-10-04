@@ -72,8 +72,6 @@ public final class OreESP extends Module {
         }
     }
 
-    ;
-
     @EventHandler
     private void onEventRender3D(EventRender3D event) {
         if (isNull() || detectedOres.isEmpty()) return;
@@ -112,8 +110,6 @@ public final class OreESP extends Module {
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
     }
-
-    ;
 
     private void performOreScan() {
         if (isNull()) return;
@@ -197,61 +193,37 @@ public final class OreESP extends Module {
     }
 
     private boolean isOreEnabled(OreType oreType) {
-        switch (oreType) {
-            case DIAMOND:
-                return enableDiamond.getValue();
-            case EMERALD:
-                return enableEmerald.getValue();
-            case GOLD:
-                return enableGold.getValue();
-            case IRON:
-                return enableIron.getValue();
-            case COAL:
-                return enableCoal.getValue();
-            case COPPER:
-                return enableCopper.getValue();
-            case REDSTONE:
-                return enableRedstone.getValue();
-            case LAPIS:
-                return enableLapis.getValue();
-            case NETHERITE:
-                return enableNetherite.getValue();
-            case NETHER_GOLD:
-                return enableNetherGold.getValue();
-            case NETHER_QUARTZ:
-                return enableNetherQuartz.getValue();
-            default:
-                return false;
-        }
+        return switch (oreType) {
+            case DIAMOND -> enableDiamond.getValue();
+            case EMERALD -> enableEmerald.getValue();
+            case GOLD -> enableGold.getValue();
+            case IRON -> enableIron.getValue();
+            case COAL -> enableCoal.getValue();
+            case COPPER -> enableCopper.getValue();
+            case REDSTONE -> enableRedstone.getValue();
+            case LAPIS -> enableLapis.getValue();
+            case NETHERITE -> enableNetherite.getValue();
+            case NETHER_GOLD -> enableNetherGold.getValue();
+            case NETHER_QUARTZ -> enableNetherQuartz.getValue();
+            default -> false;
+        };
     }
 
     private Color getOreColor(OreType oreType) {
-        switch (oreType) {
-            case DIAMOND:
-                return new Color(0x5DADE2);
-            case EMERALD:
-                return new Color(0x2ECC71);
-            case GOLD:
-                return new Color(0xF1C40F);
-            case IRON:
-                return new Color(0xD5DBDB);
-            case COAL:
-                return new Color(0x2C3E50);
-            case COPPER:
-                return new Color(0xE67E22);
-            case REDSTONE:
-                return new Color(0xE74C3C);
-            case LAPIS:
-                return new Color(0x3498DB);
-            case NETHERITE:
-                return new Color(0x8E44AD);
-            case NETHER_GOLD:
-                return new Color(0xF39C12);
-            case NETHER_QUARTZ:
-                return new Color(0xECF0F1);
-            default:
-                return new Color(0xFFFFFF);
-        }
+        return switch (oreType) {
+            case DIAMOND -> new Color(0x5DADE2);
+            case EMERALD -> new Color(0x2ECC71);
+            case GOLD -> new Color(0xF1C40F);
+            case IRON -> new Color(0xD5DBDB);
+            case COAL -> new Color(0x2C3E50);
+            case COPPER -> new Color(0xE67E22);
+            case REDSTONE -> new Color(0xE74C3C);
+            case LAPIS -> new Color(0x3498DB);
+            case NETHERITE -> new Color(0x8E44AD);
+            case NETHER_GOLD -> new Color(0xF39C12);
+            case NETHER_QUARTZ -> new Color(0xECF0F1);
+            default -> new Color(0xFFFFFF);
+        };
     }
 
     private void renderOreBlock(MatrixStack matrices, BlockPos pos, Color color) {
@@ -272,7 +244,7 @@ public final class OreESP extends Module {
         String mode = renderMode.getMode();
 
         if (mode.equals("Filled") || mode.equals("Both")) {
-            drawFilledBox(matrices, red, green, blue, alpha);
+            drawFilledBox();
         }
 
         if (mode.equals("Outline") || mode.equals("Both")) {
@@ -283,7 +255,7 @@ public final class OreESP extends Module {
         matrices.pop();
     }
 
-    private void drawFilledBox(MatrixStack matrices, float red, float green, float blue, float alpha) {
+    private void drawFilledBox() {
 
     }
 

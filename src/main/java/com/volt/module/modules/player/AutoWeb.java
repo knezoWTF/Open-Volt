@@ -88,8 +88,6 @@ public final class AutoWeb extends Module {
         }
     }
 
-    ;
-
     private void startPlacing() {
         if (isActive) return;
 

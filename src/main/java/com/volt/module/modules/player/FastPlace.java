@@ -40,8 +40,6 @@ public final class FastPlace extends Module {
         }
     }
 
-    ;
-
     @Override
     public void onEnable() {
         timer.reset();

@@ -1,8 +1,6 @@
 package com.volt.module.modules.player;
 
 
-import org.lwjgl.glfw.GLFW;
-
 import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;

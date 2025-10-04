@@ -1,9 +1,7 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.player.TickEvent;
 import com.volt.event.impl.render.EventRender2D;
 import com.volt.event.impl.world.WorldChangeEvent;
-import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;

@@ -1,8 +1,6 @@
 package com.volt.module.modules.combat;
 
 
-import org.lwjgl.glfw.GLFW;
-
 import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
@@ -90,8 +88,6 @@ public final class AutoMace extends Module {
             handleNotFalling();
         }
     }
-
-    ;
 
     private void updateFallTracking() {
         boolean currentlyOnGround = mc.player.isOnGround();

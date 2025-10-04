@@ -6,6 +6,7 @@ import com.volt.utils.font.fonts.FontRenderer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -50,43 +51,14 @@ public class FontManager {
         private final String type;
     }
 
-    private static final class FontKey {
-        private final int size;
-        private final Type type;
-
-        private FontKey(int size, Type type) {
-            this.size = size;
-            this.type = type;
-        }
-
-        public int size() {
-            return size;
-        }
-
-        public Type type() {
-            return type;
-        }
+    private record FontKey(int size, Type type) {
 
         @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (FontKey) obj;
-            return this.size == that.size &&
-                    Objects.equals(this.type, that.type);
-        }
+            public @NotNull String toString() {
+                return "FontKey[" +
+                        "size=" + size + ", " +
+                        "type=" + type + ']';
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(size, type);
         }
-
-        @Override
-        public String toString() {
-            return "FontKey[" +
-                    "size=" + size + ", " +
-                    "type=" + type + ']';
-        }
-
-    }
 }

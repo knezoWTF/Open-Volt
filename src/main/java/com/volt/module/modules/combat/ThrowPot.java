@@ -106,8 +106,6 @@ public final class ThrowPot extends Module {
         handleRotation();
     }
 
-    ;
-
     private void handleRotation() {
         if (isRotating) {
             float currentPitch = mc.player.getPitch();
@@ -165,11 +163,10 @@ public final class ThrowPot extends Module {
             if (rotationSpeed.getValueFloat() >= 90) {
                 mc.player.setPitch(targetPitch);
                 isRotating = false;
-                readyToThrow = true;
             } else {
                 isRotating = true;
-                readyToThrow = true;
             }
+            readyToThrow = true;
             hasRotated = true;
         } else {
             readyToThrow = true;

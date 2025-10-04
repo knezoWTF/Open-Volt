@@ -64,10 +64,7 @@ public final class AutoCrystal extends Module {
         if (antiSuicide.getValue() && !mc.player.isOnGround()) return;
         if (mc.crosshairTarget instanceof EntityHitResult entityHit) {
             if (entityHit.getEntity() instanceof EndCrystalEntity crystal) {
-                if (crystal != null
-                        && !crystal.isRemoved()
-                        && crystal.isAlive()
-                        && mc.world.getEntityById(crystal.getId()) != null) {
+                if (!crystal.isRemoved() && crystal.isAlive() && mc.world.getEntityById(crystal.getId()) != null) {
                     
                     if (mc.player.getPos().distanceTo(crystal.getPos()) <= 4.5) {
                         if (antiWeakness.getValue() && mc.player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS)) {

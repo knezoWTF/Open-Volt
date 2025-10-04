@@ -69,7 +69,7 @@ public class ESP2D extends Module {
             drawRectOutline(context, x1, y1, x2, y2, drawColor.getRGB(), (int) Math.max(1, Math.round(lineWidth.getValue())));
 
             if (healthBar.getValue()) {
-                drawHealthBar(context, player, x1, y1, x2, y2);
+                drawHealthBar(context, player, x1, y1, y2);
             }
         }
     }
@@ -79,7 +79,7 @@ public class ESP2D extends Module {
         if (mc.player.distanceTo(player) > range.getValue()) return false;
         if (teamCheck.getValue()) {
             if (mc.player.getScoreboardTeam() != null && player.getScoreboardTeam() != null) {
-                if (mc.player.getScoreboardTeam().equals(player.getScoreboardTeam())) return false;
+                return !mc.player.getScoreboardTeam().equals(player.getScoreboardTeam());
             }
         }
         return true;
@@ -113,7 +113,7 @@ public class ESP2D extends Module {
         Vector3f target = new Vector3f();
         Vector4f coords = new Vector4f();
         for (int i = 0; i < 8; i++) {
-            if (projectWorldToScreen(xs[i], ys[i], zs[i], viewport, displayHeight, scaleFactor, combined, cameraPos, target, coords)) {
+            if (projectWorldToScreen(xs[i], ys[i], zs[i], viewport, combined, cameraPos, target, coords)) {
                 anyVisible = true;
                 double sx = target.x / scaleFactor;
                 double sy = (displayHeight - target.y) / scaleFactor;
@@ -136,7 +136,7 @@ public class ESP2D extends Module {
     }
 
     private boolean projectWorldToScreen(double worldX, double worldY, double worldZ,
-                                         int[] viewport, int displayHeight, double scaleFactor,
+                                         int[] viewport,
                                          Matrix4f combined, Vec3d cameraPos, Vector3f outTarget, Vector4f reuseCoords) {
         double dx = worldX - cameraPos.x;
         double dy = worldY - cameraPos.y;
@@ -155,7 +155,7 @@ public class ESP2D extends Module {
         context.fill(x2 - w, y1, x2, y2, color);
     }
 
-    private void drawHealthBar(DrawContext context, PlayerEntity player, int x1, int y1, int x2, int y2) {
+    private void drawHealthBar(DrawContext context, PlayerEntity player, int x1, int y1, int y2) {
         int height = Math.max(1, y2 - y1);
         int barWidth = Math.max(1, (int) Math.round(healthBarWidth.getValue()));
         int gap = 2;

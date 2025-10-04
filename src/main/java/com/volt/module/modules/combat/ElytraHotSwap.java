@@ -68,8 +68,6 @@ public final class ElytraHotSwap extends Module {
         }
     }
 
-    ;
-
     private void startHotswap() {
         if (isSwapping) return;
 
@@ -195,15 +193,8 @@ public final class ElytraHotSwap extends Module {
         if (!previousChestArmor.isEmpty()) {
             mc.player.getInventory().setStack(36 + mc.player.getInventory().selectedSlot, previousChestArmor.copy());
 
-            if (silentSwap.getValue()) {
-
-                if (mc.interactionManager != null) {
-                    mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-                }
-            } else {
-                if (mc.interactionManager != null) {
-                    mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-                }
+            if (mc.interactionManager != null) {
+                mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
             }
 
             previousChestArmor = ItemStack.EMPTY;

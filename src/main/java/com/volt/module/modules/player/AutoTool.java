@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class AutoTool extends Module {
     private static final NumberSetting switchDelay = new NumberSetting("Switch Delay", 0, 100, 5, 1);
@@ -30,7 +30,7 @@ public final class AutoTool extends Module {
     private static final BooleanSetting preventLowDurability = new BooleanSetting("Prevent Low Durability", true);
     private static final NumberSetting durabilityThreshold = new NumberSetting("Durability Threshold", 1, 100, 10, 1);
     private final TimerUtil switchTimer = new TimerUtil();
-    private final Map<ToolType, ToolSlot> cachedTools = new EnumMap<>(ToolType.class);
+    private final AtomicReference<Map<ToolType, ToolSlot>> cachedTools = new AtomicReference<>(new EnumMap<>(ToolType.class));
     private ActionState currentState = ActionState.IDLE;
     private int previousSlot = -1;
 
@@ -66,8 +66,6 @@ public final class AutoTool extends Module {
             handleCombat((EntityHitResult) hitResult);
         }
     }
-
-    ;
 
     private void handleMining(BlockHitResult blockHit) {
         BlockPos blockPos = blockHit.getBlockPos();
@@ -184,7 +182,7 @@ public final class AutoTool extends Module {
         if (item.toString().contains("iron")) return 4.0f;
         if (item.toString().contains("golden")) return 3.5f;
         if (item.toString().contains("stone")) return 2.0f;
-        if (item.toString().contains("wooden")) return 1.0f;
+        if (item.toString().contains("wooden")) return 1.5f;
 
         return 1.0f;
     }
@@ -201,7 +199,7 @@ public final class AutoTool extends Module {
     @Override
     public void onEnable() {
         switchTimer.reset();
-        cachedTools.clear();
+        cachedTools.get().clear();
         super.onEnable();
     }
 
@@ -209,58 +207,20 @@ public final class AutoTool extends Module {
     public void onDisable() {
         currentState = ActionState.IDLE;
         previousSlot = -1;
-        cachedTools.clear();
+        cachedTools.get().clear();
         super.onDisable();
     }
 
     private enum ActionState {
         IDLE,
         MINING,
-        ATTACKING,
-        SWITCHING_BACK
+        ATTACKING
     }
 
     private enum ToolType {
-        PICKAXE(Set.of(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE,
-                Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE)),
-        AXE(Set.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.IRON_AXE,
-                Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE)),
-        SHOVEL(Set.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL,
-                Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL)),
-        HOE(Set.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE,
-                Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE)),
-        SWORD(Set.of(Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD,
-                Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD));
 
-        private final Set<Item> items;
-
-        ToolType(Set<Item> items) {
-            this.items = items;
-        }
-
-        public static ToolType getToolType(Item item) {
-            for (ToolType type : values()) {
-                if (type.contains(item)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-
-        public boolean contains(Item item) {
-            return items.contains(item);
-        }
     }
 
-    private static class ToolSlot {
-        public final ItemStack stack;
-        public final int slot;
-        public final float score;
-
-        public ToolSlot(ItemStack stack, int slot, float score) {
-            this.stack = stack;
-            this.slot = slot;
-            this.score = score;
-        }
+    private record ToolSlot(ItemStack stack, int slot, float score) {
     }
 } 

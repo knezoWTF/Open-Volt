@@ -295,8 +295,8 @@ public class RendererUtils {
         return (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
     }
 
-    private static String randomString(int length) {
-        return IntStream.range(0, length)
+    private static String randomString() {
+        return IntStream.range(0, 32)
                 .mapToObj(operand -> String.valueOf((char) RND.nextInt(RND_START, RND_END + 1)))
                 .collect(Collectors.joining());
     }
@@ -308,6 +308,6 @@ public class RendererUtils {
      */
     @Contract(value = "-> new", pure = true)
     public static Identifier randomIdentifier() {
-        return Identifier.of("renderer", "temp/" + randomString(32));
+        return Identifier.of("renderer", "temp/" + randomString());
     }
 }

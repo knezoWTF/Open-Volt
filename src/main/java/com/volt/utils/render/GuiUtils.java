@@ -1,8 +1,8 @@
 package com.volt.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import lombok.experimental.UtilityClass;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.GameRenderer;
 import org.joml.Matrix4f;
 
 import java.awt.*;
@@ -38,22 +38,14 @@ public final class GuiUtils {
     }
 
     private static float applyEasing(float t, EasingType easing) {
-        switch (easing) {
-            case LINEAR:
-                return t;
-            case EASE_IN:
-                return t * t;
-            case EASE_OUT:
-                return 1 - (1 - t) * (1 - t);
-            case EASE_IN_OUT:
-                return t < 0.5f ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
-            case BOUNCE:
-                return bounceEasing(t);
-            case ELASTIC:
-                return elasticEasing(t);
-            default:
-                return t;
-        }
+        return switch (easing) {
+            case LINEAR -> t;
+            case EASE_IN -> t * t;
+            case EASE_OUT -> 1 - (1 - t) * (1 - t);
+            case EASE_IN_OUT -> t < 0.5f ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
+            case BOUNCE -> bounceEasing(t);
+            case ELASTIC -> elasticEasing(t);
+        };
     }
 
     private static float bounceEasing(float t) {
@@ -73,12 +65,12 @@ public final class GuiUtils {
     }
 
     public static void drawGradientRect(DrawContext context, int x, int y, int width, int height,
-                                        Color topLeft, Color topRight, Color bottomLeft, Color bottomRight) {
+                                        Color topLeft, Color bottomLeft) {
         Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(() -> net.minecraft.client.render.GameRenderer.getPositionColorProgram());
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         context.fillGradient(x, y, x + width, y + height, topLeft.getRGB(), bottomLeft.getRGB());
 
@@ -215,8 +207,6 @@ public final class GuiUtils {
 
     private static Color getNotificationColor(NotificationType type) {
         switch (type) {
-            case INFO:
-                return Colors.INFO;
             case SUCCESS:
                 return Colors.SUCCESS;
             case WARNING:

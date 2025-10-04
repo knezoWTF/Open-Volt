@@ -79,7 +79,7 @@ public final class HoverTotem extends Module {
                          SlotActionType.SWAP,
                          mc.player
                  );
-             } else if (needsHotbar) {
+             } else {
                  mc.interactionManager.clickSlot(
                          mc.player.currentScreenHandler.syncId,
                          focusedSlot.getIndex(),

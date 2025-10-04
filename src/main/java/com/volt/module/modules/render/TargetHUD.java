@@ -75,23 +75,21 @@ public final class TargetHUD extends Module {
 
         int headX = x + PADDING;
         int headY = y + PADDING;
-        renderPlayerHead(context, target, headX, headY, HEAD_SIZE);
+        renderPlayerHead(context, target, headX, headY);
 
         int textX = headX + HEAD_SIZE + 8;
-        int textY = headY;
 
         String name = target.getName().getString();
-        drawInter(interLarge, context, name, textX, textY, TEXT_PRIMARY);
+        drawInter(interLarge, context, name, textX, headY, TEXT_PRIMARY);
 
         float playerTotalHealth = mc.player.getHealth() + mc.player.getAbsorptionAmount();
         float targetTotalHealth = target.getHealth() + target.getAbsorptionAmount();
         CombatStatus status = determineStatus(playerTotalHealth, targetTotalHealth);
-        drawInter(interMedium, context, status.text(), textX, textY + 18, TEXT_STATUS);
+        drawInter(interMedium, context, status.text(), textX, headY + 18, TEXT_STATUS);
 
-        int barX = textX;
         int barY = headY + HEAD_SIZE + 4;
-        int barWidth = BOX_WIDTH - (barX - x) - PADDING;
-        renderHealthBar(context, target, barX, barY, barWidth, 10);
+        int barWidth = BOX_WIDTH - (textX - x) - PADDING;
+        renderHealthBar(context, target, textX, barY, barWidth);
 
         String healthText = formatHealthValue(targetTotalHealth) + "/" + formatHealthValue(target.getMaxHealth());
         float healthTextWidth = getStringWidth(interMedium, healthText);
@@ -108,7 +106,7 @@ public final class TargetHUD extends Module {
 
         List<ItemStack> armorStacks = collectArmor(target);
         if (!armorStacks.isEmpty()) {
-            int armorRowY = (int) (y + BOX_HEIGHT - PADDING - 18);
+            int armorRowY = y + BOX_HEIGHT - PADDING - 18;
             int armorStartX = x + PADDING;
             for (ItemStack stack : armorStacks) {
                 renderItemStack(context, stack, armorStartX, armorRowY);
@@ -142,8 +140,8 @@ public final class TargetHUD extends Module {
         return closest;
     }
 
-    private void renderHealthBar(DrawContext context, PlayerEntity target, int x, int y, int width, int height) {
-        context.fill(x, y, x + width, y + height, HEALTH_BACKGROUND.getRGB());
+    private void renderHealthBar(DrawContext context, PlayerEntity target, int x, int y, int width) {
+        context.fill(x, y, x + width, y + 10, HEALTH_BACKGROUND.getRGB());
 
         float maxHealth = Math.max(target.getMaxHealth(), 1f);
         float health = MathHelper.clamp(target.getHealth(), 0f, maxHealth);
@@ -152,7 +150,7 @@ public final class TargetHUD extends Module {
         float healthPercent = MathHelper.clamp(health / maxHealth, 0f, 1f);
         int healthWidth = Math.round(width * healthPercent);
         if (healthWidth > 0) {
-            context.fill(x, y, x + healthWidth, y + height, HEALTH_COLOR.getRGB());
+            context.fill(x, y, x + healthWidth, y + 10, HEALTH_COLOR.getRGB());
         }
 
         if (absorption > 0f) {
@@ -160,14 +158,14 @@ public final class TargetHUD extends Module {
             int absorptionWidth = Math.round(width * absorptionPercent);
             int overlayWidth = Math.max(0, absorptionWidth - healthWidth);
             if (overlayWidth > 0) {
-                context.fill(x + healthWidth, y, x + healthWidth + overlayWidth, y + height, ABSORPTION_COLOR.getRGB());
+                context.fill(x + healthWidth, y, x + healthWidth + overlayWidth, y + 10, ABSORPTION_COLOR.getRGB());
             }
         }
 
-        context.drawBorder(x, y, width, height, BOX_OUTLINE.getRGB());
+        context.drawBorder(x, y, width, 10, BOX_OUTLINE.getRGB());
     }
 
-    private void renderPlayerHead(DrawContext context, PlayerEntity player, int x, int y, int size) {
+    private void renderPlayerHead(DrawContext context, PlayerEntity player, int x, int y) {
         Identifier texture = resolveSkin(player);
         if (texture == null) {
             return;
@@ -176,7 +174,7 @@ public final class TargetHUD extends Module {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(x, y, 0);
-        float scale = size / 8.0f;
+        float scale = TargetHUD.HEAD_SIZE / 8.0f;
         matrices.scale(scale, scale, 1f);
 
         RenderSystem.enableBlend();

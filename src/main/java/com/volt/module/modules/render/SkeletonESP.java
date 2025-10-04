@@ -57,11 +57,11 @@ public final class SkeletonESP extends Module {
             GL11.glLineWidth(1.0f);
             
             GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         } finally {
             try {
                 RendererUtils.endRender();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }

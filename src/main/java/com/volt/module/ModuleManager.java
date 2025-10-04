@@ -3,12 +3,10 @@ package com.volt.module;
 import com.volt.module.modules.client.ClickGUIModule;
 import com.volt.module.modules.client.Client;
 import com.volt.module.modules.client.Debugger;
-import com.volt.module.modules.client.Panic;
 import com.volt.module.modules.combat.*;
 import com.volt.module.modules.misc.*;
 import com.volt.module.modules.movement.AutoFirework;
 import com.volt.module.modules.movement.AutoHeadHitter;
-import com.volt.module.modules.movement.NoJumpDelay;
 import com.volt.module.modules.movement.Sprint;
 import com.volt.module.modules.player.*;
 import com.volt.module.modules.player.AutoMLG;
@@ -19,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 public final class ModuleManager {
@@ -33,13 +30,13 @@ public final class ModuleManager {
     public List<Module> getEnabledModules() {
         return modules.stream()
                 .filter(Module::isEnabled)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<Module> getModulesInCategory(Category category) {
         return modules.stream()
                 .filter(module -> module.getModuleCategory() == category)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public <T extends Module> Optional<T> getModule(Class<T> moduleClass) {
@@ -56,9 +53,9 @@ public final class ModuleManager {
                 new ShieldBreaker(), new ThrowPot(), new ElytraHotSwap(),
                 new AntiMiss(), new WTap(), new STap(),
                 new AimAssist(), new SwordHotSwap(), new AutoCrystal(), new SwordSwap(), new BreachSwap(),
-                new KeyCrystal(), new KeyAnchor(), new AutoCobweb());
+                new KeyCrystal(), new KeyAnchor());
         // Movement
-        add(new Sprint(), new AutoFirework(), new AutoHeadHitter(), new NoJumpDelay());
+        add(new Sprint(), new AutoFirework(), new AutoHeadHitter());
 
         // Player
         add(
@@ -81,7 +78,7 @@ public final class ModuleManager {
                 new PearlKey(), new PearlCatch(), new WindChargeKey(), new Teams(), new FakePlayer());
 
         // Client
-        add(new ClickGUIModule(), new Client(), new Panic(), new Debugger());
+        add(new ClickGUIModule(), new Client(), new Debugger());
     }
 
     private void add(Module... mods) {
