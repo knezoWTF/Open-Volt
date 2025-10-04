@@ -143,7 +143,8 @@ public final class TriggerBot extends Module {
                     delay *= (long) multiplier;
                 }
                 case "None" -> delay = 0;
-                default -> delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
+                default ->
+                        delay = (long) MathUtils.randomDoubleBetween(reactionTimeMin.getValue(), reactionTimeMax.getValue());
             }
 
             currentReactionDelay = delay;
@@ -152,8 +153,8 @@ public final class TriggerBot extends Module {
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
             if (hasElapsedDelay()) {
                 if (hasTarget(target) && samePlayerCheck(target)) {
-                        attack();
-                        waitingForReaction = false;
+                    attack();
+                    waitingForReaction = false;
                 }
             }
         }
@@ -227,7 +228,7 @@ public final class TriggerBot extends Module {
     }
 
     public void attack() {
-        ((MinecraftClientAccessor)mc).invokeDoAttack();
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();

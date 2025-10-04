@@ -22,7 +22,7 @@ public class HandledScreenMixin {
 
         if (ContainerSlots.highlightTotem.getValue() && slot.hasStack()) {
             if (slot.getStack().getItem() == Items.TOTEM_OF_UNDYING) {
-                context.fill(slot.x, slot.y, slot.x + 16,slot.y + 16, ContainerSlots.highlightColor.getValue().getRGB());
+                context.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, ContainerSlots.highlightColor.getValue().getRGB());
             }
         }
 

@@ -11,7 +11,7 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.font.util.RendererUtils;
 import com.volt.utils.render.RenderUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -42,8 +42,8 @@ public final class EntityESP extends Module {
 
     public EntityESP() {
         super("Entity ESP", "ESP around animals mobs ect", -1, Category.RENDER);
-        this.addSettings(renderMode, lineWidth, hostileColor, passiveColor, villagerColor, otherColor, 
-                        showHostile, showPassive, showVillagers, showOther, range);
+        this.addSettings(renderMode, lineWidth, hostileColor, passiveColor, villagerColor, otherColor,
+                showHostile, showPassive, showVillagers, showOther, range);
     }
 
     @EventHandler

@@ -15,7 +15,7 @@ public final class Sprint extends Module {
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
         if (mc.options.getSprintToggled().getValue()) mc.options.getSprintToggled().setValue(false);
-        
+
         mc.options.sprintKey.setPressed(true);
     }
 }

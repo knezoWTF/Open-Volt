@@ -9,24 +9,23 @@ import com.volt.module.setting.BooleanSetting;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 
 import java.util.UUID;
 
 public class FakePlayer extends Module {
+    private final BooleanSetting invincible = new BooleanSetting("Invincible", false);
+    private final BooleanSetting criticalHits = new BooleanSetting("Critical Hits", true);
+    private final BooleanSetting useTotem = new BooleanSetting("Use Totem", false);
     private OtherClientPlayerEntity fakePlayer;
     private float fakePlayerHealth = 20.0f;
     private long lastHitTime = 0;
     private int hitCount = 0;
-    
-    private final BooleanSetting invincible = new BooleanSetting("Invincible", false);
-    private final BooleanSetting criticalHits = new BooleanSetting("Critical Hits", true);
-    private final BooleanSetting useTotem = new BooleanSetting("Use Totem", false);
 
     public FakePlayer() {
         super("Fake Player", "Spawns a fake player for making configs (Only works in single player)", Category.MISC);
@@ -49,21 +48,20 @@ public class FakePlayer extends Module {
     private void onWorldChange(WorldChangeEvent event) {
         despawnFakePlayer();
     }
-    
 
 
     @EventHandler
     private void onAttack(EventAttack event) {
         if (fakePlayer == null || isNull()) return;
-        
+
         if (event.getTarget() == fakePlayer) {
             handleFakePlayerHit(isPlayerCriticalHit());
         }
     }
-    
+
     private boolean isPlayerCriticalHit() {
         if (mc.player == null) return false;
-        
+
         boolean isFalling = mc.player.getVelocity().y < -0.08F;
         boolean isSneaking = mc.player.isSneaking();
         boolean isOnGround = mc.player.isOnGround();
@@ -71,7 +69,7 @@ public class FakePlayer extends Module {
         boolean isRiding = mc.player.getVehicle() != null;
         boolean isInWater = mc.player.isTouchingWater();
         boolean isInLava = mc.player.isInLava();
-        
+
         return isFalling && !isSneaking && !isOnGround && !isUsingItem && !isRiding && !isInWater && !isInLava;
     }
 
@@ -86,7 +84,7 @@ public class FakePlayer extends Module {
                     shouldPopTotem = true;
                 }
             } else {
-                float baseDamage = 2.0f + (float)(Math.random() * 4.0f);
+                float baseDamage = 2.0f + (float) (Math.random() * 4.0f);
                 float damage = isCritical ? baseDamage * 1.5f : baseDamage;
                 if (fakePlayerHealth - damage <= 0) {
                     shouldPopTotem = true;
@@ -98,7 +96,7 @@ public class FakePlayer extends Module {
             popTotem();
         }
         if (!invincible.getValue() && !shouldPopTotem) {
-            float baseDamage = 2.0f + (float)(Math.random() * 4.0f);
+            float baseDamage = 2.0f + (float) (Math.random() * 4.0f);
             float damage = isCritical ? baseDamage * 1.5f : baseDamage;
             fakePlayerHealth = Math.max(0, fakePlayerHealth - damage);
         }
@@ -116,10 +114,10 @@ public class FakePlayer extends Module {
             double offsetY = Math.random() * 1.8;
             double offsetZ = (Math.random() - 0.5) * 0.5;
             mc.world.addParticle(ParticleTypes.DAMAGE_INDICATOR,
-                fakePlayer.getX() + offsetX,
-                fakePlayer.getY() + offsetY,
-                fakePlayer.getZ() + offsetZ,
-                0, 0, 0);
+                    fakePlayer.getX() + offsetX,
+                    fakePlayer.getY() + offsetY,
+                    fakePlayer.getZ() + offsetZ,
+                    0, 0, 0);
         }
         if (isCritical && criticalHits.getValue()) {
             for (int i = 0; i < 5; i++) {
@@ -127,20 +125,20 @@ public class FakePlayer extends Module {
                 double offsetY = Math.random() * 1.8;
                 double offsetZ = (Math.random() - 0.5) * 0.8;
                 mc.world.addParticle(ParticleTypes.CRIT,
-                    fakePlayer.getX() + offsetX,
-                    fakePlayer.getY() + offsetY,
-                    fakePlayer.getZ() + offsetZ,
-                    0, 0, 0);
+                        fakePlayer.getX() + offsetX,
+                        fakePlayer.getY() + offsetY,
+                        fakePlayer.getZ() + offsetZ,
+                        0, 0, 0);
             }
         }
         if (isCritical && criticalHits.getValue()) {
-            mc.world.playSound(mc.player, fakePlayer.getBlockPos(), 
-                SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, fakePlayer.getSoundCategory(), 
-                1.0f, 1.0f);
+            mc.world.playSound(mc.player, fakePlayer.getBlockPos(),
+                    SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, fakePlayer.getSoundCategory(),
+                    1.0f, 1.0f);
         } else {
-            mc.world.playSound(mc.player, fakePlayer.getBlockPos(), 
-                SoundEvents.ENTITY_PLAYER_HURT, fakePlayer.getSoundCategory(), 
-                1.0f, 1.0f);
+            mc.world.playSound(mc.player, fakePlayer.getBlockPos(),
+                    SoundEvents.ENTITY_PLAYER_HURT, fakePlayer.getSoundCategory(),
+                    1.0f, 1.0f);
         }
         fakePlayer.hurtTime = 10;
     }
@@ -165,18 +163,18 @@ public class FakePlayer extends Module {
         if (fakePlayer == null || mc.world == null) return;
         fakePlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
         fakePlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 800, 1));
-        mc.world.playSound(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ(), 
-                          SoundEvents.ITEM_TOTEM_USE, fakePlayer.getSoundCategory(), 
-                          1.0f, 1.0f, false);
+        mc.world.playSound(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ(),
+                SoundEvents.ITEM_TOTEM_USE, fakePlayer.getSoundCategory(),
+                1.0f, 1.0f, false);
         for (int i = 0; i < 30; i++) {
             double offsetX = (mc.world.random.nextDouble() - 0.5) * 2.0;
             double offsetY = mc.world.random.nextDouble() * 2.0;
             double offsetZ = (mc.world.random.nextDouble() - 0.5) * 2.0;
             mc.world.addParticle(ParticleTypes.TOTEM_OF_UNDYING,
-                               fakePlayer.getX() + offsetX,
-                               fakePlayer.getY() + offsetY,
-                               fakePlayer.getZ() + offsetZ,
-                               0, 0.1, 0);
+                    fakePlayer.getX() + offsetX,
+                    fakePlayer.getY() + offsetY,
+                    fakePlayer.getZ() + offsetZ,
+                    0, 0.1, 0);
         }
         fakePlayer.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.TOTEM_OF_UNDYING));
         new Thread(() -> {
@@ -212,7 +210,6 @@ public class FakePlayer extends Module {
         }
 
 
-        
         mc.world.addEntity(other);
 
         fakePlayer = other;

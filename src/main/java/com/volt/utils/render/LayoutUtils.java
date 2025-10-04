@@ -221,12 +221,12 @@ public final class LayoutUtils {
     }
 
     public static class FlexItem {
-        private int x, y, width, height;
         private final int preferredWidth;
         private final int preferredHeight;
+        private final Runnable renderer;
+        private int x, y, width, height;
         private int flexGrow = 0;
         private int flexShrink = 1;
-        private final Runnable renderer;
 
         public FlexItem(int preferredWidth, int preferredHeight, Runnable renderer) {
             this.preferredWidth = preferredWidth;
@@ -346,11 +346,11 @@ public final class LayoutUtils {
     }
 
     public static class GridItem {
-        private int x, y, width, height;
         private final int column;
         private final int row;
-        private int columnSpan = 1, rowSpan = 1;
         private final Runnable renderer;
+        private int x, y, width, height;
+        private int columnSpan = 1, rowSpan = 1;
 
         public GridItem(int column, int row, Runnable renderer) {
             this.column = column;
@@ -459,60 +459,32 @@ public final class LayoutUtils {
         public enum Vertical {TOP, CENTER, BOTTOM}
     }
 
-    public static class Position {
-        public final int x, y;
-
-        public Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
+    public record Position(int x, int y) {
     }
 
-    public static class Size {
-        public final int width, height;
-
-        public Size(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
+    public record Size(int width, int height) {
     }
 
-    public static class Padding {
-        public final int top, right, bottom, left;
+    public record Padding(int top, int right, int bottom, int left) {
+            public Padding(int all) {
+                this(all, all, all, all);
+            }
 
-        public Padding(int all) {
-            this(all, all, all, all);
-        }
+            public Padding(int vertical, int horizontal) {
+                this(vertical, horizontal, vertical, horizontal);
+            }
 
-        public Padding(int vertical, int horizontal) {
-            this(vertical, horizontal, vertical, horizontal);
-        }
-
-        public Padding(int top, int right, int bottom, int left) {
-            this.top = top;
-            this.right = right;
-            this.bottom = bottom;
-            this.left = left;
-        }
     }
 
-    public static class Margin {
-        public final int top, right, bottom, left;
+    public record Margin(int top, int right, int bottom, int left) {
+            public Margin(int all) {
+                this(all, all, all, all);
+            }
 
-        public Margin(int all) {
-            this(all, all, all, all);
-        }
+            public Margin(int vertical, int horizontal) {
+                this(vertical, horizontal, vertical, horizontal);
+            }
 
-        public Margin(int vertical, int horizontal) {
-            this(vertical, horizontal, vertical, horizontal);
-        }
-
-        public Margin(int top, int right, int bottom, int left) {
-            this.top = top;
-            this.right = right;
-            this.bottom = bottom;
-            this.left = left;
-        }
     }
 
     public static class Responsive {

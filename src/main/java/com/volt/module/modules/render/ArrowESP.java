@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
-import java.awt.Color;
+import java.awt.*;
 
 public final class ArrowESP extends Module {
     private static final Identifier ARROW_TEXTURE = Identifier.of("volt", "imgs/triangle.png");

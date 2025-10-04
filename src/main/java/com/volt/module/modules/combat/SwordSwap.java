@@ -1,12 +1,11 @@
 package com.volt.module.modules.combat;
 
 import com.volt.event.impl.player.TickEvent;
-import meteordevelopment.orbit.EventHandler;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
-
+import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.MaceItem;

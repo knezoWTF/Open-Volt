@@ -13,7 +13,7 @@ public class Notification {
     private long duration;
     private float animationProgress;
     private boolean isRemoving;
-    
+
     public Notification(String title, String message, NotificationType type, long duration) {
         this.title = title;
         this.message = message;
@@ -23,16 +23,16 @@ public class Notification {
         this.animationProgress = 0f;
         this.isRemoving = false;
     }
-    
+
     public boolean isExpired() {
         return System.currentTimeMillis() - creationTime > duration;
     }
-    
+
     public float getLifetimeProgress() {
         long elapsed = System.currentTimeMillis() - creationTime;
         return Math.min(1f, (float) elapsed / duration);
     }
-    
+
     public enum NotificationType {
         MODULE_ENABLED,
         MODULE_DISABLED

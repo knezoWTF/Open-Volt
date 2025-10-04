@@ -62,6 +62,17 @@ public final class TrapSave extends Module {
     private final TimerUtil scanTimer = new TimerUtil();
     private final TimerUtil warningTimer = new TimerUtil();
     private final List<TrapCluster> detectedTraps = new ArrayList<>();
+    private boolean trapDetected;
+    private String detectedTrapType = "";
+    private int trapCount;
+    private BlockPos lastScanPosition;
+    private int lastScanRadius;
+    private int lastScanHeight;
+    public TrapSave() {
+        super("Trap Save", "Detects trap blocks and armor stands around the player", -1, Category.PLAYER);
+        this.addSettings(scanRadius, scanHeight, maxExpansion, soundAlert, showWarning, outlineWidth,
+                tntColor, redstoneColor, pistonColor, leverColor, armorStandColor);
+    }
 
     @EventHandler
     private void onEventRender3D(EventRender3D event) {
@@ -70,20 +81,12 @@ public final class TrapSave extends Module {
         renderTrapOutlines(event.getMatrixStack(), mc.gameRenderer.getCamera().getPos());
     }
 
-    private boolean trapDetected;
-    private String detectedTrapType = "";
-    private int trapCount;
-
     @EventHandler
     private void onEventRender2D(EventRender2D event) {
         if (isValidGameState() || !showWarning.getValue() || !trapDetected) return;
 
         renderWarningOverlay(event);
     }
-
-    private BlockPos lastScanPosition;
-    private int lastScanRadius;
-    private int lastScanHeight;
 
     @EventHandler
     private void onTickEvent(TickEvent event) {
@@ -97,12 +100,6 @@ public final class TrapSave extends Module {
         if (trapDetected && warningTimer.hasElapsedTime(WARNING_DURATION_MS)) {
             resetTrapDetection();
         }
-    }
-
-    public TrapSave() {
-        super("Trap Save", "Detects trap blocks and armor stands around the player", -1, Category.PLAYER);
-        this.addSettings(scanRadius, scanHeight, maxExpansion, soundAlert, showWarning, outlineWidth,
-                tntColor, redstoneColor, pistonColor, leverColor, armorStandColor);
     }
 
     private boolean isValidGameState() {

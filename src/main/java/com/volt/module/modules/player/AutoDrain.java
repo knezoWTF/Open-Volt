@@ -7,10 +7,9 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.math.TimerUtil;
-
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 
 // TO:DO possibly make a better if in cobweb check but rn AABB is the best i can think of
- 
+
 
 public final class AutoDrain extends Module {
 
@@ -72,7 +71,6 @@ public final class AutoDrain extends Module {
         return fluidState != null && fluidState.getFluid() == Fluids.WATER && fluidState.isStill();
     }
 
-    
 
     private int findEmptyBucketInHotbar() {
         for (int hotbarIndex = 0; hotbarIndex < 9; hotbarIndex++) {

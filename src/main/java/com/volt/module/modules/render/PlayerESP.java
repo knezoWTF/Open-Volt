@@ -12,7 +12,7 @@ import com.volt.utils.font.util.RendererUtils;
 import com.volt.utils.friend.FriendManager;
 import com.volt.utils.render.RenderUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;

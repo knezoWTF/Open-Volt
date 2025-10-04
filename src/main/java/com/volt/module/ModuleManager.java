@@ -10,7 +10,6 @@ import com.volt.module.modules.movement.AutoHeadHitter;
 import com.volt.module.modules.movement.KeepSprint;
 import com.volt.module.modules.movement.Sprint;
 import com.volt.module.modules.player.*;
-import com.volt.module.modules.player.AutoMLG;
 import com.volt.module.modules.render.*;
 import lombok.Getter;
 
@@ -69,7 +68,7 @@ public final class ModuleManager {
         add(
                 new ContainerSlots(), new FullBright(), new HUD(), new PlayerESP(), new TargetHUD(),
                 new SwingSpeed(), new OreESP(), new Trajectory(), new FpsCounter(),
-                new SkeletonESP(), new EntityESP(), new ShaderESP(), new Trail(), 
+                new SkeletonESP(), new EntityESP(), new ShaderESP(), new Trail(),
                 new JumpCircles(), new HitOrbs(), new HitParticles(), new CircleESP(),
                 new Breadcrumbs(), new Notifications(), new ArrowESP());
 

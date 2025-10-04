@@ -5,11 +5,11 @@ import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
+import com.volt.module.modules.misc.Teams;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.module.modules.misc.Teams;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -51,13 +51,13 @@ public final class AutoMace extends Module {
     @EventHandler
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
-        
+
         if (switchDelayMin.getValueInt() >= switchDelayMax.getValueInt()) {
-        switchDelayMax.setValue(switchDelayMin.getValueInt() + 1);
-    }
+            switchDelayMax.setValue(switchDelayMin.getValueInt() + 1);
+        }
         if (attackDelayMin.getValue() >= attackDelayMax.getValue()) {
-        attackDelayMax.setValue(attackDelayMin.getValue() + 1);
-    }
+            attackDelayMax.setValue(attackDelayMin.getValue() + 1);
+        }
         updateFallTracking();
 
         currentTarget = mc.targetedEntity;
@@ -158,7 +158,7 @@ public final class AutoMace extends Module {
 
     private void attackTarget() {
         if (currentTarget == null) return;
-    ((MinecraftClientAccessor) mc).invokeDoAttack();
+        ((MinecraftClientAccessor) mc).invokeDoAttack();
     }
 
     private void handleLanding() {

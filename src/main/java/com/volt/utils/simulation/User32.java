@@ -5,9 +5,8 @@ import com.sun.jna.Native;
 
 public interface User32 extends Library {
     User32 INSTANCE = Native.load("user32", User32.class);
+    int MOUSEEVENTF_LEFTDOWN = 0x0002;
+    int MOUSEEVENTF_LEFTUP = 0x0004;
 
     void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
-
-    int MOUSEEVENTF_LEFTDOWN = 0x0002;
-    int MOUSEEVENTF_LEFTUP   = 0x0004;
 }

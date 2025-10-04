@@ -15,6 +15,7 @@ public final class Velocity extends Module {
     public static final BooleanSetting ignoreWhenBackwards = new BooleanSetting("Ignore S press", true);
     public static final BooleanSetting ignoreOnFire = new BooleanSetting("Ignore on fire", true);
     private boolean jumped = false;
+
     public Velocity() {
         super("Velocity", "Automatically jump resets to reduce your velocity", -1, Category.COMBAT);
         this.addSettings(chance, ignoreWhenBackwards, ignoreOnFire);

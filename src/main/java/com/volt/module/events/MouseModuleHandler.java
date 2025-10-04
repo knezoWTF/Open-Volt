@@ -7,7 +7,7 @@ import meteordevelopment.orbit.EventHandler;
 import org.lwjgl.glfw.GLFW;
 
 public class MouseModuleHandler {
-    
+
     @EventHandler
     public void onMouseClick(MouseClickEvent event) {
         if (event.action() == GLFW.GLFW_PRESS) {

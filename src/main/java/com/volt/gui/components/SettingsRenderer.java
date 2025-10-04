@@ -1,16 +1,16 @@
 package com.volt.gui.components;
 
+import com.volt.gui.events.GuiEventHandler;
 import com.volt.module.Module;
 import com.volt.module.setting.*;
 import com.volt.utils.font.fonts.FontRenderer;
-import com.volt.gui.events.GuiEventHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.MinecraftClient;
 
-import java.awt.Color;
-import java.util.Map;
+import java.awt.*;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsRenderer {
     private static final int SETTING_HEIGHT = 28;
@@ -23,16 +23,16 @@ public class SettingsRenderer {
 
         MatrixStack matrices = context.getMatrices();
 
-    int settingsHeight = module.getSettings().size() * SETTING_HEIGHT;
-    float effectiveAnimation = animation < 0.22f ? 0f : animation;
-    int animatedHeight = (int) (settingsHeight * effectiveAnimation);
+        int settingsHeight = module.getSettings().size() * SETTING_HEIGHT;
+        float effectiveAnimation = animation < 0.22f ? 0f : animation;
+        int animatedHeight = (int) (settingsHeight * effectiveAnimation);
 
-    if (animatedHeight <= 0) return settingsHeight;
+        if (animatedHeight <= 0) return settingsHeight;
 
-    int baseR = (int) MathHelperLerp(15, 28, effectiveAnimation);
-    int baseG = (int) MathHelperLerp(15, 28, effectiveAnimation);
-    int baseB = (int) MathHelperLerp(25, 34, effectiveAnimation);
-    context.fill(x + 18, moduleY, x + width - 18, moduleY + animatedHeight, new Color(baseR, baseG, baseB, 200).getRGB());
+        int baseR = (int) MathHelperLerp(15, 28, effectiveAnimation);
+        int baseG = (int) MathHelperLerp(15, 28, effectiveAnimation);
+        int baseB = (int) MathHelperLerp(25, 34, effectiveAnimation);
+        context.fill(x + 18, moduleY, x + width - 18, moduleY + animatedHeight, new Color(baseR, baseG, baseB, 200).getRGB());
 
         int maxControlWidth = Math.min(100, width - 78);
 
@@ -71,7 +71,7 @@ public class SettingsRenderer {
     private static void renderModeDropdownOverlay(DrawContext context, ModeSetting modeSetting, int x, int y, int width, int height) {
         String currentMode = modeSetting.getMode();
 
-    context.fill(x, y, x + width, y + height, new Color(70, 70, 90).getRGB());
+        context.fill(x, y, x + width, y + height, new Color(70, 70, 90).getRGB());
         context.drawBorder(x, y, width, height, new Color(100, 100, 100).getRGB());
         context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, currentMode, x + 4, y + 3, new Color(255, 255, 255).getRGB());
 
@@ -156,6 +156,7 @@ public class SettingsRenderer {
 
         renderSettingControlCommon(context, setting, controlX, controlY, controlWidth, controlHeight, null, null, smallFont);
     }
+
     private static void renderSettingControlCommon(DrawContext context, Setting setting, int controlX, int controlY, int controlWidth, int controlHeight, Map<ModeSetting, Boolean> dropdownExpanded, GuiEventHandler eventHandler, FontRenderer smallFont) {
         float prev = animatedValues.getOrDefault(setting, 0f);
         switch (setting) {
@@ -165,8 +166,8 @@ public class SettingsRenderer {
                 float cur = prev + (target - prev) * 0.14f;
                 animatedValues.put(setting, cur);
 
-                Color borderColor = mixColor(new Color(100,100,100), new Color(124,77,255), cur);
-                Color fillColor = mixColor(new Color(40,40,40), new Color(124,77,255,200), cur);
+                Color borderColor = mixColor(new Color(100, 100, 100), new Color(124, 77, 255), cur);
+                Color fillColor = mixColor(new Color(40, 40, 40), new Color(124, 77, 255, 200), cur);
 
                 int checkboxSize = 12;
                 UIRenderer.renderCheckbox(context, controlX, controlY + 2, checkboxSize, enabled, borderColor, fillColor);
@@ -177,17 +178,17 @@ public class SettingsRenderer {
                 double max = numberSetting.getMax();
                 double value = numberSetting.getValue();
                 double normalized = (value - min) / (max - min);
-                float cur = prev + ((float)normalized - prev) * 0.12f;
+                float cur = prev + ((float) normalized - prev) * 0.12f;
                 animatedValues.put(setting, cur);
 
                 int sliderHeight = 8;
                 int sliderY = controlY + (controlHeight - sliderHeight) / 2;
-        controlWidth = (int) (((double) controlWidth) * .75);
-        UIRenderer.renderSlider(context, controlX, sliderY, controlWidth, sliderHeight, cur,
-            new Color(48, 48, 48), new Color(124, 77, 255));
+                controlWidth = (int) (((double) controlWidth) * .75);
+                UIRenderer.renderSlider(context, controlX, sliderY, controlWidth, sliderHeight, cur,
+                        new Color(48, 48, 48), new Color(124, 77, 255));
 
                 boolean isEditing = eventHandler != null && eventHandler.getEditingNumberSetting() == numberSetting;
-                
+
                 if (isEditing) {
                     String inputText = eventHandler.getNumberInputText();
                     int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(inputText + "|");
@@ -195,21 +196,21 @@ public class SettingsRenderer {
                     int inputY = controlY + 1;
                     int inputWidth = Math.max(30, textWidth + 4);
                     int inputHeight = controlHeight - 2;
-                    
-            context.fill(inputX - 2, inputY, inputX + inputWidth, inputY + inputHeight, 
-                new Color(28, 28, 32, 220).getRGB());
-            context.drawBorder(inputX - 2, inputY, inputWidth, inputHeight, 
-                new Color(124, 77, 255).getRGB());
-                    
+
+                    context.fill(inputX - 2, inputY, inputX + inputWidth, inputY + inputHeight,
+                            new Color(28, 28, 32, 220).getRGB());
+                    context.drawBorder(inputX - 2, inputY, inputWidth, inputHeight,
+                            new Color(124, 77, 255).getRGB());
+
                     String displayText = inputText + "|";
-            smallFont.drawString(context.getMatrices(), displayText, inputX, controlY + 2, new Color(255, 255, 255));
+                    smallFont.drawString(context.getMatrices(), displayText, inputX, controlY + 2, new Color(255, 255, 255));
                 } else {
                     String valueText = String.valueOf(value);
                     if (valueText.endsWith(".0")) {
                         valueText = valueText.substring(0, valueText.length() - 2);
                     }
-            context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, valueText,
-                controlX + controlWidth + 5, controlY + 2, new Color(170, 170, 170).getRGB());
+                    context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, valueText,
+                            controlX + controlWidth + 5, controlY + 2, new Color(170, 170, 170).getRGB());
                 }
             }
 
@@ -217,13 +218,13 @@ public class SettingsRenderer {
                 String currentMode = modeSetting.getMode();
                 String displayText = currentMode.length() > 8 ? currentMode.substring(0, 8) + "..." : currentMode;
 
-        context.fill(controlX, controlY, controlX + controlWidth, controlY + controlHeight,
-            new Color(64, 64, 72).getRGB());
-        context.drawBorder(controlX, controlY, controlWidth, controlHeight,
-            new Color(96, 96, 96).getRGB());
+                context.fill(controlX, controlY, controlX + controlWidth, controlY + controlHeight,
+                        new Color(64, 64, 72).getRGB());
+                context.drawBorder(controlX, controlY, controlWidth, controlHeight,
+                        new Color(96, 96, 96).getRGB());
 
-        context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, displayText,
-            controlX + 4, controlY + 3, new Color(255, 255, 255).getRGB());
+                context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, displayText,
+                        controlX + 4, controlY + 3, new Color(255, 255, 255).getRGB());
 
                 int arrowX = controlX + controlWidth - 12;
                 int arrowY = controlY + controlHeight / 2;

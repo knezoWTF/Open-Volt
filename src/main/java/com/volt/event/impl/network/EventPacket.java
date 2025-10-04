@@ -10,8 +10,8 @@ import net.minecraft.network.packet.Packet;
 @Getter
 @Setter
 public class EventPacket extends CancellableEvent {
-    private Packet packet;
     private final TransferOrder order;
+    private Packet packet;
 
     public EventPacket(Packet packet, TransferOrder order) {
         this.packet = packet;

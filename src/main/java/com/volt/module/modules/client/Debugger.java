@@ -11,6 +11,7 @@ public class Debugger extends Module {
     public Debugger() {
         super("Debugger", "Debugs inv packets (dev purposes)", -1, Category.CLIENT);
     }
+
     @EventHandler
     public void onPacketSend(EventPacket e) {
         if (isNull()) return;

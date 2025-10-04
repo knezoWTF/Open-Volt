@@ -8,7 +8,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
@@ -119,7 +118,7 @@ public final class KeyAnchor extends Module {
         if (isValidAnchorPosition(placementPos) && !hasPlacedThisCycle) {
             if (swapToItem(Items.RESPAWN_ANCHOR)) {
                 hasPlacedThisCycle = true;
-                    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+                ((MinecraftClientAccessor) mc).invokeDoItemUse();
 
             }
         }

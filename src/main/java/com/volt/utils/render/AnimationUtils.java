@@ -56,12 +56,12 @@ public final class AnimationUtils {
     }
 
     public static class Animation {
+        private final long duration;
+        private final EasingFunction easing;
         private float startValue;
         private float targetValue;
         private float currentValue;
         private long startTime;
-        private final long duration;
-        private final EasingFunction easing;
         private boolean completed;
         private Runnable onComplete;
 
@@ -258,23 +258,10 @@ public final class AnimationUtils {
         }
     }
 
-    public static class SequenceStep {
-        public final float startValue;
-        public final float targetValue;
-        public final long duration;
-        public final long delay;
-        public final EasingFunction easing;
-
-        public SequenceStep(float startValue, float targetValue, long duration, long delay, EasingFunction easing) {
-            this.startValue = startValue;
-            this.targetValue = targetValue;
-            this.duration = duration;
-            this.delay = delay;
-            this.easing = easing;
-        }
+    public record SequenceStep(float startValue, float targetValue, long duration, long delay, EasingFunction easing) {
 
         public SequenceStep(float startValue, float targetValue, long duration) {
-            this(startValue, targetValue, duration, 0, Easing.EASE_OUT_CUBIC);
+                this(startValue, targetValue, duration, 0, Easing.EASE_OUT_CUBIC);
+            }
         }
-    }
 } 

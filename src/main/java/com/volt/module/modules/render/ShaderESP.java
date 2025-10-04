@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.volt.event.impl.render.EventRender3D;
 import com.volt.module.Category;
 import com.volt.module.Module;
-import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.BooleanSetting;
+import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.ModeSetting;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.render.OutlineVertexConsumerProvider;
@@ -15,7 +15,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import java.awt.Color;
+
+import java.awt.*;
 
 public final class ShaderESP extends Module {
 
@@ -56,7 +57,6 @@ public final class ShaderESP extends Module {
         return true;
     }
 
-    
 
     private void renderEntityWithProvider(Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider, int light) {
         Vec3d cam = mc.gameRenderer.getCamera().getPos();

@@ -13,11 +13,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-
-import java.awt.Color;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.awt.*;
+
 public class ESP2D extends Module {
 
     //TODO: Fix the esp having the holy grail of microstutters :Sob: (walper if ur reading this im sorry)
@@ -27,13 +28,13 @@ public class ESP2D extends Module {
     private final BooleanSetting showSelf = new BooleanSetting("Show Self", false);
     private final BooleanSetting teamCheck = new BooleanSetting("Team Check", false);
     private final NumberSetting range = new NumberSetting("Range", 10, 250, 120, 5);
-        private final BooleanSetting healthBar = new BooleanSetting("Health Bar", true);
-        private final NumberSetting healthBarWidth = new NumberSetting("Health Width", 1.0, 8.0, 2.0, 1.0);
+    private final BooleanSetting healthBar = new BooleanSetting("Health Bar", true);
+    private final NumberSetting healthBarWidth = new NumberSetting("Health Width", 1.0, 8.0, 2.0, 1.0);
 
-        public ESP2D() {
-            super("2D ESP", "Draws 2D boxes around players", -1, Category.RENDER);
-            addSettings(lineWidth, color, showSelf, teamCheck, range, healthBar, healthBarWidth);
-        }
+    public ESP2D() {
+        super("2D ESP", "Draws 2D boxes around players", -1, Category.RENDER);
+        addSettings(lineWidth, color, showSelf, teamCheck, range, healthBar, healthBarWidth);
+    }
 
     @EventHandler
     private void onRender2D(EventRender2D event) {
@@ -42,7 +43,7 @@ public class ESP2D extends Module {
         DrawContext context = event.getContext();
         final int fbWidth = mc.getWindow().getFramebufferWidth();
         final int fbHeight = mc.getWindow().getFramebufferHeight();
-        final int[] viewport = new int[] { 0, 0, fbWidth, fbHeight };
+        final int[] viewport = new int[]{0, 0, fbWidth, fbHeight};
         final int displayHeight = mc.getWindow().getHeight();
         final double scale = mc.getWindow().getScaleFactor();
 
@@ -100,9 +101,9 @@ public class ESP2D extends Module {
     }
 
     private int[] projectBoxTo2D(Box box, int[] viewport, int displayHeight, double scaleFactor, Matrix4f combined, Vec3d cameraPos) {
-        double[] xs = { box.minX, box.minX, box.minX, box.minX, box.maxX, box.maxX, box.maxX, box.maxX };
-        double[] ys = { box.minY, box.minY, box.maxY, box.maxY, box.minY, box.minY, box.maxY, box.maxY };
-        double[] zs = { box.minZ, box.maxZ, box.minZ, box.maxZ, box.minZ, box.maxZ, box.minZ, box.maxZ };
+        double[] xs = {box.minX, box.minX, box.minX, box.minX, box.maxX, box.maxX, box.maxX, box.maxX};
+        double[] ys = {box.minY, box.minY, box.maxY, box.maxY, box.minY, box.minY, box.maxY, box.maxY};
+        double[] zs = {box.minZ, box.maxZ, box.minZ, box.maxZ, box.minZ, box.maxZ, box.minZ, box.maxZ};
 
         double minX = Double.POSITIVE_INFINITY;
         double minY = Double.POSITIVE_INFINITY;
@@ -132,7 +133,7 @@ public class ESP2D extends Module {
         int y2 = (int) Math.ceil(maxY);
         if (x2 - x1 < 2 || y2 - y1 < 2) return null;
 
-        return new int[] { x1, y1, x2, y2 };
+        return new int[]{x1, y1, x2, y2};
     }
 
     private boolean projectWorldToScreen(double worldX, double worldY, double worldZ,

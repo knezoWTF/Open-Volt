@@ -8,12 +8,7 @@ import com.volt.module.Module;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.NumberSetting;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,21 +17,13 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class HitParticles extends Module {
-
-    private static final class Particle {
-        Vec3d pos;
-        Vec3d vel;
-        float size;
-        long spawn;
-        Particle(Vec3d pos, Vec3d vel, float size, long spawn) { this.pos = pos; this.vel = vel; this.size = size; this.spawn = spawn; }
-    }
 
     private final NumberSetting perHit = new NumberSetting("Particles/Hit", 5, 200, 40, 1);
     private final NumberSetting maxLifetime = new NumberSetting("Lifetime (s)", 0.2, 4.0, 1.6, 0.1);
@@ -47,12 +34,30 @@ public final class HitParticles extends Module {
     private final NumberSetting sizeMin = new NumberSetting("Size Min", 0.02, 0.4, 0.06, 0.01);
     private final NumberSetting sizeMax = new NumberSetting("Size Max", 0.02, 0.8, 0.16, 0.01);
     private final ColorSetting color = new ColorSetting("Color", new Color(220, 240, 255, 230));
-
     private final Deque<Particle> particles = new ArrayDeque<>();
 
     public HitParticles() {
         super("Hit Particles", "Spawns particles on hit", -1, Category.RENDER);
         addSettings(perHit, maxLifetime, gravity, restitution, friction, baseSpeed, sizeMin, sizeMax, color);
+    }
+
+    private static void drawDisc(MatrixStack matrices, float radius, float r, float g, float b, float a) {
+        Matrix4f m = matrices.peek().getPositionMatrix();
+        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+        float edgeA = a * 0.05f;
+        int segs = 24;
+        for (int i = 0; i < segs; i++) {
+            double a0 = (i / (double) segs) * Math.PI * 2.0;
+            double a1 = ((i + 1) / (double) segs) * Math.PI * 2.0;
+            float x0 = (float) (Math.cos(a0) * radius);
+            float y0 = (float) (Math.sin(a0) * radius);
+            float x1 = (float) (Math.cos(a1) * radius);
+            float y1 = (float) (Math.sin(a1) * radius);
+            buf.vertex(m, 0, 0, 0).color(r, g, b, a);
+            buf.vertex(m, x0, y0, 0).color(r, g, b, edgeA);
+            buf.vertex(m, x1, y1, 0).color(r, g, b, edgeA);
+        }
+        BufferRenderer.drawWithGlobalProgram(buf.end());
     }
 
     @EventHandler
@@ -105,7 +110,10 @@ public final class HitParticles extends Module {
         Iterator<Particle> it = particles.iterator();
         while (it.hasNext()) {
             Particle p = it.next();
-            if (now - p.spawn > ttl) { it.remove(); continue; }
+            if (now - p.spawn > ttl) {
+                it.remove();
+                continue;
+            }
 
             p.vel = p.vel.add(0, -g * dt, 0);
 
@@ -136,23 +144,18 @@ public final class HitParticles extends Module {
         RenderSystem.enableDepthTest();
     }
 
-    private static void drawDisc(MatrixStack matrices, float radius, float r, float g, float b, float a) {
-        Matrix4f m = matrices.peek().getPositionMatrix();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
-        float edgeA = a * 0.05f;
-        int segs = 24;
-        for (int i = 0; i < segs; i++) {
-            double a0 = (i / (double) segs) * Math.PI * 2.0;
-            double a1 = ((i + 1) / (double) segs) * Math.PI * 2.0;
-            float x0 = (float) (Math.cos(a0) * radius);
-            float y0 = (float) (Math.sin(a0) * radius);
-            float x1 = (float) (Math.cos(a1) * radius);
-            float y1 = (float) (Math.sin(a1) * radius);
-            buf.vertex(m, 0, 0, 0).color(r, g, b, a);
-            buf.vertex(m, x0, y0, 0).color(r, g, b, edgeA);
-            buf.vertex(m, x1, y1, 0).color(r, g, b, edgeA);
+    private static final class Particle {
+        Vec3d pos;
+        Vec3d vel;
+        float size;
+        long spawn;
+
+        Particle(Vec3d pos, Vec3d vel, float size, long spawn) {
+            this.pos = pos;
+            this.vel = vel;
+            this.size = size;
+            this.spawn = spawn;
         }
-        BufferRenderer.drawWithGlobalProgram(buf.end());
     }
 }
 

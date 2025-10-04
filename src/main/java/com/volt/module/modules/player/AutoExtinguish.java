@@ -10,7 +10,6 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.InventoryUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
 

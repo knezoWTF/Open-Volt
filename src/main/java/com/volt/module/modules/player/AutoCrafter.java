@@ -361,9 +361,9 @@ public final class AutoCrafter extends Module {
     }
 
     private record Recipe(Item result, Item material1, int count1, Item material2, int count2, int[] pattern) {
-            Recipe(Item result, Item material1, int count1, int[] pattern) {
-                this(result, material1, count1, null, 0, pattern);
-            }
+        Recipe(Item result, Item material1, int count1, int[] pattern) {
+            this(result, material1, count1, null, 0, pattern);
+        }
 
     }
 } 

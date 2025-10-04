@@ -10,7 +10,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -63,7 +62,7 @@ public final class ThrowPot extends Module {
         super("Throw Pot", "Throws instant health potions based on health levels", -1, Category.COMBAT);
         this.addSettings(throwKey, throwDelay, healthThreshold, multiThrow, lowHealthThreshold, lowHealthPots,
                 criticalHealthThreshold, criticalHealthPots, potDelay, autoSwitch, randomize,
-                lookDown, rotateBack,  rotationSpeed);
+                lookDown, rotateBack, rotationSpeed);
         this.getSettings().removeIf(setting -> setting instanceof KeybindSetting && !setting.equals(throwKey));
     }
 
@@ -222,7 +221,7 @@ public final class ThrowPot extends Module {
         }
 
         mc.player.getInventory().selectedSlot = slot;
-    ((MinecraftClientAccessor) mc).invokeDoItemUse();
+        ((MinecraftClientAccessor) mc).invokeDoItemUse();
     }
 
     private void finishThrow() {

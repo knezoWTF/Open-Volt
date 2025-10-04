@@ -2,14 +2,15 @@ package com.volt.gui.components;
 
 
 import net.minecraft.client.gui.DrawContext;
-import java.awt.Color;
+
+import java.awt.*;
 
 public class UIRenderer {
-    
+
     public static void renderRoundedRect(DrawContext context, int x, int y, int width, int height, int radius, Color color) {
         context.fill(x + radius, y, x + width - radius, y + height, color.getRGB());
         context.fill(x, y + radius, x + width, y + height - radius, color.getRGB());
-        
+
         for (int i = 0; i < radius; i++) {
             for (int j = 0; j < radius; j++) {
                 double distance = Math.sqrt(i * i + j * j);
@@ -22,11 +23,11 @@ public class UIRenderer {
             }
         }
     }
-    
+
     public static void renderDropdownArrow(DrawContext context, int x, int y, boolean expanded, Color color) {
         int arrowSize = 8;
         int halfSize = arrowSize / 2;
-        
+
         if (expanded) {
             context.fill(x - halfSize, y - 2, x + halfSize, y - 1, color.getRGB());
             context.fill(x - halfSize + 1, y - 1, x + halfSize - 1, y, color.getRGB());
@@ -39,7 +40,7 @@ public class UIRenderer {
             context.fill(x + 1, y - 1, x + 2, y + 1, color.getRGB());
         }
     }
-    
+
     public static void renderSlider(DrawContext context, int x, int y, int width, int height, double normalized, Color trackColor, Color fillColor) {
         context.fill(x, y, x + width, y + height, trackColor.getRGB());
 
@@ -49,26 +50,26 @@ public class UIRenderer {
             context.fill(x, y, x + fillWidth, y + height, fillColor.getRGB());
         }
     }
-    
+
     public static void renderCheckbox(DrawContext context, int x, int y, int size, boolean enabled, Color borderColor, Color fillColor) {
         context.fill(x, y, x + size, y + size, fillColor.getRGB());
-        
+
         context.drawBorder(x, y, size, size, borderColor.getRGB());
-        
+
         if (enabled) {
             int checkX = x + 2;
             int checkY = y + 6;
-            
+
             for (int i = 0; i < 3; i++) {
                 context.fill(checkX + i, checkY + i, checkX + i + 1, checkY + i + 1, Color.WHITE.getRGB());
             }
-            
+
             for (int i = 0; i < 5; i++) {
                 context.fill(checkX + 2 + i, checkY + 2 - i, checkX + 3 + i, checkY + 3 - i, Color.WHITE.getRGB());
             }
         }
     }
-    
+
     public static Color getCategoryColor(com.volt.module.Category category) {
         return switch (category) {
             case COMBAT -> new Color(255, 100, 100);

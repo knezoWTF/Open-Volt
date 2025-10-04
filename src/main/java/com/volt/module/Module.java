@@ -49,9 +49,11 @@ public abstract class Module implements IMinecraft {
         setEnabled(!enabled);
     }
 
-    public void onEnable() {}
+    public void onEnable() {
+    }
 
-    public void onDisable() {}
+    public void onDisable() {
+    }
 
     public boolean isNull() {
         return mc.player == null || mc.world == null;

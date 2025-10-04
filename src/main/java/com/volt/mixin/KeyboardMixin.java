@@ -3,7 +3,6 @@ package com.volt.mixin;
 import com.volt.Volt;
 import com.volt.module.Module;
 import com.volt.utils.keybinding.KeyUtils;
-
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;

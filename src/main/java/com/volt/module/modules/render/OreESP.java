@@ -28,13 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class OreESP extends Module {
 
+    private static final int SCAN_INTERVAL_MS = 500;
     private final ModeSetting renderMode = new ModeSetting("Render Mode", "Outline", "Outline", "Filled", "Both");
     private final NumberSetting scanRadius = new NumberSetting("Scan Radius", 1, 64, 32, 1);
     private final NumberSetting scanHeight = new NumberSetting("Scan Height", 1, 32, 16, 1);
     private final NumberSetting outlineWidth = new NumberSetting("Outline Width", 0.5, 5.0, 2.0, 0.5);
     private final BooleanSetting throughWalls = new BooleanSetting("Through Walls", true);
     private final NumberSetting transparency = new NumberSetting("Transparency", 0.1, 1.0, 0.5, 0.1);
-
     private final BooleanSetting enableDiamond = new BooleanSetting("Enable Diamond", true);
     private final BooleanSetting enableEmerald = new BooleanSetting("Enable Emerald", true);
     private final BooleanSetting enableGold = new BooleanSetting("Enable Gold", true);
@@ -46,8 +46,6 @@ public final class OreESP extends Module {
     private final BooleanSetting enableNetherite = new BooleanSetting("Enable Netherite", false);
     private final BooleanSetting enableNetherGold = new BooleanSetting("Enable Nether Gold", false);
     private final BooleanSetting enableNetherQuartz = new BooleanSetting("Enable Nether Quartz", false);
-
-    private static final int SCAN_INTERVAL_MS = 500;
     private final TimerUtil scanTimer = new TimerUtil();
     private final Map<BlockPos, OreType> detectedOres = new ConcurrentHashMap<>();
     private BlockPos lastPlayerPos;

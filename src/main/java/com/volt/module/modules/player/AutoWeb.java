@@ -10,7 +10,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
 import org.lwjgl.glfw.GLFW;

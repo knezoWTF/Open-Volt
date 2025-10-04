@@ -7,8 +7,9 @@ import com.volt.module.setting.ModeSetting;
 import org.lwjgl.glfw.GLFW;
 
 public final class ClickGUIModule extends Module {
-    int prevGuiScale;
     private static final ModeSetting scale = new ModeSetting("Scale", "Small", "Small", "Medium", "Large");
+    int prevGuiScale;
+
     public ClickGUIModule() {
         super("Click Gui", "Toggles the Volt GUI", GLFW.GLFW_KEY_RIGHT_SHIFT, Category.CLIENT);
         addSettings(scale);

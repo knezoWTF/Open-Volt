@@ -4,11 +4,7 @@ import com.volt.Volt;
 import com.volt.event.impl.render.EventRender2D;
 import com.volt.module.Category;
 import com.volt.module.Module;
-import com.volt.module.setting.BooleanSetting;
-import com.volt.module.setting.ColorSetting;
-import com.volt.module.setting.ModeSetting;
-import com.volt.module.setting.NumberSetting;
-import com.volt.module.setting.StringSetting;
+import com.volt.module.setting.*;
 import com.volt.utils.font.FontManager;
 import com.volt.utils.font.fonts.FontRenderer;
 import meteordevelopment.orbit.EventHandler;
@@ -53,6 +49,12 @@ public class HUD extends Module {
         addSettings(watermark, watermarkMode, watermarkText, watermarkSimpleFontMode, watermarkScale, arrayList, arrayListScale, colorMode, customColor, fontMode, suffixMode, hideVisuals, lowercase, backBarMode, waveAnimation, waveSpeed, waveSpread, padding, opacity, info, bpsCounter, fpsCounter, scale);
     }
 
+    public static int getAstolfo(int offset) {
+        int i = (int) ((System.currentTimeMillis() / 11 + offset) % 360);
+        i = (i > 180 ? 360 - i : i) + 180;
+        return Color.HSBtoRGB(i / 360f, 0.55f, 1f);
+    }
+
     @EventHandler
     private void onEventRender2D(EventRender2D event) {
         if (mc.player == null || mc.world == null) {
@@ -73,22 +75,22 @@ public class HUD extends Module {
 
                         String totalWatermarkText = firstCharacter + Formatting.WHITE.toString() + restOfString;
 
-                         int scaledX = (int) (3 * watermarkScale.getValue());
-                         int scaledY = (int) (3 * watermarkScale.getValue());
-                         
-                         Color watermarkColor = switch (colorMode.getMode()) {
-                             case "Astolfo" -> new Color(getAstolfo(0));
-                             case "Custom" -> getCustomColor();
-                             default -> getThemeColor();
-                         };
+                        int scaledX = (int) (3 * watermarkScale.getValue());
+                        int scaledY = (int) (3 * watermarkScale.getValue());
+
+                        Color watermarkColor = switch (colorMode.getMode()) {
+                            case "Astolfo" -> new Color(getAstolfo(0));
+                            case "Custom" -> getCustomColor();
+                            default -> getThemeColor();
+                        };
 
                         if (watermarkSimpleFontMode.getMode().equals("MC")) {
                             event.getContext().getMatrices().push();
                             event.getContext().getMatrices().scale((float) watermarkScale.getValue(), (float) watermarkScale.getValue(), 1.0f);
-                            
+
                             int adjustedX = (int) (scaledX / watermarkScale.getValue());
                             int adjustedY = (int) (scaledY / watermarkScale.getValue());
-                            
+
                             event.getContext().drawText(mc.textRenderer, totalWatermarkText, adjustedX, adjustedY, watermarkColor.getRGB(), true);
                             event.getContext().getMatrices().pop();
                         } else {
@@ -98,48 +100,48 @@ public class HUD extends Module {
                     break;
 
                 case "Gamesense":
-                     String text = "§f" + watermarkText.getValue() + "§rsense §8| §f " + ("free") + "§7 (" + ("0000") + ") §8 | §f " + getIP();
+                    String text = "§f" + watermarkText.getValue() + "§rsense §8| §f " + ("free") + "§7 (" + ("0000") + ") §8 | §f " + getIP();
 
-                     int padding = (int) (2 * watermarkScale.getValue());
-                     int offsetX = (int) (4 * watermarkScale.getValue());
-                     int offsetY = (int) (4 * watermarkScale.getValue());
+                    int padding = (int) (2 * watermarkScale.getValue());
+                    int offsetX = (int) (4 * watermarkScale.getValue());
+                    int offsetY = (int) (4 * watermarkScale.getValue());
 
-                     FontRenderer gamesenseFont = getWatermarkFontRenderer("Inter");
-                     int textWidth = (int) gamesenseFont.getStringWidth(text);
-                     int textHeight = (int) gamesenseFont.getStringHeight(text);
-                     int backgroundWidth = textWidth + padding * 2;
-                     int backgroundHeight = textHeight + padding * 2;
+                    FontRenderer gamesenseFont = getWatermarkFontRenderer("Inter");
+                    int textWidth = (int) gamesenseFont.getStringWidth(text);
+                    int textHeight = (int) gamesenseFont.getStringHeight(text);
+                    int backgroundWidth = textWidth + padding * 2;
+                    int backgroundHeight = textHeight + padding * 2;
 
-                     event.getContext().fill(
-                             offsetX - padding - 1,
-                             offsetY - padding - 1,
-                             offsetX + backgroundWidth + 1,
-                             offsetY + backgroundHeight + 1,
-                             new Color(96, 96, 96).getRGB()
-                     );
+                    event.getContext().fill(
+                            offsetX - padding - 1,
+                            offsetY - padding - 1,
+                            offsetX + backgroundWidth + 1,
+                            offsetY + backgroundHeight + 1,
+                            new Color(96, 96, 96).getRGB()
+                    );
 
-                     event.getContext().fill(
-                             offsetX - padding,
-                             offsetY - padding,
-                             offsetX + backgroundWidth,
-                             offsetY + backgroundHeight,
-                             new Color(25, 25, 25).getRGB()
-                     );
+                    event.getContext().fill(
+                            offsetX - padding,
+                            offsetY - padding,
+                            offsetX + backgroundWidth,
+                            offsetY + backgroundHeight,
+                            new Color(25, 25, 25).getRGB()
+                    );
 
-                     Color gamesenseColor = switch (colorMode.getMode()) {
-                         case "Astolfo" -> new Color(getAstolfo(0));
-                         case "Custom" -> getCustomColor();
-                         default -> getThemeColor();
-                     };
-                     
-                     gamesenseFont.drawString(
-                             event.getContext().getMatrices(),
-                             text,
-                             offsetX,
-                             offsetY,
-                             gamesenseColor
-                     );
-                     break;
+                    Color gamesenseColor = switch (colorMode.getMode()) {
+                        case "Astolfo" -> new Color(getAstolfo(0));
+                        case "Custom" -> getCustomColor();
+                        default -> getThemeColor();
+                    };
+
+                    gamesenseFont.drawString(
+                            event.getContext().getMatrices(),
+                            text,
+                            offsetX,
+                            offsetY,
+                            gamesenseColor
+                    );
+                    break;
             }
         }
 
@@ -157,20 +159,20 @@ public class HUD extends Module {
                 enabledModules.sort(Comparator.comparingDouble(ri -> -getCustomFontRenderer(fontMode.getMode()).getStringWidth(getFullName(ri))));
             }
 
-             int i = padding.getValueInt();
+            int i = padding.getValueInt();
             int totalWidth = event.getWidth();
 
-             for (Module m : enabledModules) {
-                 int moduleHeight;
+            for (Module m : enabledModules) {
+                int moduleHeight;
 
-                 if (fontMode.getMode().equals("MC")) {
-                     moduleHeight = mc.textRenderer.fontHeight;
-                 } else {
-                     moduleHeight = (int) getCustomFontRenderer(fontMode.getMode()).getStringHeight(getFullName(m));
-                 }
+                if (fontMode.getMode().equals("MC")) {
+                    moduleHeight = mc.textRenderer.fontHeight;
+                } else {
+                    moduleHeight = (int) getCustomFontRenderer(fontMode.getMode()).getStringHeight(getFullName(m));
+                }
 
-                 i += moduleHeight + (int) (3 * arrayListScale.getValue());
-             }
+                i += moduleHeight + (int) (3 * arrayListScale.getValue());
+            }
 
             i = padding.getValueInt();
             double waveTime = (System.currentTimeMillis() / 1000.0) * waveSpeed.getValue();
@@ -220,8 +222,10 @@ public class HUD extends Module {
                 }
 
                 switch (backBarMode.getMode()) {
-                    case "Full" -> event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding2, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight + scaledPadding1, color);
-                    case "Rise" -> event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding1, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight, color);
+                    case "Full" ->
+                            event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding2, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight + scaledPadding1, color);
+                    case "Rise" ->
+                            event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding1, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight, color);
                 }
 
                 if (fontMode.getMode().equals("MC")) {
@@ -339,12 +343,6 @@ public class HUD extends Module {
         float brightness = Math.min(1f, Math.max(0f, (float) (hsb[2] * (0.6 + waveValue * 0.4))));
         int rgb = Color.HSBtoRGB(hsb[0], hsb[1], brightness);
         return (base.getAlpha() << 24) | (rgb & 0xFFFFFF);
-    }
-
-    public static int getAstolfo(int offset) {
-        int i = (int) ((System.currentTimeMillis() / 11 + offset) % 360);
-        i = (i > 180 ? 360 - i : i) + 180;
-        return Color.HSBtoRGB(i / 360f, 0.55f, 1f);
     }
 
     private Color getThemeColor() {

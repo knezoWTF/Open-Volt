@@ -21,31 +21,30 @@ public class FpsCounter extends Module {
         super("FPS Counter", "Displays FPS with rounded background", -1, Category.RENDER);
         addSettings(x, y, backgroundOpacity, cornerRadius);
     }
-    
+
     @EventHandler
     private void onEventRender2D(EventRender2D event) {
         if (mc.player == null || mc.world == null) {
             return;
         }
-        
+
         String fpsText = "FPS: " + MinecraftClient.getInstance().getCurrentFps();
-        
+
 
         var fontRenderer = Volt.INSTANCE.fontManager.getSize(14, FontManager.Type.Inter);
 
         int padding = 6;
-        
+
         int posX = x.getValueInt();
         int posY = y.getValueInt();
-    
-        
+
 
         fontRenderer.drawString(
-            event.getContext().getMatrices(),
-            fpsText,
-            posX + padding,
-            posY + padding,
-            Color.WHITE
+                event.getContext().getMatrices(),
+                fpsText,
+                posX + padding,
+                posY + padding,
+                Color.WHITE
         );
     }
 }

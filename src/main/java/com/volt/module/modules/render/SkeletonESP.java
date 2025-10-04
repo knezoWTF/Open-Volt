@@ -43,7 +43,7 @@ public final class SkeletonESP extends Module {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-            
+
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
             GL11.glLineWidth(2.5f);
@@ -55,7 +55,7 @@ public final class SkeletonESP extends Module {
             }
 
             GL11.glLineWidth(1.0f);
-            
+
             GL11.glDisable(GL11.GL_LINE_SMOOTH);
         } catch (Exception ignored) {
         } finally {
@@ -99,7 +99,7 @@ public final class SkeletonESP extends Module {
 
         matrices.push();
         matrices.translate(x, y, z);
-        
+
         float bodyYaw = player.prevBodyYaw + (player.bodyYaw - player.prevBodyYaw) * partialTicks;
         matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(-bodyYaw));
 

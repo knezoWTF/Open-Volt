@@ -74,6 +74,7 @@ public final class RenderUtils {
 
         BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
+
     public static void renderFilled(MatrixStack matrices, Box box, Color color) {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
@@ -133,7 +134,7 @@ public final class RenderUtils {
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
 
         BufferRenderer.drawWithGlobalProgram(buffer.end());
-}
+    }
 
     public static void renderLine(MatrixStack matrices, Vec3d start, Vec3d end, Color color) {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
@@ -148,7 +149,7 @@ public final class RenderUtils {
         buffer.vertex(matrix, (float) end.x, (float) end.y, (float) end.z).color(r, g, b, a);
 
         BufferRenderer.drawWithGlobalProgram(buffer.end());
-}
+    }
 
 
     public static void drawRoundedRect(DrawContext context, int x, int y, int width, int height, int radius, int color) {

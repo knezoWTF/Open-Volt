@@ -9,43 +9,19 @@ import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.NumberSetting;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.joml.Matrix4f;
-
 public final class Breadcrumbs extends Module {
-
-    private static final class Particle {
-        Vec3d pos;
-        Vec3d vel;
-        float size;
-        long spawn;
-        float rotation;
-        float rotationSpeed;
-        
-        Particle(Vec3d pos, Vec3d vel, float size, long spawn) {
-            this.pos = pos;
-            this.vel = vel;
-            this.size = size;
-            this.spawn = spawn;
-            this.rotation = ThreadLocalRandom.current().nextFloat() * 360f;
-            this.rotationSpeed = (ThreadLocalRandom.current().nextFloat() - 0.5f) * 2f;
-        }
-    }
 
     private final NumberSetting spawnRate = new NumberSetting("Spawn Rate", 1, 20, 5, 1);
     private final NumberSetting lifetime = new NumberSetting("Lifetime", 1.0, 10.0, 3.0, 0.1);
@@ -54,11 +30,9 @@ public final class Breadcrumbs extends Module {
     private final BooleanSetting physics = new BooleanSetting("Physics", true);
     private final NumberSetting gravity = new NumberSetting("Gravity", 0.0, 2.0, 0.5, 0.05);
     private final ColorSetting color = new ColorSetting("Color", new Color(255, 255, 255, 150));
-
     private final Deque<Particle> particles = new ArrayDeque<>();
     private Vec3d lastPos = null;
     private int tickCounter = 0;
-
     public Breadcrumbs() {
         super("Breadcrumbs", "Spawns particles when walking", -1, Category.RENDER);
         addSettings(spawnRate, lifetime, particleSize, spread, physics, gravity, color);
@@ -69,49 +43,49 @@ public final class Breadcrumbs extends Module {
         if (isNull()) return;
 
         Vec3d currentPos = mc.player.getPos();
-        
+
         if (lastPos != null) {
             double distance = currentPos.distanceTo(lastPos);
-            
+
             if (distance > 0.1) {
                 tickCounter++;
                 int rate = spawnRate.getValueInt();
-                
+
                 if (tickCounter >= (21 - rate)) {
                     spawnParticles(currentPos);
                     tickCounter = 0;
                 }
             }
         }
-        
+
         lastPos = currentPos;
-        
+
         long now = System.currentTimeMillis();
         long maxLifetime = (long) (lifetime.getValue() * 1000);
-        
+
         particles.removeIf(particle -> now - particle.spawn > maxLifetime);
     }
 
     private void spawnParticles(Vec3d pos) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int count = random.nextInt(1, 4);
-        
+
         for (int i = 0; i < count; i++) {
             float spreadValue = spread.getValueFloat();
             double offsetX = (random.nextDouble() - 0.5) * spreadValue;
             double offsetZ = (random.nextDouble() - 0.5) * spreadValue;
-            
+
             Vec3d particlePos = pos.add(offsetX, 0.1, offsetZ);
             Vec3d velocity = Vec3d.ZERO;
-            
+
             if (physics.getValue()) {
                 velocity = new Vec3d(
-                    (random.nextDouble() - 0.5) * 0.1,
-                    random.nextDouble() * 0.05,
-                    (random.nextDouble() - 0.5) * 0.1
+                        (random.nextDouble() - 0.5) * 0.1,
+                        random.nextDouble() * 0.05,
+                        (random.nextDouble() - 0.5) * 0.1
                 );
             }
-            
+
             float size = particleSize.getValueFloat() * (0.8f + random.nextFloat() * 0.4f);
             particles.add(new Particle(particlePos, velocity, size, System.currentTimeMillis()));
         }
@@ -123,7 +97,7 @@ public final class Breadcrumbs extends Module {
 
         MatrixStack matrices = e.getMatrixStack();
         Vec3d cam = mc.gameRenderer.getCamera().getPos();
-        
+
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
@@ -158,7 +132,7 @@ public final class Breadcrumbs extends Module {
 
             matrices.push();
             matrices.translate(p.pos.x - cam.x, p.pos.y - cam.y, p.pos.z - cam.z);
-            
+
             float yaw = mc.gameRenderer.getCamera().getYaw();
             float pitch = mc.gameRenderer.getCamera().getPitch();
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
@@ -190,5 +164,23 @@ public final class Breadcrumbs extends Module {
             buf.vertex(m, x1, y1, 0).color(r, g, b, edgeA);
         }
         BufferRenderer.drawWithGlobalProgram(buf.end());
+    }
+
+    private static final class Particle {
+        Vec3d pos;
+        Vec3d vel;
+        float size;
+        long spawn;
+        float rotation;
+        float rotationSpeed;
+
+        Particle(Vec3d pos, Vec3d vel, float size, long spawn) {
+            this.pos = pos;
+            this.vel = vel;
+            this.size = size;
+            this.spawn = spawn;
+            this.rotation = ThreadLocalRandom.current().nextFloat() * 360f;
+            this.rotationSpeed = (ThreadLocalRandom.current().nextFloat() - 0.5f) * 2f;
+        }
     }
 }

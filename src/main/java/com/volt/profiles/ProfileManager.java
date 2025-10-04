@@ -233,6 +233,7 @@ public final class ProfileManager {
             else if (setting instanceof NumberSetting numberSetting) numberSetting.setValue(numberSetting.getMin());
             else if (setting instanceof ModeSetting modeSetting && modeSetting.getModes() != null && !modeSetting.getModes().isEmpty())
                 modeSetting.setMode(modeSetting.getModes().getFirst());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 }

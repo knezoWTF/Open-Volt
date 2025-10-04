@@ -9,7 +9,6 @@ import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
@@ -19,7 +18,7 @@ public final class PearlCatch extends Module {
     private final KeybindSetting pearlChargeKeybind = new KeybindSetting("Pearl Charge Key", GLFW.GLFW_KEY_H, true);
     private final BooleanSetting silentMode = new BooleanSetting("Silent", true);
     private final NumberSetting windDelayMs = new NumberSetting("Wind Delay (ms)", 0, 2000, 200, 1);
-    
+
     private final TimerUtil pearlDelayTimer = new TimerUtil();
     private boolean keyPressed = false;
     private boolean pearlThrown = false;
@@ -36,7 +35,7 @@ public final class PearlCatch extends Module {
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
         if (mc.currentScreen != null) return;
-        
+
         boolean currentKeyState = KeyUtils.isKeyPressed(pearlChargeKeybind.getKeyCode());
 
         if (currentKeyState && !keyPressed) {
@@ -74,18 +73,18 @@ public final class PearlCatch extends Module {
     private void throwWindChargeSilently(int windChargeSlot) {
         originalSlot = mc.player.getInventory().selectedSlot;
         mc.player.getInventory().selectedSlot = windChargeSlot;
-        
+
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        
+
         needsSlotRestore = true;
     }
 
     private void throwWindChargeNormally(int windChargeSlot) {
         originalSlot = mc.player.getInventory().selectedSlot;
         mc.player.getInventory().selectedSlot = windChargeSlot;
-        
+
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        
+
         needsSlotRestore = true;
     }
 
@@ -103,16 +102,16 @@ public final class PearlCatch extends Module {
     private void throwPearlSilently(int pearlSlot) {
         int currentSlot = mc.player.getInventory().selectedSlot;
         mc.player.getInventory().selectedSlot = pearlSlot;
-        
+
         mc.player.swingHand(Hand.MAIN_HAND);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
-        
+
         mc.player.getInventory().selectedSlot = currentSlot;
     }
 
     private void throwPearlNormally(int pearlSlot) {
         mc.player.getInventory().selectedSlot = pearlSlot;
-        
+
         mc.player.swingHand(Hand.MAIN_HAND);
         ((MinecraftClientAccessor) mc).invokeDoItemUse();
     }

@@ -6,7 +6,6 @@ import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -43,29 +42,29 @@ public class AimAssist extends Module {
         );
     }
 
-@EventHandler
-private void onRender3D(EventRender3D event) {
-    if (isNull()) return;
+    @EventHandler
+    private void onRender3D(EventRender3D event) {
+        if (isNull()) return;
 
 
-    if (weaponsOnly.getValue() && !isHoldingWeapon()) return;
+        if (weaponsOnly.getValue() && !isHoldingWeapon()) return;
 
-    if (mc.currentScreen != null) return;
+        if (mc.currentScreen != null) return;
 
-    if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK
-        && mc.options.attackKey.isPressed()) {
-        return;
+        if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK
+                && mc.options.attackKey.isPressed()) {
+            return;
+        }
+
+        currentTarget = findBestTarget();
+        if (currentTarget != null) {
+            if (!throughWalls.getValue() && !mc.player.canSee(currentTarget)) return;
+
+            Vec3d chestPos = getChestPosition(currentTarget);
+            float[] rotation = calculateRotation(chestPos);
+            applySmoothAiming(rotation[0], rotation[1]);
+        }
     }
-
-    currentTarget = findBestTarget();
-    if (currentTarget != null) {
-        if (!throughWalls.getValue() && !mc.player.canSee(currentTarget)) return;
-
-        Vec3d chestPos = getChestPosition(currentTarget);
-        float[] rotation = calculateRotation(chestPos);
-        applySmoothAiming(rotation[0], rotation[1]);
-    }
-}
 
     private Entity findBestTarget() {
         if (isNull()) return null;
@@ -122,45 +121,45 @@ private void onRender3D(EventRender3D event) {
     }
 
 
-private void applySmoothAiming(float targetYaw, float targetPitch) {
-    long currentTime = System.currentTimeMillis();
-    
-    if (lastUpdateTime == 0) {
+    private void applySmoothAiming(float targetYaw, float targetPitch) {
+        long currentTime = System.currentTimeMillis();
+
+        if (lastUpdateTime == 0) {
+            lastUpdateTime = currentTime;
+            return;
+        }
+
+        float deltaTime = Math.min((currentTime - lastUpdateTime) / 1000.0f, 0.05f);
         lastUpdateTime = currentTime;
-        return;
+
+        if (deltaTime < 0.001f) return;
+
+        float yawDiff = MathHelper.wrapDegrees(targetYaw - mc.player.getYaw());
+        float pitchDiff = targetPitch - mc.player.getPitch();
+
+        float distance = (float) Math.hypot(yawDiff, pitchDiff);
+
+        if (distance < 0.3f) return;
+
+        float speedFactor = speed.getValueFloat() * 0.1f;
+        float smoothingFactor = smoothing.getValueFloat();
+
+        float baseInterpolation = speedFactor / smoothingFactor;
+
+        float yawStep = yawDiff * baseInterpolation * yawSpeed.getValueFloat();
+        float pitchStep = pitchDiff * baseInterpolation * pitchSpeed.getValueFloat();
+
+        float frameCorrection = deltaTime * 60.0f;
+        yawStep *= frameCorrection;
+        pitchStep *= frameCorrection;
+
+        float maxStep = speedFactor * 3.0f;
+        yawStep = MathHelper.clamp(yawStep, -maxStep, maxStep);
+        pitchStep = MathHelper.clamp(pitchStep, -maxStep, maxStep);
+
+        mc.player.setYaw(mc.player.getYaw() + yawStep);
+        mc.player.setPitch(MathHelper.clamp(mc.player.getPitch() + pitchStep, -89f, 89f));
     }
-    
-    float deltaTime = Math.min((currentTime - lastUpdateTime) / 1000.0f, 0.05f);
-    lastUpdateTime = currentTime;
-    
-    if (deltaTime < 0.001f) return;
-
-    float yawDiff = MathHelper.wrapDegrees(targetYaw - mc.player.getYaw());
-    float pitchDiff = targetPitch - mc.player.getPitch();
-
-    float distance = (float) Math.hypot(yawDiff, pitchDiff);
-    
-    if (distance < 0.3f) return;
-    
-    float speedFactor = speed.getValueFloat() * 0.1f;
-    float smoothingFactor = smoothing.getValueFloat();
-    
-    float baseInterpolation = speedFactor / smoothingFactor;
-    
-    float yawStep = yawDiff * baseInterpolation * yawSpeed.getValueFloat();
-    float pitchStep = pitchDiff * baseInterpolation * pitchSpeed.getValueFloat();
-    
-    float frameCorrection = deltaTime * 60.0f;
-    yawStep *= frameCorrection;
-    pitchStep *= frameCorrection;
-    
-    float maxStep = speedFactor * 3.0f;
-    yawStep = MathHelper.clamp(yawStep, -maxStep, maxStep);
-    pitchStep = MathHelper.clamp(pitchStep, -maxStep, maxStep);
-
-    mc.player.setYaw(mc.player.getYaw() + yawStep);
-    mc.player.setPitch(MathHelper.clamp(mc.player.getPitch() + pitchStep, -89f, 89f));
-}
 
 
     private boolean isHoldingWeapon() {

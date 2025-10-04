@@ -3,13 +3,13 @@ package com.volt.module.setting;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.Color;
+import java.awt.*;
 
 @Setter
 @Getter
 public class ColorSetting extends Setting {
-    private Color value;
     private final boolean hasAlpha;
+    private Color value;
 
     public ColorSetting(String name, Color defaultValue) {
         this(name, defaultValue, false);

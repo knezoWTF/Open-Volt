@@ -113,11 +113,11 @@ public class FastMStack extends MatrixStack {
     record Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
 
         @Override
-            public @NotNull String toString() {
-                return "Entry[" +
-                        "positionMatrix=" + positionMatrix + ", " +
-                        "normalMatrix=" + normalMatrix + ']';
-            }
-
+        public @NotNull String toString() {
+            return "Entry[" +
+                    "positionMatrix=" + positionMatrix + ", " +
+                    "normalMatrix=" + normalMatrix + ']';
         }
+
+    }
 }

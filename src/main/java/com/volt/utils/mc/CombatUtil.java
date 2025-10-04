@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 public final class CombatUtil implements IMinecraft {
     public static boolean isShieldFacingAway(final LivingEntity en) {
 
-        if (en == null) return true; 
+        if (en == null) return true;
         if (!en.isPlayer()) return true;
         if (mc.player == null) return false;
 

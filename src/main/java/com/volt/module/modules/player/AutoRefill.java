@@ -53,6 +53,15 @@ public final class AutoRefill extends Module {
 
     private boolean keyPressed = false;
 
+    public AutoRefill() {
+        super("Auto Refill", "Automatically refills hotbar with health potions from inventory", -1, Category.PLAYER);
+        this.addSettings(refillKeybind, refillDelay, reactionDelayMin, reactionDelayMax, minStackCount,
+                closeInventoryAfter, onlyWhenSneaking, hoverMode, hoverDelayMin, hoverDelayMax,
+                refillInstantHealth, refillRegeneration, refillStrength, refillSpeed);
+
+        updateHealthPotionsSet();
+    }
+
     @EventHandler
     private void onTickEvent(TickEvent event) {
         if (isNull()) return;
@@ -93,15 +102,6 @@ public final class AutoRefill extends Module {
                 handleClosingInventory();
                 break;
         }
-    }
-
-    public AutoRefill() {
-        super("Auto Refill", "Automatically refills hotbar with health potions from inventory", -1, Category.PLAYER);
-        this.addSettings(refillKeybind, refillDelay, reactionDelayMin, reactionDelayMax, minStackCount,
-                closeInventoryAfter, onlyWhenSneaking, hoverMode, hoverDelayMin, hoverDelayMax,
-                refillInstantHealth, refillRegeneration, refillStrength, refillSpeed);
-
-        updateHealthPotionsSet();
     }
 
     private void updateHealthPotionsSet() {

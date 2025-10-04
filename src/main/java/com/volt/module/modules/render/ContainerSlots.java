@@ -6,7 +6,7 @@ import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.ModeSetting;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ContainerSlots extends Module {
     public static final ModeSetting fontMode = new ModeSetting("Font", "Inter", "Inter", "MC");

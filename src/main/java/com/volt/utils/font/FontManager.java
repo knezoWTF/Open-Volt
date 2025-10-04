@@ -54,11 +54,11 @@ public class FontManager {
     private record FontKey(int size, Type type) {
 
         @Override
-            public @NotNull String toString() {
-                return "FontKey[" +
-                        "size=" + size + ", " +
-                        "type=" + type + ']';
-            }
-
+        public @NotNull String toString() {
+            return "FontKey[" +
+                    "size=" + size + ", " +
+                    "type=" + type + ']';
         }
+
+    }
 }

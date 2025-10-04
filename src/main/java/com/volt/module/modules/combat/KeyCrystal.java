@@ -10,7 +10,6 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.InventoryUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.Items;
@@ -94,7 +93,7 @@ public final class KeyCrystal extends Module {
 
                 if (mc.player.getPos().distanceTo(crystal.getPos()) <= 6.0 && attackTimer.hasElapsedTime(150)) {
                     if (antiWeakness.getValue() && mc.player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS)) {
-                            InventoryUtil.swapToWeapon(SwordItem.class);
+                        InventoryUtil.swapToWeapon(SwordItem.class);
                     }
                     ((MinecraftClientAccessor) mc).invokeDoAttack();
                     attackTimer.reset();

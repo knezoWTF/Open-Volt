@@ -248,7 +248,7 @@ public final class HudComponentUtils {
         int x = x1;
         int y = y1;
 
-        for (;;) {
+        for (; ; ) {
             for (int i = -thickness / 2; i <= thickness / 2; i++) {
                 for (int j = -thickness / 2; j <= thickness / 2; j++) {
                     context.fill(x + i, y + j, x + i + 1, y + j + 1, color.getRGB());
@@ -286,36 +286,14 @@ public final class HudComponentUtils {
         }
     }
 
-    public static class InfoItem {
-        public final String key;
-        public final String value;
-        public final Color color;
+    public record InfoItem(String key, String value, Color color) {
+            public InfoItem(String key, String value) {
+                this(key, value, null);
+            }
 
-        public InfoItem(String key, String value) {
-            this(key, value, null);
-        }
-
-        public InfoItem(String key, String value, Color color) {
-            this.key = key;
-            this.value = value;
-            this.color = color;
-        }
     }
 
-    public static class MapPoint {
-        public final float relativeX;
-        public final float relativeZ;
-        public final Color color;
-        public final int size;
-        public final String label;
-
-        public MapPoint(float relativeX, float relativeZ, Color color, int size, String label) {
-            this.relativeX = relativeX;
-            this.relativeZ = relativeZ;
-            this.color = color;
-            this.size = size;
-            this.label = label;
-        }
+    public record MapPoint(float relativeX, float relativeZ, Color color, int size, String label) {
     }
 
     public static class DataBuffer {

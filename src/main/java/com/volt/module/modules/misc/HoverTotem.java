@@ -44,53 +44,53 @@ public final class HoverTotem extends Module {
     private void totemHandler() {
         if (isNull()) return;
         if (!(mc.currentScreen instanceof InventoryScreen inv)) return;
-         
+
         Slot focusedSlot = ((HandledScreenAccessor) inv).getFocusedSlot();
         if (focusedSlot == null) return;
-         
+
         ItemStack focusedItemStack = focusedSlot.getStack();
         if (focusedItemStack.getItem() != Items.TOTEM_OF_UNDYING) return;
-         
+
         if (focusedSlot.getIndex() < 9) return;
-        
+
         ItemStack offhandItem = mc.player.getOffHandStack();
-         boolean needsOffhand = offhandItem.isEmpty() || (offhandItem.getItem() != Items.TOTEM_OF_UNDYING && !ignoreOffhand.getValue());
-         boolean needsHotbar = !hasTotemInHotbar();
-         
-         if (!needsOffhand && !needsHotbar) return;
-         
-         int minDelay = minMS.getValueInt();
-         int maxDelay = maxMS.getValueInt();
-         
-         if (minDelay >= maxDelay) {
-             maxDelay = minDelay + 1;
-         }
-         
-         long delay = random.nextLong(minDelay, maxDelay);
-         if (timer.hasElapsedTime(delay, true)) {
-             assert mc.player != null;
-             assert mc.interactionManager != null;
-             
-             if (needsOffhand) {
-                 mc.interactionManager.clickSlot(
-                         mc.player.currentScreenHandler.syncId,
-                         focusedSlot.getIndex(),
-                         40,
-                         SlotActionType.SWAP,
-                         mc.player
-                 );
-             } else {
-                 mc.interactionManager.clickSlot(
-                         mc.player.currentScreenHandler.syncId,
-                         focusedSlot.getIndex(),
-                         0,
-                         SlotActionType.QUICK_MOVE,
-                         mc.player
-                 );
-             }
-         }
+        boolean needsOffhand = offhandItem.isEmpty() || (offhandItem.getItem() != Items.TOTEM_OF_UNDYING && !ignoreOffhand.getValue());
+        boolean needsHotbar = !hasTotemInHotbar();
+
+        if (!needsOffhand && !needsHotbar) return;
+
+        int minDelay = minMS.getValueInt();
+        int maxDelay = maxMS.getValueInt();
+
+        if (minDelay >= maxDelay) {
+            maxDelay = minDelay + 1;
+        }
+
+        long delay = random.nextLong(minDelay, maxDelay);
+        if (timer.hasElapsedTime(delay, true)) {
+            assert mc.player != null;
+            assert mc.interactionManager != null;
+
+            if (needsOffhand) {
+                mc.interactionManager.clickSlot(
+                        mc.player.currentScreenHandler.syncId,
+                        focusedSlot.getIndex(),
+                        40,
+                        SlotActionType.SWAP,
+                        mc.player
+                );
+            } else {
+                mc.interactionManager.clickSlot(
+                        mc.player.currentScreenHandler.syncId,
+                        focusedSlot.getIndex(),
+                        0,
+                        SlotActionType.QUICK_MOVE,
+                        mc.player
+                );
+            }
+        }
     }
-    
+
     private boolean hasTotemInHotbar() {
         if (isNull()) return false;
         return mc.player.getInventory().main.subList(0, 9).stream()

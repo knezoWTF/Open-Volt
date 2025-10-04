@@ -10,25 +10,17 @@ import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public final class JumpCircles extends Module {
-
-    private record Ring(Vec3d origin, long startTime, boolean self) {
-    }
 
     private final ModeSetting targets = new ModeSetting("Targets", "Self", "Self", "Players");
     private final NumberSetting duration = new NumberSetting("Duration", 0.2, 3.0, 1.0, 0.05);
@@ -39,13 +31,18 @@ public final class JumpCircles extends Module {
     private final BooleanSetting glow = new BooleanSetting("Glow", true);
     private final NumberSetting glowIntensity = new NumberSetting("Glow Intensity", 0.1, 2.0, 0.8, 0.05);
     private final NumberSetting glowRadius = new NumberSetting("Glow Radius", 0.1, 1.0, 0.3, 0.05);
-
     private final Deque<Ring> rings = new ArrayDeque<>();
     private boolean wasOnGround = true;
-
     public JumpCircles() {
         super("Jump Circles", "Animated ring displayed when jumping", -1, Category.RENDER);
         addSettings(targets, duration, maxRadius, thickness, segments, color, glow, glowIntensity, glowRadius);
+    }
+
+    private static void addTri(BufferBuilder buffer, Matrix4f matrix, Vec3d a, Vec3d b, Vec3d c,
+                               float r, float g, float bl, float al, Vec3d cam) {
+        buffer.vertex(matrix, (float) (a.x - cam.x), (float) (a.y - cam.y), (float) (a.z - cam.z)).color(r, g, bl, al);
+        buffer.vertex(matrix, (float) (b.x - cam.x), (float) (b.y - cam.y), (float) (b.z - cam.z)).color(r, g, bl, al);
+        buffer.vertex(matrix, (float) (c.x - cam.x), (float) (c.y - cam.y), (float) (c.z - cam.z)).color(r, g, bl, al);
     }
 
     @EventHandler
@@ -201,11 +198,7 @@ public final class JumpCircles extends Module {
         }
     }
 
-    private static void addTri(BufferBuilder buffer, Matrix4f matrix, Vec3d a, Vec3d b, Vec3d c,
-                               float r, float g, float bl, float al, Vec3d cam) {
-        buffer.vertex(matrix, (float) (a.x - cam.x), (float) (a.y - cam.y), (float) (a.z - cam.z)).color(r, g, bl, al);
-        buffer.vertex(matrix, (float) (b.x - cam.x), (float) (b.y - cam.y), (float) (b.z - cam.z)).color(r, g, bl, al);
-        buffer.vertex(matrix, (float) (c.x - cam.x), (float) (c.y - cam.y), (float) (c.z - cam.z)).color(r, g, bl, al);
+    private record Ring(Vec3d origin, long startTime, boolean self) {
     }
 }
 

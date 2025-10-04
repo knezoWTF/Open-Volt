@@ -4,7 +4,7 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 
 public class FullBright extends Module {
-    public FullBright(){
+    public FullBright() {
         super("Full Bright", "Removes darkness", Category.RENDER);
     }
 }

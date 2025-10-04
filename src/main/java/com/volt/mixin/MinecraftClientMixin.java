@@ -8,11 +8,8 @@ import com.volt.gui.ClickGui;
 import com.volt.module.modules.client.ClickGUIModule;
 import com.volt.module.modules.client.Client;
 import com.volt.profiles.ProfileManager;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +35,7 @@ public class MinecraftClientMixin implements IMinecraft {
             }
         }
     }
+
     @Inject(method = "run", at = @At("HEAD"))
     public void runInject(CallbackInfo ci) {
         if (Volt.INSTANCE != null) {

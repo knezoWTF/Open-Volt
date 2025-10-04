@@ -16,21 +16,18 @@ import net.minecraft.item.Items;
 import net.minecraft.util.hit.EntityHitResult;
 
 public final class ShieldBreaker extends Module {
+    public static boolean breakingShield = false;
     private final NumberSetting reactionDelay = new NumberSetting("Reaction Delay", 0, 250, 50, 5);
     private final NumberSetting swapDelay = new NumberSetting("Swap Delay", 0, 500, 100, 10);
     private final NumberSetting attackDelay = new NumberSetting("Attack Delay", 0, 500, 100, 10);
     private final NumberSetting swapBackDelay = new NumberSetting("Swap Back Delay", 0, 500, 150, 10);
-
     private final BooleanSetting revertSlot = new BooleanSetting("Revert Slot", true);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
     private final BooleanSetting disableIfUsingItem = new BooleanSetting("Disable if using item", true);
-
     private final TimerUtil reactionTimer = new TimerUtil();
     private final TimerUtil swapTimer = new TimerUtil();
     private final TimerUtil attackTimer = new TimerUtil();
     private final TimerUtil swapBackTimer = new TimerUtil();
-    public static boolean breakingShield = false;
-
     private int savedSlot = -1;
 
     public ShieldBreaker() {

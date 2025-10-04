@@ -9,7 +9,6 @@ import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.keybinding.KeyUtils;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
@@ -31,8 +30,6 @@ public final class CartKey extends Module {
     private int originalSlot = -1;
     private long lastAction, bowStart;
     private State state = State.IDLE;
-
-    private enum State {IDLE, RAIL, CART, SWITCH, BOW_WAIT, BOW_CHARGE}
 
     public CartKey() {
         super("Cart Key", "Places rail + TNT cart, auto switches to bow", -1, Category.MISC);
@@ -75,8 +72,6 @@ public final class CartKey extends Module {
             }
         }
     }
-
-    ;
 
     private boolean canPlace() {
         if (!(mc.crosshairTarget instanceof BlockHitResult hit)) return false;
@@ -191,4 +186,6 @@ public final class CartKey extends Module {
         reset();
         super.onDisable();
     }
+
+    private enum State {IDLE, RAIL, CART, SWITCH, BOW_WAIT, BOW_CHARGE}
 }

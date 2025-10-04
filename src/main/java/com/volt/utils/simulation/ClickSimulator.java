@@ -1,12 +1,11 @@
 package com.volt.utils.simulation;
 
 import lombok.experimental.UtilityClass;
-
-import static com.volt.Volt.shouldUseMouseEvent;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+
+import static com.volt.Volt.shouldUseMouseEvent;
 
 @UtilityClass
 public final class ClickSimulator {
@@ -26,7 +25,8 @@ public final class ClickSimulator {
             new Thread(() -> {
                 try {
                     Thread.sleep(30);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
                 KeyBinding.setKeyPressed(key, false);
             }).start();
 

@@ -5,9 +5,9 @@ import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
+import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
 import com.volt.utils.mc.EnchantmentUtil;
-
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MaceItem;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import com.volt.module.setting.BooleanSetting;
+
 public final class BreachSwap extends Module {
 
     private final NumberSetting switchDelay = new NumberSetting("Switch Delay", 10, 100, 30, 1);

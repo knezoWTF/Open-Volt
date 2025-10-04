@@ -332,15 +332,15 @@ public class FontRenderer implements Closeable {
     record DrawEntry(float atX, float atY, float r, float g, float b, Glyph toDraw) {
 
         @Override
-            public @NotNull String toString() {
-                return "DrawEntry[" +
-                        "atX=" + atX + ", " +
-                        "atY=" + atY + ", " +
-                        "r=" + r + ", " +
-                        "g=" + g + ", " +
-                        "b=" + b + ", " +
-                        "toDraw=" + toDraw + ']';
-            }
-
+        public @NotNull String toString() {
+            return "DrawEntry[" +
+                    "atX=" + atX + ", " +
+                    "atY=" + atY + ", " +
+                    "r=" + r + ", " +
+                    "g=" + g + ", " +
+                    "b=" + b + ", " +
+                    "toDraw=" + toDraw + ']';
         }
+
+    }
 }
