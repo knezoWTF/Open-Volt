@@ -1,7 +1,8 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.render.EventRender3D;
+import com.volt.event.impl.player.TickEvent;
 import com.volt.event.impl.world.WorldChangeEvent;
+import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
@@ -12,7 +13,6 @@ import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
-import com.volt.utils.simulation.ClickSimulator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Tameable;
@@ -57,7 +57,6 @@ public final class TriggerBot extends Module {
     private float randomizedThreshold = 0;
     private Entity target;
     private String lastTargetUUID = null;
-    private boolean hasAttacked = false;
 
     public TriggerBot() {
         super("Trigger Bot", "Makes you automatically attack once aimed at a target", -1, Category.COMBAT);
@@ -78,7 +77,7 @@ public final class TriggerBot extends Module {
     }
 
     @EventHandler
-    private void render(EventRender3D event) {
+    private void tick(TickEvent event) {
         if (isNull()) return;
         if (mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
@@ -120,20 +119,14 @@ public final class TriggerBot extends Module {
         }
 
         if (setPreferCrits()) {
-            if (!hasAttacked) {
-                attack();
-                hasAttacked = true;
-            }
-            return;
+            attack();
         }
 
         if (target != null && (!target.getUuidAsString().equals(lastTargetUUID))) {
-            hasAttacked = false;
             lastTargetUUID = target.getUuidAsString();
         }
 
         if (mc.player.getAttackCooldownProgress(0.0f) >= 1.0f) {
-            hasAttacked = false;
         }
 
         if (!waitingForReaction) {
@@ -159,11 +152,8 @@ public final class TriggerBot extends Module {
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
             if (hasElapsedDelay()) {
                 if (hasTarget(target) && samePlayerCheck(target)) {
-                    if (!hasAttacked) {
                         attack();
-                        hasAttacked = true;
                         waitingForReaction = false;
-                    }
                 }
             }
         }
@@ -237,7 +227,7 @@ public final class TriggerBot extends Module {
     }
 
     public void attack() {
-        ClickSimulator.leftClick();
+        ((MinecraftClientAccessor)mc).invokeDoAttack();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();
@@ -264,7 +254,6 @@ public final class TriggerBot extends Module {
         timerReactionTime.reset();
         waitingForReaction = false;
         waitingForDelay = false;
-        hasAttacked = false;
         super.onEnable();
     }
 
@@ -274,7 +263,6 @@ public final class TriggerBot extends Module {
         timerReactionTime.reset();
         waitingForReaction = false;
         waitingForDelay = false;
-        hasAttacked = false;
         super.onDisable();
     }
 }
