@@ -62,7 +62,7 @@ public final class AutoMace extends Module {
         updateFallTracking();
 
         currentTarget = mc.targetedEntity;
-        if (FriendManager.isFriend(currentTarget.getUuid())) return;
+        if (currentTarget != null && FriendManager.isFriend(currentTarget.getUuid())) return;
         boolean isAirborne = !mc.player.isOnGround();
         boolean isFalling = mc.player.getVelocity().y < -0.1;
         double currentFallDistance = getCurrentFallDistance();
