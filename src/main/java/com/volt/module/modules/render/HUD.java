@@ -7,6 +7,7 @@ import com.volt.module.Module;
 import com.volt.module.setting.*;
 import com.volt.utils.font.FontManager;
 import com.volt.utils.font.fonts.FontRenderer;
+import com.volt.utils.render.RenderUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Formatting;
@@ -35,6 +36,8 @@ public class HUD extends Module {
     public static final BooleanSetting waveAnimation = new BooleanSetting("Wave Animation", false);
     public static final NumberSetting waveSpeed = new NumberSetting("Wave Speed", 0.1, 5.0, 1.5, 0.1);
     public static final NumberSetting waveSpread = new NumberSetting("Wave Spread", 0.1, 5.0, 0.6, 0.1);
+    public static final BooleanSetting glow = new BooleanSetting("Glow", true);
+    public static final NumberSetting glowIntensity = new NumberSetting("Glow Intensity", 0.1, 2.0, 0.6, 0.05);
     public static final NumberSetting padding = new NumberSetting("Offset", 0, 40, 5, 1);
     public static final NumberSetting opacity = new NumberSetting("BG Opacity", 0, 255, 80, 1);
     public static final BooleanSetting info = new BooleanSetting("Info", true);
@@ -46,7 +49,7 @@ public class HUD extends Module {
 
     public HUD() {
         super("HUD", "Renders information", -1, Category.RENDER);
-        addSettings(watermark, watermarkMode, watermarkText, watermarkSimpleFontMode, watermarkScale, arrayList, arrayListScale, colorMode, customColor, fontMode, suffixMode, hideVisuals, lowercase, backBarMode, waveAnimation, waveSpeed, waveSpread, padding, opacity, info, bpsCounter, fpsCounter, scale);
+        addSettings(watermark, watermarkMode, watermarkText, watermarkSimpleFontMode, watermarkScale, arrayList, arrayListScale, colorMode, customColor, fontMode, suffixMode, hideVisuals, lowercase, backBarMode, waveAnimation, waveSpeed, waveSpread, glow, glowIntensity, padding, opacity, info, bpsCounter, fpsCounter, scale);
     }
 
     public static int getAstolfo(int offset) {
@@ -177,6 +180,8 @@ public class HUD extends Module {
             i = padding.getValueInt();
             double waveTime = (System.currentTimeMillis() / 1000.0) * waveSpeed.getValue();
             int moduleIndex = 0;
+            
+            int prevBackgroundLeft = -1;
 
             for (Module m : enabledModules) {
                 String fullName = getFullName(m);
@@ -191,7 +196,8 @@ public class HUD extends Module {
                 if (waveAnimation.getValue()) {
                     double wavePhase = waveTime + moduleIndex * waveSpread.getValue();
                     double waveValue = (Math.sin(wavePhase) + 1.0) * 0.5;
-                    textColor = applyWaveColor(color, waveValue);
+                    double wave = Math.sin(waveValue * Math.PI * 0.5);
+                    textColor = applyWaveColor(color, wave);
                 }
 
                 int moduleWidth;
@@ -212,14 +218,28 @@ public class HUD extends Module {
                 int scaledPadding3 = (int) (3 * arrayListScale.getValue());
                 int scaledPadding5 = (int) (5 * arrayListScale.getValue());
 
+                int backgroundLeft = totalWidth - moduleWidth - padding.getValueInt() - scaledPadding3;
+                int backgroundTop = i - scaledPadding2;
+                int backgroundRight = totalWidth - padding.getValueInt() + scaledPadding5;
+                int backgroundBottom = i + moduleHeight + scaledPadding1;
+
                 if (opacity.getValueInt() > 0) {
                     int backgroundColor = new Color(0, 0, 0, opacity.getValueInt()).getRGB();
-                    int backgroundLeft = totalWidth - moduleWidth - padding.getValueInt() - scaledPadding3;
-                    int backgroundTop = i - scaledPadding2;
-                    int backgroundRight = totalWidth - padding.getValueInt() + scaledPadding5;
-                    int backgroundBottom = i + moduleHeight + scaledPadding1;
                     event.getContext().fill(backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, backgroundColor);
                 }
+
+                boolean isFirst = moduleIndex == 0;
+                boolean isLast = moduleIndex == enabledModules.size() - 1;
+
+                if (glow.getValue()) {
+                    renderBordersWithGlow(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, 
+                                         prevBackgroundLeft, isFirst, isLast, color);
+                } else {
+                    renderBorders(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, 
+                                 prevBackgroundLeft, isFirst, isLast, color);
+                }
+                
+                prevBackgroundLeft = backgroundLeft - 1;
 
                 switch (backBarMode.getMode()) {
                     case "Full" ->
@@ -228,10 +248,17 @@ public class HUD extends Module {
                             event.getContext().fill(totalWidth - padding.getValueInt() + scaledPadding3, i - scaledPadding1, totalWidth - padding.getValueInt() + scaledPadding5, i + moduleHeight, color);
                 }
 
-                if (fontMode.getMode().equals("MC")) {
-                    event.getContext().drawText(mc.textRenderer, fullName, totalWidth - moduleWidth - padding.getValueInt(), i, textColor, true);
+                int textX = totalWidth - moduleWidth - padding.getValueInt();
+                int textY = i;
+                
+                if (glow.getValue()) {
+                    renderTextWithGlow(event, fullName, textX, textY, textColor, customRenderer);
                 } else {
-                    customRenderer.drawString(event.getContext().getMatrices(), fullName, totalWidth - moduleWidth - padding.getValueInt(), i, new Color(textColor));
+                    if (fontMode.getMode().equals("MC")) {
+                        event.getContext().drawText(mc.textRenderer, fullName, textX, textY, textColor, true);
+                    } else {
+                        customRenderer.drawString(event.getContext().getMatrices(), fullName, textX, textY, new Color(textColor));
+                    }
                 }
 
                 i += moduleHeight + (int) (3 * arrayListScale.getValue());
@@ -337,16 +364,84 @@ public class HUD extends Module {
         return "";
     }
 
+    private void renderBorders(EventRender2D event, int backgroundLeft, int backgroundTop, 
+                               int backgroundRight, int backgroundBottom, int prevBackgroundLeft, 
+                               boolean isFirst, boolean isLast, int color) {
+        if (isFirst) {
+            event.getContext().fill(backgroundLeft - 1, backgroundTop - 1, backgroundRight + 1, backgroundTop, color);
+        }
+        
+        event.getContext().fill(backgroundLeft - 1, backgroundTop, backgroundLeft, backgroundBottom, color);
+        event.getContext().fill(backgroundRight, backgroundTop, backgroundRight + 1, backgroundBottom, color);
+        
+        if (prevBackgroundLeft != -1 && prevBackgroundLeft != backgroundLeft - 1) {
+            if (prevBackgroundLeft < backgroundLeft - 1) {
+                event.getContext().fill(prevBackgroundLeft, backgroundTop - 1, backgroundLeft, backgroundTop, color);
+            } else {
+                event.getContext().fill(backgroundLeft - 1, backgroundTop - 1, prevBackgroundLeft + 1, backgroundTop, color);
+            }
+        }
+        
+        if (isLast) {
+            event.getContext().fill(backgroundLeft - 1, backgroundBottom, backgroundRight + 1, backgroundBottom + 1, color);
+        }
+    }
+
+    private void renderBordersWithGlow(EventRender2D event, int backgroundLeft, int backgroundTop, 
+                                       int backgroundRight, int backgroundBottom, int prevBackgroundLeft, 
+                                       boolean isFirst, boolean isLast, int color) {
+        float intensity = glowIntensity.getValueFloat();
+        
+        if (isFirst) {
+            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1, 
+                                    backgroundRight + 1, backgroundTop, color, intensity);
+        }
+        
+        RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop, 
+                                backgroundLeft, backgroundBottom, color, intensity);
+        RenderUtils.fillWithGlow(event.getContext(), backgroundRight, backgroundTop, 
+                                backgroundRight + 1, backgroundBottom, color, intensity);
+        
+        if (prevBackgroundLeft != -1 && prevBackgroundLeft != backgroundLeft - 1) {
+            if (prevBackgroundLeft < backgroundLeft - 1) {
+                RenderUtils.fillWithGlow(event.getContext(), prevBackgroundLeft, backgroundTop - 1, 
+                                        backgroundLeft, backgroundTop, color, intensity);
+            } else {
+                RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1, 
+                                        prevBackgroundLeft + 1, backgroundTop, color, intensity);
+            }
+        }
+        
+        if (isLast) {
+            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundBottom, 
+                                    backgroundRight + 1, backgroundBottom + 1, color, intensity);
+        }
+    }
+
+    private void renderTextWithGlow(EventRender2D event, String text, int x, int y, int color, FontRenderer customRenderer) {
+        float intensity = glowIntensity.getValueFloat();
+        
+        if (fontMode.getMode().equals("MC")) {
+            RenderUtils.drawTextWithGlow(event.getContext(), mc.textRenderer, text, x, y, color, intensity);
+        } else {
+            RenderUtils.drawCustomTextWithGlow(event.getContext().getMatrices(), customRenderer, text, x, y, color, intensity);
+        }
+    }
+
     private int applyWaveColor(int baseColor, double waveValue) {
         Color base = new Color(baseColor, true);
-        float[] hsb = Color.RGBtoHSB(base.getRed(), base.getGreen(), base.getBlue(), null);
-        float brightness = Math.min(1f, Math.max(0f, (float) (hsb[2] * (0.6 + waveValue * 0.4))));
-        int rgb = Color.HSBtoRGB(hsb[0], hsb[1], brightness);
-        return (base.getAlpha() << 24) | (rgb & 0xFFFFFF);
+        
+        double wave = Math.pow(waveValue, 0.5);
+        
+        int r = (int) (base.getRed() + (255 - base.getRed()) * wave);
+        int g = (int) (base.getGreen() + (255 - base.getGreen()) * wave);
+        int b = (int) (base.getBlue() + (255 - base.getBlue()) * wave);
+        
+        return (base.getAlpha() << 24) | (r << 16) | (g << 8) | b;
     }
 
     private Color getThemeColor() {
-        return new Color(150, 0, 255);
+        return new Color(100, 150, 255);
     }
 
     private Color getThemeColor(int variant) {
