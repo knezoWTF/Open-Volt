@@ -35,5 +35,4 @@ public final class PingSpoof extends Module {
             future.join();
         }
     }
-
 }

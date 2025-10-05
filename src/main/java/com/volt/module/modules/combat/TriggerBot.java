@@ -6,6 +6,7 @@ import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
+import com.volt.module.modules.misc.WindChargeKey;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
@@ -20,6 +21,7 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
@@ -240,6 +242,7 @@ public final class TriggerBot extends Module {
         if (en == mc.player || en == mc.cameraEntity || !en.isAlive()) return false;
         if (en instanceof PlayerEntity player && FriendManager.isFriend(player.getUuid())) return false;
         if (Teams.isTeammate(en)) return false;
+        if (en instanceof WindChargeEntity) return false;
 
         return switch (en) {
             case EndCrystalEntity ignored when ignoreCrystals.getValue() -> false;
