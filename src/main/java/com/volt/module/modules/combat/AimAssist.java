@@ -6,6 +6,7 @@ import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
+import com.volt.utils.friend.FriendManager;
 import com.volt.utils.math.MathUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
