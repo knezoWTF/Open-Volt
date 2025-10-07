@@ -6,7 +6,6 @@ import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.modules.misc.Teams;
-import com.volt.module.modules.misc.WindChargeKey;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
@@ -120,15 +119,8 @@ public final class TriggerBot extends Module {
             }
         }
 
-        if (setPreferCrits()) {
-            attack();
-        }
-
         if (target != null && (!target.getUuidAsString().equals(lastTargetUUID))) {
             lastTargetUUID = target.getUuidAsString();
-        }
-
-        if (mc.player.getAttackCooldownProgress(0.0f) >= 1.0f) {
         }
 
         if (!waitingForReaction) {
@@ -153,8 +145,22 @@ public final class TriggerBot extends Module {
         }
 
         if (waitingForReaction && timerReactionTime.hasElapsedTime(currentReactionDelay, true)) {
-            if (hasElapsedDelay()) {
-                if (hasTarget(target) && samePlayerCheck(target)) {
+            if (critMode.getMode().equals("Strict")) {
+                if (!mc.player.isOnGround()) {
+                    if (canCrit() && mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue()) {
+                        if (hasTarget(target) && samePlayerCheck(target)) {
+                            attack();
+                            waitingForReaction = false;
+                        }
+                    }
+                } else {
+                    if (hasElapsedDelay() && hasTarget(target) && samePlayerCheck(target)) {
+                        attack();
+                        waitingForReaction = false;
+                    }
+                }
+            } else {
+                if (hasElapsedDelay() && hasTarget(target) && samePlayerCheck(target)) {
                     attack();
                     waitingForReaction = false;
                 }
@@ -174,6 +180,17 @@ public final class TriggerBot extends Module {
         return entity.getUuidAsString().equals(lastTargetUUID);
     }
 
+    private boolean canCrit() {
+        return !mc.player.isOnGround()
+                && mc.player.fallDistance > 0F
+                && !mc.player.isClimbing()
+                && !mc.player.isTouchingWater()
+                && !mc.player.isInLava()
+                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
+                && mc.player.getVehicle() == null;
+    }
+
+
     private boolean setPreferCrits() {
         String mode = critMode.getMode();
 
@@ -183,17 +200,11 @@ public final class TriggerBot extends Module {
         if (entityHitResult.getEntity() != target) return false;
         if (!hasTarget(entityHitResult.getEntity())) return false;
 
-        boolean canCrit = !mc.player.isOnGround()
-                && mc.player.fallDistance < 0F
-                && !mc.player.isClimbing()
-                && !mc.player.isTouchingWater()
-                && !mc.player.isInLava()
-                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)
-                && mc.player.getVehicle() == null;
+
 
         boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
 
-        return mode.equals("Strict") && canCrit && cooldownCharged;
+        return mode.equals("Strict") && canCrit() && cooldownCharged;
     }
 
     private boolean hasElapsedDelay() {

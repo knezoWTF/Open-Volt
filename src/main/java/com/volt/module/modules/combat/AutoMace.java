@@ -17,6 +17,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
@@ -34,6 +35,7 @@ public final class AutoMace extends Module {
     private final BooleanSetting ignorePassiveMobs = new BooleanSetting("No Passive Mobs", true);
     private final BooleanSetting ignoreInvisible = new BooleanSetting("No Invisible", true);
     private final BooleanSetting respectCooldown = new BooleanSetting("Respect Cooldown", true);
+    private final BooleanSetting stunSlam = new BooleanSetting("Stun Slam", false);
     private final TimerUtil switchTimer = new TimerUtil();
     private final TimerUtil attackTimer = new TimerUtil();
     private int previousSlot = -1;
@@ -42,11 +44,13 @@ public final class AutoMace extends Module {
     private double fallStartY = -1;
     private boolean isInAir = false;
     private boolean hasSwitchedToMace = false;
+    private boolean hasExecuted = false;
+    private int comboState = 0;
 
     public AutoMace() {
         super("Auto Mace", "Automatically attacks with mace", -1, Category.COMBAT);
         this.addSettings(minFallDistance, switchDelayMin, switchDelayMax, attackDelayMin, attackDelayMax,
-                targetPlayers, targetMobs, autoSwitchBack, instantSwitchBack, ignorePassiveMobs, ignoreInvisible, respectCooldown);
+                targetPlayers, targetMobs, autoSwitchBack, instantSwitchBack, ignorePassiveMobs, ignoreInvisible, respectCooldown, stunSlam);
     }
 
     @EventHandler
@@ -99,21 +103,53 @@ public final class AutoMace extends Module {
             if (isInAir) {
                 isInAir = false;
                 fallStartY = -1;
+                hasExecuted = false;
+                comboState = 0;
             }
-        } else {
-            if (!isInAir) {
-                isInAir = true;
-                fallStartY = currentY;
-            } else {
-                if (currentlyFalling) {
-                    if (fallStartY == -1 || currentY > fallStartY) {
-                        fallStartY = currentY;
-                    }
-                } else if (mc.player.getVelocity().y > 0.1) {
-                    fallStartY = Math.max(fallStartY == -1 ? currentY : fallStartY, currentY);
-                }
+            if (autoSwitchBack.getValue() && previousSlot != -1) {
+                mc.player.getInventory().selectedSlot = previousSlot;
+                previousSlot = -1;
             }
+            return;
         }
+
+        if (!isInAir) {
+            isInAir = true;
+            fallStartY = currentY;
+        } else if (currentlyFalling) {
+            if (fallStartY == -1 || currentY > fallStartY) {
+                fallStartY = currentY;
+            }
+        } else if (mc.player.getVelocity().y > 0.1) {
+            fallStartY = Math.max(fallStartY == -1 ? currentY : fallStartY, currentY);
+        }
+
+      if (stunSlam.getValue()) {
+          double fallDist = fallStartY == -1 ? 0 : Math.max(0, fallStartY - currentY);
+
+          if (comboState == 1) {
+              comboState = 2;
+              hasExecuted = true;
+              return;
+          }
+
+          if (hasExecuted || !currentlyFalling || fallDist < minFallDistance.getValueFloat()) return;
+          if (!(mc.targetedEntity instanceof PlayerEntity target)) return;
+          if (!target.isAlive()) return;
+
+          if (previousSlot == -1) previousSlot = mc.player.getInventory().selectedSlot;
+
+          boolean hasShield = target.isHolding(Items.SHIELD) && target.isBlocking();
+
+          if (hasShield) {
+              if (switchToAxe()) {
+                  ((MinecraftClientAccessor) mc).invokeDoAttack();
+                  comboState = 1;
+                  return;
+              }
+          }
+      }
+        hasExecuted = true;
     }
 
     private double getCurrentFallDistance() {
@@ -181,6 +217,17 @@ public final class AutoMace extends Module {
             previousSlot = -1;
             hasSwitchedToMace = false;
         }
+    }
+
+    private boolean switchToAxe() {
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (stack.getItem() instanceof AxeItem) {
+                mc.player.getInventory().selectedSlot = i;
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleNotFalling() {

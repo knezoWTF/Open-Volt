@@ -120,6 +120,7 @@ public class AimAssist extends Module {
         if (entity == null || entity == mc.player || !(entity instanceof LivingEntity livingEntity)) return false;
         if (!livingEntity.isAlive() || livingEntity.isDead()) return false;
         if (Teams.isTeammate(entity)) return false;
+        if (entity instanceof PlayerEntity player && FriendManager.isFriend(player.getUuid())) return false;
 
         return entity instanceof PlayerEntity ? targetPlayers.getValue() : targetMobs.getValue();
     }
