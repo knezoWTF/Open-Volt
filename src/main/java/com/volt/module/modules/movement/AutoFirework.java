@@ -9,7 +9,6 @@ import com.volt.module.setting.NumberSetting;
 import com.volt.utils.math.TimerUtil;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,10 +38,12 @@ public final class AutoFirework extends Module {
 
         boolean currentRightClick = mc.options.useKey.isPressed();
 
-        if (!wasRightClickPressed && currentRightClick && shouldUseFirework() && canUseFirework()) {
+     /*   if (!wasRightClickPressed && currentRightClick && shouldUseFirework() && canUseFirework()) {
             lastFireworkTime = System.currentTimeMillis();
             useFirework();
         }
+
+      */
 
         if (pendingSwitchBack && switchBackTimer.hasElapsedTime(switchBackDelay.getValueInt())) {
             performSwitchBack();
@@ -55,17 +56,21 @@ public final class AutoFirework extends Module {
         return System.currentTimeMillis() - lastFireworkTime > 200;
     }
 
-    private boolean shouldUseFirework() {
+   /* private boolean shouldUseFirework() {
         if (!isWearingElytra()) return false;
-        if (onlyWhenFlying.getValue() && !mc.player.isFallFlying()) return false;
+        if (onlyWhenFlying.getValue() && !mc.player.isGliding()) return false;
         if (isHoldingImportantItem()) return false;
         return findFireworkInHotbar() != -1;
     }
 
+    */
+/*
     private boolean isWearingElytra() {
         ItemStack chestplate = mc.player.getEquippedStack(EquipmentSlot.CHEST);
         return chestplate.getItem() instanceof ElytraItem && ElytraItem.isUsable(chestplate);
     }
+
+ */
 
     private boolean isHoldingImportantItem() {
         if (respectGapples.getValue() && (isGoldenApple(mc.player.getMainHandStack()) || isGoldenApple(mc.player.getOffHandStack()))) {
