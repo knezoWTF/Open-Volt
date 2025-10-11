@@ -1,0 +1,2 @@
+module Open.Volt.main {
+}
