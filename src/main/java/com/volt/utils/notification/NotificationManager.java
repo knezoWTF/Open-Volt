@@ -26,4 +26,11 @@ public class NotificationManager {
         Notification notification = new Notification(title, message, type, DEFAULT_DURATION);
         notifications.add(notification);
     }
+
+    public void addBuffExpiredNotification(String buffName) {
+        String title = "rebuff";
+        String message = buffName;
+        Notification notification = new Notification(title, message, Notification.NotificationType.BUFF_EXPIRED, DEFAULT_DURATION);
+        notifications.add(notification);
+    }
 }

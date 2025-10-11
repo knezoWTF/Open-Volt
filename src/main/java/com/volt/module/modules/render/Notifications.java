@@ -28,6 +28,7 @@ public class Notifications extends Module {
     private static final Color BLACK_COLOR = new Color(20, 20, 20, 255);
     private static final Color ENABLED_COLOR = new Color(0, 255, 0);
     private static final Color DISABLED_COLOR = new Color(255, 0, 0);
+    private static final Color BUFF_EXPIRED_COLOR = new Color(255, 165, 0);
 
     public Notifications() {
         super("Notifications", "Toggle notification display on/off", Category.RENDER);
@@ -94,9 +95,11 @@ public class Notifications extends Module {
                 PURPLE_COLOR.getBlue(), alpha);
         context.fill(x, y, x + 3, y + NOTIFICATION_HEIGHT, accentColor.getRGB());
 
-        Color statusColor = notification.getType() == Notification.NotificationType.MODULE_ENABLED ?
-                new Color(ENABLED_COLOR.getRed(), ENABLED_COLOR.getGreen(), ENABLED_COLOR.getBlue(), alpha) :
-                new Color(DISABLED_COLOR.getRed(), DISABLED_COLOR.getGreen(), DISABLED_COLOR.getBlue(), alpha);
+        Color statusColor = switch (notification.getType()) {
+            case MODULE_ENABLED -> new Color(ENABLED_COLOR.getRed(), ENABLED_COLOR.getGreen(), ENABLED_COLOR.getBlue(), alpha);
+            case MODULE_DISABLED -> new Color(DISABLED_COLOR.getRed(), DISABLED_COLOR.getGreen(), DISABLED_COLOR.getBlue(), alpha);
+            case BUFF_EXPIRED -> new Color(BUFF_EXPIRED_COLOR.getRed(), BUFF_EXPIRED_COLOR.getGreen(), BUFF_EXPIRED_COLOR.getBlue(), alpha);
+        };
 
         FontRenderer interFont = Volt.INSTANCE.fontManager.getSize(12, FontManager.Type.Inter);
 

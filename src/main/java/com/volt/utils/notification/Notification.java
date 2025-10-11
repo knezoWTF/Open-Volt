@@ -35,6 +35,7 @@ public class Notification {
 
     public enum NotificationType {
         MODULE_ENABLED,
-        MODULE_DISABLED
+        MODULE_DISABLED,
+        BUFF_EXPIRED
     }
 }

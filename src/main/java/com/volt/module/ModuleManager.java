@@ -62,7 +62,7 @@ public final class ModuleManager {
                 new AutoExtinguish(), new AutoTool(), new AutoWeb(), new AutoRefill(),
                 new AutoDrain(), new AutoCrafter(), new FastPlace(), new FastEXP(),
                 new Eagle(), new TrapSave(), new PingSpoof(), new AutoDoubleHand(),
-                new AutoMLG(), new FastMine());
+                new AutoMLG(), new FastMine(), new ReBuffNotifier());
 
         // Render
         add(
