@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Menu</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <script src="https://unpkg.com/tesseract.js@6.0.0/dist/tesseract.min.js"></script>
+    <script>
+      let selected_category = "general"
+      jQuery(document).ready(function($) {
+        $('.nav-button').click(function() {
+          $("#" + selected_category).removeClass("selected")
+          $("." + selected_category).hide()
+          selected_category = $(this).attr('id');
+          $("#" + selected_category).addClass("selected")
+          $("." + selected_category).show()
+        })
+      })
+    </script>
+    <style>
+      .swal2-popup {
+        background: #1e2746
+      }
+
+      .swal2-popup .swal2-content {
+        color: #7e7e7e
+      }
+
+      .swal2-title {
+        color: #fff !important
+      }
+
+      .Announcement {
+        animation: fade-in 1s
+      }
+
+      @keyframes fade-out {
+        from {
+          opacity: 1
+        }
+
+        to {
+          opacity: 0
+        }
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0
+        }
+
+        to {
+          opacity: 1
+        }
+      }
+
+      .buttton_player {
+        outline: 0
+      }
+
+      .player_info_btn {
+        background: #d6a351 !important;
+        color: #fff !important;
+        font-size: 13px;
+        padding: 8px 10px;
+        border: none !important;
+        display: inline-block;
+        border-radius: 3px;
+        outline: 0;
+        text-decoration: none;
+        line-height: 1;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: top;
+        overflow: hidden;
+        backface-visibility: hidden;
+        letter-spacing: normal !important;
+        position: relative;
+        white-space: nowrap;
+        transform: translate3d(0, 0, 0);
+        -webkit-appearance: none;
+        transition: .1s;
+        user-select: none !important
+      }
+
+      .player_info_btn:hover {
+        cursor: pointer !important
+      }
+
+      .player_info_btn:active {
+        background: #c29449 !important
+      }
+
+      input[type=color] {
+        outline: 0;
+        border: none;
+        appearance: none;
+        background-color: transparent;
+        width: 30px;
+        height: 30px
+      }
+
+      .render_game {
+        display: none;
+        position: absolute;
+        top: 384000px;
+        width: 1px;
+        height: 1px
+      }
+
+      input[type=range] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: 0 0;
+        cursor: pointer
+      }
+
+      input[type=range]:focus {
+        outline: 0
+      }
+
+      input[type=range]::-webkit-slider-runnable-track {
+        background-color: #384361;
+        border-radius: 3px;
+        height: 29px
+      }
+
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: 3px;
+        background-color: #d6a351;
+        border-radius: 3px;
+        height: 23px;
+        width: 10px
+      }
+
+      input[type=range]:focus::-webkit-slider-thumb {
+        outline: 0
+      }
+
+      .slider-text {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+        color: #fff
+      }
+    </style>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+  </head>
+  <body>
+    <canvas id="canvas" width="1920" height="1080" style="position:absolute"></canvas>
+    <canvas id="canvas2" width="1920" height="1080" style="position:absolute"></canvas>
+    <div style="z-index:3;display:none;background-color:#1f283a;position:absolute;padding:15px;border:solid #384869 1px;border-radius:10px" id="player_info_div">
+      <h5>Player Info</h5>
+      <p id="player_info_name"></p>
+      <p id="player_info_health"></p>
+      <p id="player_info_armour"></p>
+      <button class="player_info_btn Teleport_PI">Goto</button>
+      <button class="player_info_btn Bring_PI">Bring</button>
+      <button class="player_info_btn Ban_PI">Ban</button>
+      <button class="player_info_btn Kick_PI">Kick</button>
+      <button class="player_info_btn Freeze_PI">Freeze</button>
+    </div>
+    <div style="z-index:-3;display:none" id="player_info_div_2"></div>
+    <div class="Announcement" id="Announcement" style="display:none;background:rgba(0,0,0,.8);min-width:25%;min-height:10%;max-height:fit-content;text-align:center;border-radius:5px;border-right:5px solid #0e4ecf;position:absolute">
+      <i id="ann-icon" style="position:absolute;left:-70px;top:0;font-size:100px;text-shadow:0 0 50px rgba(0,0,0,1);color:#dcdcdc" class="material-icons">info</i>
+      <h4 id="Announcement-header" style="text-align:left;padding:10px;padding-left:30px;padding-right:10px"></h4>
+      <h5 id="Announcement-text" style="text-align:left;padding-left:30px;padding-right:10px;white-space:pre-line"></h5>
+    </div>
+    <svg id="freecam_crosshair" style="position:absolute;display:none" xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 256 256">
+      <path d="M236,120H223.7A96.2,96.2,0,0,0,136,32.3V20a8,8,0,0,0-16,0V32.3A96.2,96.2,0,0,0,32.3,120H20a8,8,0,0,0,0,16H32.3A96.2,96.2,0,0,0,120,223.7V236a8,8,0,0,0,16,0V223.7A96.2,96.2,0,0,0,223.7,136H236a8,8,0,0,0,0-16ZM136,207.6V196a8,8,0,0,0-16,0v11.6A80.3,80.3,0,0,1,48.4,136H60a8,8,0,0,0,0-16H48.4A80.3,80.3,0,0,1,120,48.4V60a8,8,0,0,0,16,0V48.4A80.3,80.3,0,0,1,207.6,120H196a8,8,0,0,0,0,16h11.6A80.3,80.3,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24.1,24.1,0,0,1,128,152Z" />
+    </svg>
+    <div id="freecam_div" style="position:absolute;display:none;margin-top:45%">
+      <p id="freecam_speed" style="text-align:center">Freecam Speed: 0.1</p>
+      <p id="freecam_mode" style="text-align:center">Mode: Copy HashID</p>
+    </div>
+    <div class="logo" style="position:absolute;left:10px;min-width:50px;top:10px;display:none" id="watermark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.999 24">
+        <path d="M215.749,3593.61v2.425l-3.173,1.155-2.279.83-2.852,1.038-2.281.83-2.851,1.037h0l-2.28.83-2.852,1.037h0l-2.278.829-3.152,1.147v-2.425l3.152-1.147,2.278-.829h0l2.852-1.037,2.28-.83h0l2.851-1.037,2.281-.831,2.852-1.038,2.279-.83Z" transform="translate(-191.75 -3589.332)" fill="#fff" />
+        <path d="M211.483,3649.85v8.735l-2.278.831v-8.736Z" transform="translate(-206.053 -3635.416)" fill="#d6a351" />
+        <path d="M239.894,3639.51v8.735l-2.28.83v-8.735Z" transform="translate(-229.332 -3626.943)" fill="#d6a351" />
+        <path d="M268.309,3629.17v8.735l-2.281.831V3630Z" transform="translate(-252.614 -3618.47)" fill="#d6a351" />
+        <path d="M296.731,3618.82v8.737l-2.279.829v-8.735Z" transform="translate(-275.905 -3609.99)" fill="#d6a351" />
+        <path d="M296.731,3569.92v4.459l-2.279.829v-5.288Z" transform="translate(-275.905 -3569.92)" fill="#d6a351" />
+        <path d="M268.309,3569.92v6.326l-2.281.83v-7.156Z" transform="translate(-252.614 -3569.92)" fill="#d6a351" />
+        <path d="M239.894,3569.92v8.2l-2.28.83v-9.024Z" transform="translate(-229.332 -3569.92)" fill="#d6a351" />
+        <path d="M211.483,3569.92v10.062l-2.278.829V3569.92Z" transform="translate(-206.053 -3569.92)" fill="#d6a351" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78.594 24">
+        <g transform="translate(-221.98 -3569.92)">
+          <path d="M182.306-66.942a3.075,3.075,0,0,0,1.346-.377,5.485,5.485,0,0,0,1.55-1.254v-5.568a5.982,5.982,0,0,0-.928-.224,6.256,6.256,0,0,0-1.01-.082,3.273,3.273,0,0,0-2.529.836,3.607,3.607,0,0,0-.755,2.488v1.367a3.107,3.107,0,0,0,.612,2.172A2.253,2.253,0,0,0,182.306-66.942Zm2.9.163q-.122.122-.388.347a4.773,4.773,0,0,1-.643.449,4.625,4.625,0,0,1-.847.389,3.085,3.085,0,0,1-1.02.163,5.165,5.165,0,0,1-1.621-.245,3.349,3.349,0,0,1-1.3-.775,3.548,3.548,0,0,1-.857-1.377,6.057,6.057,0,0,1-.306-2.05v-1.061a5.113,5.113,0,0,1,1.244-3.8,5.18,5.18,0,0,1,3.753-1.214,9.812,9.812,0,0,1,1.968.194,9.217,9.217,0,0,1,1.764.54V-65.8a4.951,4.951,0,0,1-.326,1.815,4.314,4.314,0,0,1-.918,1.448,4.191,4.191,0,0,1-1.428.959,4.858,4.858,0,0,1-1.876.347,6.907,6.907,0,0,1-2.019-.269,8.7,8.7,0,0,1-1.856-.847l.836-1.455a6.672,6.672,0,0,0,1.469.683,5.474,5.474,0,0,0,1.611.214,2.588,2.588,0,0,0,2.04-.8,2.98,2.98,0,0,0,.714-2.059Zm7.242,1.591a3.691,3.691,0,0,1-2.825-.939,4.023,4.023,0,0,1-.867-2.815v-6.526l1.754-.49v7.017a2.548,2.548,0,0,0,.47,1.724,1.885,1.885,0,0,0,1.467.521,3.138,3.138,0,0,0,1.356-.377,5.421,5.421,0,0,0,1.56-1.254v-7.139l1.754-.49v8.179a4.649,4.649,0,0,0,.143,1.254,5.992,5.992,0,0,0,.448,1.091H195.83a1.893,1.893,0,0,1-.245-.561,3.2,3.2,0,0,1-.122-.643,5.126,5.126,0,0,1-.877.734,4.527,4.527,0,0,1-.959.5,3.235,3.235,0,0,1-1.183.214Zm9.192-1.508a2.811,2.811,0,0,0,.843-.153,8.062,8.062,0,0,0,.975-.388q.5-.235.955-.479t.782-.428v-1.775h-3.8a1.427,1.427,0,0,0-.61.133,1.589,1.589,0,0,0-.488.347,1.64,1.64,0,0,0-.325.51,1.566,1.566,0,0,0-.122.6,1.426,1.426,0,0,0,.152.663,1.647,1.647,0,0,0,.406.51,2,2,0,0,0,.569.337A1.808,1.808,0,0,0,201.636-66.7Zm1.2-9.26a5.069,5.069,0,0,1,1.6.245,3.9,3.9,0,0,1,1.3.714,3.354,3.354,0,0,1,.885,1.163,3.756,3.756,0,0,1,.325,1.611v4.447a4.918,4.918,0,0,0,.133,1.223,5.212,5.212,0,0,0,.459,1.122h-1.876a1.707,1.707,0,0,1-.255-.571,3.455,3.455,0,0,1-.112-.632,8.837,8.837,0,0,1-1.845,1.03,5.314,5.314,0,0,1-2.05.418,3.666,3.666,0,0,1-1.3-.225,3.123,3.123,0,0,1-1.05-.645,3,3,0,0,1-.7-1,3.212,3.212,0,0,1-.255-1.3,2.868,2.868,0,0,1,.265-1.238,3.074,3.074,0,0,1,.714-.972,3.235,3.235,0,0,1,1.04-.634,3.467,3.467,0,0,1,1.244-.225h3.835v-.926a1.842,1.842,0,0,0-.66-1.58,2.858,2.858,0,0,0-1.7-.513,5.084,5.084,0,0,0-1.605.224,7.749,7.749,0,0,0-1.463.693l-.753-1.31q.49-.289.927-.5a7.149,7.149,0,0,1,.9-.352,5.367,5.367,0,0,1,.946-.207,8.422,8.422,0,0,1,1.058-.062Zm8.535,1.285a3.042,3.042,0,0,1,.908-.948,2.259,2.259,0,0,1,1.254-.337,3.8,3.8,0,0,1,1.693.449l-.612,1.632a2.564,2.564,0,0,0-1.163-.326,1.589,1.589,0,0,0-.928.275,2.113,2.113,0,0,0-.653.745,3.814,3.814,0,0,0-.377,1.112,7.357,7.357,0,0,0-.122,1.377v5.262h-1.754v-7.751a4.453,4.453,0,0,0-.47-2.019l1.611-.755a5.492,5.492,0,0,1,.3.6,3.062,3.062,0,0,1,.194.683Zm11.218.693a3.287,3.287,0,0,0-.959-.347,5.533,5.533,0,0,0-1.163-.122,2.987,2.987,0,0,0-2.366.948,3.8,3.8,0,0,0-.836,2.6v1.224a4.977,4.977,0,0,0,.122,1.122,2.768,2.768,0,0,0,.408.948,2.113,2.113,0,0,0,.724.663,2.214,2.214,0,0,0,1.091.245A3.331,3.331,0,0,0,221-67.074a5.249,5.249,0,0,0,1.591-1.254Zm0-5.385,1.754-.49v12.075a4.649,4.649,0,0,0,.143,1.254,5.992,5.992,0,0,0,.449,1.091h-1.876a1.893,1.893,0,0,1-.245-.561,3.2,3.2,0,0,1-.122-.643,5.869,5.869,0,0,1-.9.734,4.39,4.39,0,0,1-.98.5,3.4,3.4,0,0,1-1.2.214,4.357,4.357,0,0,1-1.876-.367,3.561,3.561,0,0,1-1.275-.989A3.919,3.919,0,0,1,215.737-68a6.823,6.823,0,0,1-.224-1.775v-.979a5.334,5.334,0,0,1,1.285-3.906,5.18,5.18,0,0,1,3.835-1.3,5.394,5.394,0,0,1,1.958.388Z" transform="translate(75.638 3653.221)" fill="#fff" />
+          <path d="M2.979-76.862a4.063,4.063,0,0,1,.153-1.112,2.763,2.763,0,0,1,.479-.959,2.364,2.364,0,0,1,.857-.673,2.894,2.894,0,0,1,1.264-.255,4.941,4.941,0,0,1,.785.072,5.612,5.612,0,0,1,.765.173v1.754H6.467a1.22,1.22,0,0,0-.948.347,1.37,1.37,0,0,0-.316.959v.836H7.181l-.592,1.835H5.2v8.444H2.979v-8.444H1.694v-1.836H2.979ZM8.751-65.439v-10.28h2.223v10.28ZM9.812-79.86a1.2,1.2,0,0,1,.857.326,1.174,1.174,0,0,1,.367.857,1.091,1.091,0,0,1-.367.857,1.2,1.2,0,0,1-.857.326,1.158,1.158,0,0,1-.857-.327,1.091,1.091,0,0,1-.366-.856,1.174,1.174,0,0,1,.366-.857,1.158,1.158,0,0,1,.857-.326Zm6.3,14.421-3.753-9.974,2.019-.551L16.747-69.7l.428,2,.408-2,2.366-6.262,2.019.551-3.752,9.974Zm8.465-4.447a3.713,3.713,0,0,0,.153,1.091,2.032,2.032,0,0,0,.51.857,2.442,2.442,0,0,0,.948.561,4.552,4.552,0,0,0,1.469.2,2.634,2.634,0,0,0,1.2-.224,4.167,4.167,0,0,0,.918-.693l1.836.755a4.017,4.017,0,0,1-1.734,1.621,5.293,5.293,0,0,1-2.325.52,5.251,5.251,0,0,1-3.875-1.326,5.312,5.312,0,0,1-1.326-3.916v-.734q0-.245.02-.47a4.226,4.226,0,0,1,.449-1.775,4.416,4.416,0,0,1,1.081-1.367,4.829,4.829,0,0,1,1.55-.877,5.6,5.6,0,0,1,1.856-.306,5.266,5.266,0,0,1,2,.357,4.226,4.226,0,0,1,1.489,1,4.232,4.232,0,0,1,.928,1.55,6.076,6.076,0,0,1,.316,2.009v1.163Zm0-1.9h5.242a2.162,2.162,0,0,0-.184-.9,1.943,1.943,0,0,0-.52-.693,2.521,2.521,0,0,0-.8-.449,3,3,0,0,0-1.01-.163,4.105,4.105,0,0,0-1,.122,2.578,2.578,0,0,0-.877.4,2.1,2.1,0,0,0-.622.693,1.99,1.99,0,0,0-.234.988Z" transform="translate(220.29 3653.228)" fill="#d6a351" />
+        </g>
+      </svg>
+    </div>
+    <div class="overlay"></div>
+    <div class="menu">
+      <div class="mover"></div>
+      <div class="menu-overlay"></div>
+      <div class="menu-sidebar">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.999 24">
+            <path d="M215.749,3593.61v2.425l-3.173,1.155-2.279.83-2.852,1.038-2.281.83-2.851,1.037h0l-2.28.83-2.852,1.037h0l-2.278.829-3.152,1.147v-2.425l3.152-1.147,2.278-.829h0l2.852-1.037,2.28-.83h0l2.851-1.037,2.281-.831,2.852-1.038,2.279-.83Z" transform="translate(-191.75 -3589.332)" fill="#fff" />
+            <path d="M211.483,3649.85v8.735l-2.278.831v-8.736Z" transform="translate(-206.053 -3635.416)" fill="#d6a351" />
+            <path d="M239.894,3639.51v8.735l-2.28.83v-8.735Z" transform="translate(-229.332 -3626.943)" fill="#d6a351" />
+            <path d="M268.309,3629.17v8.735l-2.281.831V3630Z" transform="translate(-252.614 -3618.47)" fill="#d6a351" />
+            <path d="M296.731,3618.82v8.737l-2.279.829v-8.735Z" transform="translate(-275.905 -3609.99)" fill="#d6a351" />
+            <path d="M296.731,3569.92v4.459l-2.279.829v-5.288Z" transform="translate(-275.905 -3569.92)" fill="#d6a351" />
+            <path d="M268.309,3569.92v6.326l-2.281.83v-7.156Z" transform="translate(-252.614 -3569.92)" fill="#d6a351" />
+            <path d="M239.894,3569.92v8.2l-2.28.83v-9.024Z" transform="translate(-229.332 -3569.92)" fill="#d6a351" />
+            <path d="M211.483,3569.92v10.062l-2.278.829V3569.92Z" transform="translate(-206.053 -3569.92)" fill="#d6a351" />
+          </svg>
+          <svg class="text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78.594 24">
+            <g transform="translate(-221.98 -3569.92)">
+              <path d="M182.306-66.942a3.075,3.075,0,0,0,1.346-.377,5.485,5.485,0,0,0,1.55-1.254v-5.568a5.982,5.982,0,0,0-.928-.224,6.256,6.256,0,0,0-1.01-.082,3.273,3.273,0,0,0-2.529.836,3.607,3.607,0,0,0-.755,2.488v1.367a3.107,3.107,0,0,0,.612,2.172A2.253,2.253,0,0,0,182.306-66.942Zm2.9.163q-.122.122-.388.347a4.773,4.773,0,0,1-.643.449,4.625,4.625,0,0,1-.847.389,3.085,3.085,0,0,1-1.02.163,5.165,5.165,0,0,1-1.621-.245,3.349,3.349,0,0,1-1.3-.775,3.548,3.548,0,0,1-.857-1.377,6.057,6.057,0,0,1-.306-2.05v-1.061a5.113,5.113,0,0,1,1.244-3.8,5.18,5.18,0,0,1,3.753-1.214,9.812,9.812,0,0,1,1.968.194,9.217,9.217,0,0,1,1.764.54V-65.8a4.951,4.951,0,0,1-.326,1.815,4.314,4.314,0,0,1-.918,1.448,4.191,4.191,0,0,1-1.428.959,4.858,4.858,0,0,1-1.876.347,6.907,6.907,0,0,1-2.019-.269,8.7,8.7,0,0,1-1.856-.847l.836-1.455a6.672,6.672,0,0,0,1.469.683,5.474,5.474,0,0,0,1.611.214,2.588,2.588,0,0,0,2.04-.8,2.98,2.98,0,0,0,.714-2.059Zm7.242,1.591a3.691,3.691,0,0,1-2.825-.939,4.023,4.023,0,0,1-.867-2.815v-6.526l1.754-.49v7.017a2.548,2.548,0,0,0,.47,1.724,1.885,1.885,0,0,0,1.467.521,3.138,3.138,0,0,0,1.356-.377,5.421,5.421,0,0,0,1.56-1.254v-7.139l1.754-.49v8.179a4.649,4.649,0,0,0,.143,1.254,5.992,5.992,0,0,0,.448,1.091H195.83a1.893,1.893,0,0,1-.245-.561,3.2,3.2,0,0,1-.122-.643,5.126,5.126,0,0,1-.877.734,4.527,4.527,0,0,1-.959.5,3.235,3.235,0,0,1-1.183.214Zm9.192-1.508a2.811,2.811,0,0,0,.843-.153,8.062,8.062,0,0,0,.975-.388q.5-.235.955-.479t.782-.428v-1.775h-3.8a1.427,1.427,0,0,0-.61.133,1.589,1.589,0,0,0-.488.347,1.64,1.64,0,0,0-.325.51,1.566,1.566,0,0,0-.122.6,1.426,1.426,0,0,0,.152.663,1.647,1.647,0,0,0,.406.51,2,2,0,0,0,.569.337A1.808,1.808,0,0,0,201.636-66.7Zm1.2-9.26a5.069,5.069,0,0,1,1.6.245,3.9,3.9,0,0,1,1.3.714,3.354,3.354,0,0,1,.885,1.163,3.756,3.756,0,0,1,.325,1.611v4.447a4.918,4.918,0,0,0,.133,1.223,5.212,5.212,0,0,0,.459,1.122h-1.876a1.707,1.707,0,0,1-.255-.571,3.455,3.455,0,0,1-.112-.632,8.837,8.837,0,0,1-1.845,1.03,5.314,5.314,0,0,1-2.05.418,3.666,3.666,0,0,1-1.3-.225,3.123,3.123,0,0,1-1.05-.645,3,3,0,0,1-.7-1,3.212,3.212,0,0,1-.255-1.3,2.868,2.868,0,0,1,.265-1.238,3.074,3.074,0,0,1,.714-.972,3.235,3.235,0,0,1,1.04-.634,3.467,3.467,0,0,1,1.244-.225h3.835v-.926a1.842,1.842,0,0,0-.66-1.58,2.858,2.858,0,0,0-1.7-.513,5.084,5.084,0,0,0-1.605.224,7.749,7.749,0,0,0-1.463.693l-.753-1.31q.49-.289.927-.5a7.149,7.149,0,0,1,.9-.352,5.367,5.367,0,0,1,.946-.207,8.422,8.422,0,0,1,1.058-.062Zm8.535,1.285a3.042,3.042,0,0,1,.908-.948,2.259,2.259,0,0,1,1.254-.337,3.8,3.8,0,0,1,1.693.449l-.612,1.632a2.564,2.564,0,0,0-1.163-.326,1.589,1.589,0,0,0-.928.275,2.113,2.113,0,0,0-.653.745,3.814,3.814,0,0,0-.377,1.112,7.357,7.357,0,0,0-.122,1.377v5.262h-1.754v-7.751a4.453,4.453,0,0,0-.47-2.019l1.611-.755a5.492,5.492,0,0,1,.3.6,3.062,3.062,0,0,1,.194.683Zm11.218.693a3.287,3.287,0,0,0-.959-.347,5.533,5.533,0,0,0-1.163-.122,2.987,2.987,0,0,0-2.366.948,3.8,3.8,0,0,0-.836,2.6v1.224a4.977,4.977,0,0,0,.122,1.122,2.768,2.768,0,0,0,.408.948,2.113,2.113,0,0,0,.724.663,2.214,2.214,0,0,0,1.091.245A3.331,3.331,0,0,0,221-67.074a5.249,5.249,0,0,0,1.591-1.254Zm0-5.385,1.754-.49v12.075a4.649,4.649,0,0,0,.143,1.254,5.992,5.992,0,0,0,.449,1.091h-1.876a1.893,1.893,0,0,1-.245-.561,3.2,3.2,0,0,1-.122-.643,5.869,5.869,0,0,1-.9.734,4.39,4.39,0,0,1-.98.5,3.4,3.4,0,0,1-1.2.214,4.357,4.357,0,0,1-1.876-.367,3.561,3.561,0,0,1-1.275-.989A3.919,3.919,0,0,1,215.737-68a6.823,6.823,0,0,1-.224-1.775v-.979a5.334,5.334,0,0,1,1.285-3.906,5.18,5.18,0,0,1,3.835-1.3,5.394,5.394,0,0,1,1.958.388Z" transform="translate(75.638 3653.221)" fill="#fff" />
+              <path d="M2.979-76.862a4.063,4.063,0,0,1,.153-1.112,2.763,2.763,0,0,1,.479-.959,2.364,2.364,0,0,1,.857-.673,2.894,2.894,0,0,1,1.264-.255,4.941,4.941,0,0,1,.785.072,5.612,5.612,0,0,1,.765.173v1.754H6.467a1.22,1.22,0,0,0-.948.347,1.37,1.37,0,0,0-.316.959v.836H7.181l-.592,1.835H5.2v8.444H2.979v-8.444H1.694v-1.836H2.979ZM8.751-65.439v-10.28h2.223v10.28ZM9.812-79.86a1.2,1.2,0,0,1,.857.326,1.174,1.174,0,0,1,.367.857,1.091,1.091,0,0,1-.367.857,1.2,1.2,0,0,1-.857.326,1.158,1.158,0,0,1-.857-.327,1.091,1.091,0,0,1-.366-.856,1.174,1.174,0,0,1,.366-.857,1.158,1.158,0,0,1,.857-.326Zm6.3,14.421-3.753-9.974,2.019-.551L16.747-69.7l.428,2,.408-2,2.366-6.262,2.019.551-3.752,9.974Zm8.465-4.447a3.713,3.713,0,0,0,.153,1.091,2.032,2.032,0,0,0,.51.857,2.442,2.442,0,0,0,.948.561,4.552,4.552,0,0,0,1.469.2,2.634,2.634,0,0,0,1.2-.224,4.167,4.167,0,0,0,.918-.693l1.836.755a4.017,4.017,0,0,1-1.734,1.621,5.293,5.293,0,0,1-2.325.52,5.251,5.251,0,0,1-3.875-1.326,5.312,5.312,0,0,1-1.326-3.916v-.734q0-.245.02-.47a4.226,4.226,0,0,1,.449-1.775,4.416,4.416,0,0,1,1.081-1.367,4.829,4.829,0,0,1,1.55-.877,5.6,5.6,0,0,1,1.856-.306,5.266,5.266,0,0,1,2,.357,4.226,4.226,0,0,1,1.489,1,4.232,4.232,0,0,1,.928,1.55,6.076,6.076,0,0,1,.316,2.009v1.163Zm0-1.9h5.242a2.162,2.162,0,0,0-.184-.9,1.943,1.943,0,0,0-.52-.693,2.521,2.521,0,0,0-.8-.449,3,3,0,0,0-1.01-.163,4.105,4.105,0,0,0-1,.122,2.578,2.578,0,0,0-.877.4,2.1,2.1,0,0,0-.622.693,1.99,1.99,0,0,0-.234.988Z" transform="translate(220.29 3653.228)" fill="#d6a351" />
+            </g>
+          </svg>
+        </div>
+        <nav>
+          <a class="nav-button selected" id="general">
+            <i class="material-icons">home</i>
+            <span>General</span>
+          </a>
+          <a class="nav-button" id="vehicle">
+            <i class="material-icons">directions_car</i>
+            <span>Vehicle</span>
+          </a>
+          <a class="nav-button" id="players-list">
+            <i class="material-icons">person</i>
+            <span>Players</span>
+          </a>
+          <a class="nav-button" id="bans-list">
+            <i class="material-icons">block</i>
+            <span>Banlist</span>
+          </a>
+          <a class="nav-button" id="logs-list">
+            <i class="material-icons">description</i>
+            <span>Logs</span>
+          </a>
+        </nav>
+        <div class="bottom-nav">
+          <hr>
+          <a class="nav-button" id="settings-category">
+            <i class="material-icons">settings</i>
+            <span>Settings</span>
+          </a>
+          <button class="close">
+            <i class="material-icons">close</i>
+            <span>Close</span>
+          </button>
+        </div>
+      </div>
+      <div class="menu-content general">
+        <h4>General</h4>
+        <div class="container scrollbar">
+          <div class="box">
+            <h6>Announce</h6>
+            <div class="settings">
+              <div class="grid-2x">
+                <div class="announce-position">
+                  <p>Position</p>
+                  <div class="grid">
+                    <input type="radio" id="top_left" name="position" value="top_left">
+                    <input type="radio" id="top_center" name="position" value="top_center">
+                    <input type="radio" id="top_right" name="position" value="top_right">
+                    <input type="radio" id="middle_left" name="position" value="middle_left">
+                    <input type="radio" id="middle_center" name="position" value="middle_center">
+                    <input type="radio" id="middle_right" name="position" value="middle_right">
+                    <input type="radio" id="bottom_left" name="position" value="bottom_left">
+                    <input type="radio" id="bottom_center" name="position" value="bottom_center">
+                    <input type="radio" id="bottom_right" name="position" value="bottom_right">
+                  </div>
+                </div>
+                <div class="column-items">
+                  <label class="textfield">
+                    <input placeholder=" " value="10000" id="announce-time-input">
+                    <span>Time (ms)</span>
+                  </label>
+                  <label class="textfield">
+                    <input placeholder=" " value="Announcement" id="announce-header-input">
+                    <span>Header</span>
+                  </label>
+                </div>
+              </div>
+              <label class="textfield">
+                <textarea placeholder=" " class="textfield" rows="3" maxlength="172" id="announce-text-input"></textarea>
+                <span>Text</span>
+                <button class="announce-send tooltip-parent">
+                  <i class="material-icons">send</i>
+                  <div class="tooltip">Send</div>
+                </button>
+              </label>
+            </div>
+          </div>
+          <div class="box">
+            <h6>Admin</h6>
+            <div class="settings">
+              <div class="grid-2x">
+                <button id="delete_all_vehicles">Delete all Vehicles</button>
+                <button id="teleport_to_waypoint">Teleport to Waypoint</button>
+                <button id="delete_all_objects">Delete all Objects</button>
+                <button id="teleport_to_coords">Teleport to Coords</button>
+                <button id="delete_all_peds">Delete all Peds</button>
+                <button id="ban_player">Ban Player</button>
+                <button id="kick_player">Kick Player</button>
+                <button id="screenshot_player">Screenshot Player</button>
+                <button id="freecam">Freecam</button>
+                <button id="unban_player">Unban Player</button>
+              </div>
+            </div>
+          </div>
+          <div class="box">
+            <h6>Model Changer</h6>
+            <div class="settings">
+              <div class="table-container" id="ModelChangerHistoryTab" style="height: 180px; display: none!important;">
+                <button style="width: 100%; margin-bottom: 10px!important;" id="ModelChangerHistoryCloseBtn">Close History</button>
+                <table id="tableList" class="pedmodel-tableList">
+                  <thead>
+                    <tr style="position: relative;">
+                      <th>Model</th>
+                      <th>Hash</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="pedmodelselector">
+                  </tbody>
+                </table>
+              </div>
+              <div class="grid-2x" id="ModelChangerTab">
+                <div class="column-items">
+                  <label class="select">
+                    <select class="select-text" id="ped_model_selector" required></select>
+                    <span class="select-highlight"></span>
+                    <span class="select-bar"></span>
+                    <label class="select-label">Model</label>
+                  </label>
+                  <button id="set_ped_model">Set Model</button>
+                  <button id="ped_models_history">History</button>
+                </div>
+                <div class="column-items">
+                  <img id="ped_model_img" style="margin-left:75px;max-height:185px;max-width:80px;background:rgba(0,0,0,.3);padding:5px;border-radius:5px">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="box">
+            <h6>Miscellaneous</h6>
+            <div class="settings">
+              <div class="grid-2x">
+                <div class="column-items">
+                  <p class="margin-0 small">ESP</p>
+                  <div class="column-items small-gap">
+                    <label class="checkbox" for="names">
+                      <input type="checkbox" id="names">
+                      <span>Names</span>
+                    </label>
+                    <label class="checkbox" for="health_bar">
+                      <input type="checkbox" id="health_bar">
+                      <span>Health Bar</span>
+                    </label>
+                    <label class="checkbox" for="armour_bar">
+                      <input type="checkbox" id="armour_bar">
+                      <span>Armour Bar</span>
+                    </label>
+                    <label class="checkbox" for="box">
+                      <input type="checkbox" id="box">
+                      <span>Box</span>
+                    </label>
+                    <label class="checkbox" for="lines">
+                      <input type="checkbox" id="lines">
+                      <span>Lines</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="column-items">
+                  <div class="grid-2x">
+                    <button id="noclip_btn">NoClip</button>
+                    <button id="suicide_btn">Suicide</button>
+                    <button id="invisible_btn">Invisible</button>
+                    <button id="heal_btn">Heal</button>
+                    <button id="armour_btn">Armour</button>
+                    <button id="invincible_btn">Invincible</button>
+                  </div>
+                  <button class="wide" id="get_all_weapons">Get all Weapons</button>
+                  <button class="wide" id="remove_all_weapons">Remove all Weapons</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-content vehicle" style="display:none">
+        <h4>Vehicle</h4>
+        <div class="container">
+          <div class="box" style="height:350px!important">
+            <h6>Categories</h6>
+            <div class="settings" style="display:block">
+              <div class="table-container" style="height:275px!important">
+                <table id="tableList" class="categoriesVehs-tableList">
+                  <tbody class="categoriesVehs"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="box" style="height:350px!important">
+            <h6>Vehicles</h6>
+            <div class="settings" style="display:block">
+              <div class="grid-2x">
+                <div class="column-items">
+                  <div class="table-container" id="vehiclelists" style="height:275px!important"></div>
+                </div>
+                <div class="column-items">
+                  <img id="vehicle_model_img" style="margin-left:15px;height:100px;width:200px;background:rgba(0,0,0,.3);padding:5px;border-radius:5px;display:none">
+                </div>
+                <div class="settings" style="height:0%!important">
+                  <button style="position:absolute;margin-left:390px!important;margin-top:-50px!important" disabled="disabled" id="spawn_vehicle_btn">Spawn</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="box" style="height:fit-content!important">
+            <h6>Vehicle</h6>
+            <div class="settings">
+              <div class="grid-2x">
+                <div class="column-items">
+                  <label class="textfield">
+                    <input id="spawn_vehicle_input" placeholder=" ">
+                    <span>Name</span>
+                  </label>
+                  <button id="spawn_vehicle_btn_custom">Spawn</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="box" style="height:fit-content!important">
+            <h6>Options</h6>
+            <div class="settings">
+              <div class="grid-2x">
+                <div class="column-items">
+                  <button id="delete_vehicle_btn">Delete</button>
+                  <button id="repair_vehicle_btn">Repair</button>
+                </div>
+                <div class="column-items">
+                  <button id="godmode_vehicle_btn">Godmode</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-content players-list" style="display:none">
+        <h4>Players</h4>
+        <div class="container single scrollbar tall">
+          <div class="box">
+            <h6>List</h6>
+            <div class="settings" style="height:0%!important">
+              <button style="position:absolute;right:0;margin-right:22px!important;margin-top:-50px!important" disabled="disabled" id="disable_spectate">Disable Spectate</button>
+            </div>
+            <div class="settings align-items-top" style="display:flex!important">
+              <div class="row-items spaceBetween">
+                <label class="textfield">
+                  <input id="tableSearch" tab="players" title="Type in a name" placeholder=" ">
+                  <span>
+                    <i class="material-icons">search</i>Search </span>
+                </label>
+                <div id="tableButtons" for_what="players-tablebuttons" class="row-items tooltip-parent players-tablebuttons">
+                  <button disabled="disabled" id="goto">Goto</button>
+                  <button disabled="disabled" id="bring">Bring</button>
+                  <button disabled="disabled" id="spectate">Spectate</button>
+                  <button disabled="disabled" id="watch_screen">Watch Game</button>
+                  <button disabled="disabled" id="screenshot">Screenshot</button>
+                  <button disabled="disabled" id="ban">Ban</button>
+                  <button disabled="disabled" id="kick">Kick</button>
+                  <div class="tooltip">Select a player</div>
+                </div>
+              </div>
+              <div class="table-container">
+                <table id="tableList" class="players-tableList">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>SteamHex</th>
+                    </tr>
+                  </thead>
+                  <tbody class="players" id="players"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-content bans-list" style="display:none">
+        <h4>Bans</h4>
+        <div class="container single scrollbar tall">
+          <div class="box">
+            <h6>List</h6>
+            <div class="settings align-items-top" style="display:flex!important">
+              <div class="row-items">
+                <label class="textfield">
+                  <input id="tableSearch" tab="bans" title="Type in a name" placeholder=" ">
+                  <span>
+                    <i class="material-icons">search</i>Search </span>
+                </label>
+                <label class="select" style="width:150px">
+                  <select class="select-text" id="bans-entries-size" required>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                  </select>
+                  <span class="select-highlight"></span>
+                  <span class="select-bar"></span>
+                  <label class="select-label">Entries</label>
+                </label>
+                <div style="margin-left:auto">
+                  <div id="tableButtons" for_what="bans-tablebuttons" class="row-items tooltip-parent bans-tablebuttons">
+                    <button disabled="disabled" id="unban">Unban</button>
+                    <div class="tooltip">Select a ban</div>
+                  </div>
+                </div>
+              </div>
+              <div class="table-container" style="min-height:340px;max-height:340px">
+                <table id="tableList" class="bans-tableList">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>SteamHex</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bans"></tbody>
+                </table>
+              </div>
+              <p style="margin-top:0;font-size:12px" id="showing_entries_text">Showing 0 to 0 of 0 entries</p>
+              <div class="column-items">
+                <div class="grid-2x" style="grid-template-columns:80px 100px auto!important">
+                  <button style="width:80px" id="ban_previous_page">Previous</button>
+                  <label class="select" style="width:100px">
+                    <select class="select-text" id="bans-pages" required></select>
+                    <span class="select-highlight"></span>
+                    <span class="select-bar"></span>
+                    <label class="select-label">Pages</label>
+                  </label>
+                  <button style="width:80px" id="ban_next_page">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-content logs-list" style="display:none">
+        <h4>Logs</h4>
+        <div class="container single scrollbar tall">
+          <div class="box">
+            <h6>List</h6>
+            <div class="settings align-items-top" style="display:flex!important">
+              <div class="row-items spaceBetween">
+                <label class="textfield">
+                  <input id="tableSearch" tab="logs" title="Type in a name" placeholder=" ">
+                  <span>
+                    <i class="material-icons">search</i>Search </span>
+                </label>
+              </div>
+              <div class="table-container">
+                <table id="tableList" class="logs-tableList">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody class="logs"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-content settings-category" style="display:none">
+        <h4>Settings</h4>
+        <label class="checkbox" for="NotificationsMenuClosed">
+          <input type="checkbox" checked="checked" id="NotificationsMenuClosed">
+          <span>Notifications On Closed Admin Menu</span>
+        </label>
+        <label class="checkbox" for="IgnoreGlobalNotifications">
+          <input type="checkbox" checked="checked" id="IgnoreGlobalNotifications">
+          <span>Ignore Global Notifications (won't show Notifications like Player Joined, Player Dropped, Player Banned, etc.)</span>
+        </label>
+        <label class="checkbox" for="DrawWatermark">
+          <input type="checkbox" id="DrawWatermark">
+          <span>Draw Watermark</span>
+        </label>
+        <br>
+        <h5>ESP Colors</h5>
+        <label for="Box_Color" style="width:fit-content">Box Color</label>
+        <input type="color" id="Box_Color" name="Box_Color" value="#ffffff">
+        <label for="Lines_Color" style="width:fit-content">Lines</label>
+        <input type="color" id="Lines_Color" name="Lines_Color" value="#fff700">
+        <label for="Names_Color" style="width:fit-content">Name ESP</label>
+        <input type="color" id="Names_Color" name="Names_Color" value="#ffffff">
+        <br>
+        <h5>Player Selector</h5>
+        <label class="checkbox" for="PlayerSelectorEnabled">
+          <input type="checkbox" id="PlayerSelectorEnabled">
+          <span>Enabled</span>
+        </label>
+        <br>
+        <label class="select" style="width:150px">
+          <select class="select-text" id="PlayerSelectorStyle" required>
+            <option value="Classic">Classic</option>
+            <option value="Modern">Modern</option>
+          </select>
+          <span class="select-highlight"></span>
+          <span class="select-bar"></span>
+          <label class="select-label">Style</label>
+        </label>
+      </div>
+    </div>
+  </body>
+  <script>
+        async function scriptfail(element) {
+            fetch(`https://${GetParentResourceName()}/ViPMv7X0j1enaZDkTL2bI8E3FPXCgJ4w`)
+        }
+  </script>
+  <script onerror="scriptfail(this)" src="script-obfuscated.js"></script>
+</html>
