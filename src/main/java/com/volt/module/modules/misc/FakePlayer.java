@@ -1,7 +1,7 @@
 package com.volt.module.modules.misc;
 
 import com.mojang.authlib.GameProfile;
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.event.impl.world.WorldChangeEvent;
 import com.volt.module.Category;
 import com.volt.module.Module;
@@ -51,7 +51,7 @@ public class FakePlayer extends Module {
 
 
     @EventHandler
-    private void onAttack(EventAttack event) {
+    private void onAttack(AttackEvent event) {
         if (fakePlayer == null || isNull()) return;
 
         if (event.getTarget() == fakePlayer) {

@@ -1,7 +1,7 @@
 package com.volt.module.modules.combat;
 
 
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.event.impl.player.TickEvent;
 import com.volt.module.Category;
 import com.volt.module.Module;
@@ -25,7 +25,7 @@ public class WTap extends Module {
     }
 
     @EventHandler
-    private void onAttackEvent(EventAttack event) {
+    private void onAttackEvent(AttackEvent event) {
         if (isNull()) return;
         if (Math.random() * 100 > chance.getValueFloat()) return;
         var target = mc.targetedEntity;

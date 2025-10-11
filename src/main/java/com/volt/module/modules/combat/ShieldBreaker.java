@@ -18,23 +18,28 @@ import net.minecraft.util.hit.EntityHitResult;
 
 public final class ShieldBreaker extends Module {
     public static boolean breakingShield = false;
-    private final NumberSetting reactionDelay = new NumberSetting("Reaction Delay", 0, 250, 50, 5);
-    private final NumberSetting swapDelay = new NumberSetting("Swap Delay", 0, 500, 100, 10);
-    private final NumberSetting attackDelay = new NumberSetting("Attack Delay", 0, 500, 100, 10);
-    private final NumberSetting swapBackDelay = new NumberSetting("Swap Back Delay", 0, 500, 150, 10);
+
+    private final NumberSetting reactionDelay = new NumberSetting("Reaction Delay", 0, 250, 0, 5);
+    private final NumberSetting swapDelay = new NumberSetting("Swap Delay", 0, 500, 50, 10);
+    private final NumberSetting attackDelay = new NumberSetting("Attack Delay", 0, 500, 50, 10);
+    private final NumberSetting swapBackDelay = new NumberSetting("Swap Back Delay", 0, 500, 100, 10);
+
     private final BooleanSetting revertSlot = new BooleanSetting("Revert Slot", true);
     private final BooleanSetting rayTraceCheck = new BooleanSetting("Check Facing", true);
     private final BooleanSetting disableIfUsingItem = new BooleanSetting("Disable if using item", true);
-    private final BooleanSetting ignoreFriends = new BooleanSetting("Ignore friends", false);
+    private final BooleanSetting ignoreFriends = new BooleanSetting("Ignore Friends", false);
+
     private final TimerUtil reactionTimer = new TimerUtil();
     private final TimerUtil swapTimer = new TimerUtil();
     private final TimerUtil attackTimer = new TimerUtil();
     private final TimerUtil swapBackTimer = new TimerUtil();
+
     private int savedSlot = -1;
 
     public ShieldBreaker() {
-        super("Shield Breaker", "Automatically breaks the opponents shield", -1, Category.COMBAT);
-        this.addSettings(reactionDelay, swapDelay, attackDelay, swapBackDelay, revertSlot, rayTraceCheck, disableIfUsingItem, ignoreFriends);
+        super("Shield Breaker", "Automatically breaks the opponent's shield", -1, Category.COMBAT);
+        this.addSettings(reactionDelay, swapDelay, attackDelay, swapBackDelay,
+                revertSlot, rayTraceCheck, disableIfUsingItem, ignoreFriends);
     }
 
     @EventHandler
@@ -44,7 +49,8 @@ public final class ShieldBreaker extends Module {
         if (mc.player.isUsingItem() && disableIfUsingItem.getValue()) return;
         if (!(mc.crosshairTarget instanceof EntityHitResult entityHit)) return;
         if (!(entityHit.getEntity() instanceof PlayerEntity target)) return;
-        if (FriendManager.isFriend(target.getUuid())) return;
+        if (FriendManager.isFriend(target.getUuid()) && ignoreFriends.getValue()) return;
+
         boolean isBlocking = target.isBlocking() && target.isHolding(Items.SHIELD);
         boolean canBreak = !rayTraceCheck.getValue() || !CombatUtil.isShieldFacingAway(target);
 
@@ -59,14 +65,20 @@ public final class ShieldBreaker extends Module {
                     }
                 }
             }
-            if (mc.player.getMainHandStack().getItem() instanceof AxeItem && attackTimer.hasElapsedTime(attackDelay.getValueInt())) {
-                ((MinecraftClientAccessor) mc).invokeDoAttack();
-                attackTimer.reset();
-                swapBackTimer.reset();
-                breakingShield = false;
+
+            if (mc.player.getMainHandStack().getItem() instanceof AxeItem) {
+                if (attackTimer.hasElapsedTime(attackDelay.getValueInt()) || savedSlot == -1) {
+                    ((MinecraftClientAccessor) mc).invokeDoAttack();
+                    attackTimer.reset();
+                    swapBackTimer.reset();
+                    breakingShield = false;
+                }
             }
         } else {
-            reactionTimer.reset();
+            if (!reactionTimer.hasElapsedTime(reactionDelay.getValueInt() / 2)) {
+                reactionTimer.reset();
+            }
+
             if (savedSlot != -1 && swapBackTimer.hasElapsedTime(swapBackDelay.getValueInt())) {
                 if (revertSlot.getValue()) {
                     mc.player.getInventory().selectedSlot = savedSlot;
@@ -86,4 +98,3 @@ public final class ShieldBreaker extends Module {
         super.onDisable();
     }
 }
-

@@ -61,12 +61,11 @@ public class MinecraftClientMixin implements IMinecraft {
         }
     }
 
-
     @Inject(method = "stop", at = @At("HEAD"))
     public void stopInject(CallbackInfo ci) {
         if (Volt.INSTANCE != null) {
             ProfileManager profileManager = Volt.INSTANCE.getProfileManager();
-            profileManager.saveProfile("default");
+            profileManager.saveProfile("default", true);
         }
     }
 
