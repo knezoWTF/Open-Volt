@@ -97,6 +97,8 @@ public final class KeyAnchor extends Module {
         BlockPos targetBlock = blockHit.getBlockPos();
         var blockState = mc.world.getBlockState(targetBlock);
 
+        if (blockState.isAir()) return;
+
         if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
             int charges = blockState.get(RespawnAnchorBlock.CHARGES);
             if (charges > 0) {
