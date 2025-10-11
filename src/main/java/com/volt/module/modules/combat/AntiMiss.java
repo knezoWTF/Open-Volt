@@ -1,6 +1,6 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import meteordevelopment.orbit.EventHandler;
@@ -12,7 +12,7 @@ public final class AntiMiss extends Module {
     }
 
     @EventHandler
-    private void onAttackEvent(EventAttack event) {
+    private void onAttackEvent(AttackEvent event) {
         if (isNull()) return;
 
         assert mc.crosshairTarget != null;

@@ -1,6 +1,6 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.event.impl.player.TickEvent;
 import com.volt.mixin.MinecraftClientAccessor;
 import com.volt.module.Category;
@@ -33,7 +33,7 @@ public final class BreachSwap extends Module {
     }
 
     @EventHandler
-    public void onAttack(EventAttack event) {
+    public void onAttack(AttackEvent event) {
         if (isNull() || isSwappingAttack) return;
         if (onlyOnGround.getValue() && !mc.player.isOnGround()) return;
         if (ShieldBreaker.breakingShield) return;

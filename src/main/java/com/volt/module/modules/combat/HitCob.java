@@ -1,6 +1,6 @@
 package com.volt.module.modules.combat;
 
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import meteordevelopment.orbit.EventHandler;
@@ -24,7 +24,7 @@ public class HitCob extends Module {
     }
 
     @EventHandler
-    private void onAttack(EventAttack event) {
+    private void onAttack(AttackEvent event) {
         if (isNull() || !(event.getTarget() instanceof PlayerEntity target)) return;
 
         int webSlot = findCobwebInHotbar();

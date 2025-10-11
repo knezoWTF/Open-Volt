@@ -1,7 +1,7 @@
 package com.volt.module.modules.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.volt.event.impl.player.EventAttack;
+import com.volt.event.impl.player.AttackEvent;
 import com.volt.event.impl.render.EventRender3D;
 import com.volt.module.Category;
 import com.volt.module.Module;
@@ -61,7 +61,7 @@ public final class HitParticles extends Module {
     }
 
     @EventHandler
-    private void onAttack(EventAttack e) {
+    private void onAttack(AttackEvent e) {
         Entity t = e.getTarget();
         if (!(t instanceof LivingEntity)) return;
 
