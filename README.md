@@ -1,3 +1,5 @@
+# hacked by intbuffer & roseline - we are the best - 1337!!! #mullvad #urbanvpn
+
 https://discord.gg/qwKegVhc9H
 # OpenVolt
 
