@@ -1,11 +1,20 @@
 package com.volt.gui.components;
 
-
 import net.minecraft.client.gui.DrawContext;
 
 import java.awt.*;
 
 public class UIRenderer {
+
+    public static void renderGlow(DrawContext context, int x, int y, int width, int height, Color glowColor, float intensity) {
+        for (int layer = 2; layer >= 0; layer--) {
+            float alpha = intensity * (0.1f + 0.2f * (float) layer / 2);
+            int expand = layer;
+
+            Color layerColor = new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), (int) (alpha * 255));
+            context.fill(x - expand, y - expand, x + width + expand, y + height + expand, layerColor.getRGB());
+        }
+    }
 
     public static void renderRoundedRect(DrawContext context, int x, int y, int width, int height, int radius, Color color) {
         context.fill(x + radius, y, x + width - radius, y + height, color.getRGB());
@@ -42,6 +51,8 @@ public class UIRenderer {
     }
 
     public static void renderSlider(DrawContext context, int x, int y, int width, int height, double normalized, Color trackColor, Color fillColor) {
+        renderGlow(context, x, y, width, height, fillColor, 0.02f);
+
         context.fill(x, y, x + width, y + height, trackColor.getRGB());
 
         float clamped = (float) Math.max(0.0, Math.min(1.0, normalized));
@@ -52,22 +63,13 @@ public class UIRenderer {
     }
 
     public static void renderCheckbox(DrawContext context, int x, int y, int size, boolean enabled, Color borderColor, Color fillColor) {
+        if (enabled) {
+            renderGlow(context, x, y, size, size, borderColor, 0.02f);
+        }
+
         context.fill(x, y, x + size, y + size, fillColor.getRGB());
 
         context.drawBorder(x, y, size, size, borderColor.getRGB());
-
-        if (enabled) {
-            int checkX = x + 2;
-            int checkY = y + 6;
-
-            for (int i = 0; i < 3; i++) {
-                context.fill(checkX + i, checkY + i, checkX + i + 1, checkY + i + 1, Color.WHITE.getRGB());
-            }
-
-            for (int i = 0; i < 5; i++) {
-                context.fill(checkX + 2 + i, checkY + 2 - i, checkX + 3 + i, checkY + 3 - i, Color.WHITE.getRGB());
-            }
-        }
     }
 
     public static Color getCategoryColor(com.volt.module.Category category) {
