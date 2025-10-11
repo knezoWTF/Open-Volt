@@ -73,6 +73,7 @@ I won't accept pull requests which refactor a lot of packages or are utterly poi
 # Before pasting!
 
 Don't sell this please or at least credit Koi, Walper and me before taking our code! Thanks.
+<<<<<<< HEAD
 
 # New Files Added (as of October 2025)
 
@@ -101,3 +102,5 @@ The following files have been newly added to the repository:
 - src/main/resources/assets/mark2.png
 
 These files were added to expand the functionality, resources, and features of the client. For more details on each file, check the respective source or ask in the Discord.
+=======
+>>>>>>> parent of 436c989 (Improved code quality and performance)
