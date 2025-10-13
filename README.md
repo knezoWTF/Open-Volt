@@ -1,6 +1,6 @@
 https://discord.gg/qwKegVhc9H
 # OpenVolt
-
+FOLLOW THE LICENSE!!!!
 A 1.21.1 client (for 1.9 combat).
 
 This client is still going to be worked on.
