@@ -102,7 +102,7 @@ public final class KeyAnchor extends Module {
         if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
             int charges = blockState.get(RespawnAnchorBlock.CHARGES);
             if (charges > 0) {
-                if (swapToSword() || swapToItem(Items.TOTEM_OF_UNDYING)) {
+                if (swapToItem(Items.TOTEM_OF_UNDYING) || swapToSword()) {
                     ((MinecraftClientAccessor) mc).invokeDoItemUse();
                     scheduleRestoreOriginalSlot();
                     hasPlacedThisCycle = true;
