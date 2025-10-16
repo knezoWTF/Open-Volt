@@ -30,6 +30,7 @@ public final class HitOrbs extends Module {
     private final NumberSetting smokeIntensity = new NumberSetting("Smoke Intensity", 0.0, 2.0, 1.0, 0.1);
     private final ColorSetting color = new ColorSetting("Color", new Color(120, 240, 255, 220));
     private final List<Effect> effects = new ArrayList<>();
+
     public HitOrbs() {
         super("Hit Orbs", "Spawns orbs orbiting a target on hit", -1, Category.RENDER);
         addSettings(duration, count, orbitRadius, orbSize, smokeIntensity, color);

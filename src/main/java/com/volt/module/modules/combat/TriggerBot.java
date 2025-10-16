@@ -14,6 +14,7 @@ import com.volt.utils.math.MathUtils;
 import com.volt.utils.math.TimerUtil;
 import com.volt.utils.mc.CombatUtil;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -24,6 +25,7 @@ import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 
@@ -80,6 +82,7 @@ public final class TriggerBot extends Module {
     @EventHandler
     private void tick(TickEvent event) {
         if (isNull()) return;
+        assert mc.player != null;
         if (mc.player.isUsingItem()) return;
         if (mc.currentScreen != null) return;
 
@@ -181,6 +184,7 @@ public final class TriggerBot extends Module {
     }
 
     private boolean canCrit() {
+        assert mc.player != null;
         return !mc.player.isOnGround()
                 && mc.player.fallDistance > 0F
                 && !mc.player.isClimbing()
@@ -195,21 +199,25 @@ public final class TriggerBot extends Module {
         String mode = critMode.getMode();
 
         if (mode.equals("None")) return false;
+        assert mc.player != null;
         if (mc.player.hasStatusEffect(StatusEffects.LEVITATION)) return false;
         if (!(mc.crosshairTarget instanceof EntityHitResult entityHitResult)) return false;
         if (entityHitResult.getEntity() != target) return false;
         if (!hasTarget(entityHitResult.getEntity())) return false;
 
-
+        assert mc.world != null;
+        if (mc.world.getBlockState(mc.player.getBlockPos()).isOf(Blocks.COBWEB)) return false;
 
         boolean cooldownCharged = mc.player.getAttackCooldownProgress(0.0f) >= swordThresholdMin.getValue();
 
         return mode.equals("Strict") && canCrit() && cooldownCharged;
     }
 
+
     private boolean hasElapsedDelay() {
         if (setPreferCrits()) return false;
 
+        assert mc.player != null;
         Item heldItem = mc.player.getMainHandStack().getItem();
         float cooldown = mc.player.getAttackCooldownProgress(0.0f);
 
@@ -236,12 +244,13 @@ public final class TriggerBot extends Module {
 
     private boolean isHoldingSwordOrAxe() {
         if (!useOnlySwordOrAxe.getValue()) return true;
+        assert mc.player != null;
         Item item = mc.player.getMainHandStack().getItem();
         return item instanceof AxeItem || item instanceof SwordItem;
     }
 
     public void attack() {
-        ((MinecraftClientAccessor) mc).invokeDoAttack();
+        ((MinecraftClientAccessor)mc).invokeDoAttack();
         if (samePlayer.getValue() && target != null) {
             lastTargetUUID = target.getUuidAsString();
             samePlayerTimer.reset();

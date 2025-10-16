@@ -31,17 +31,17 @@ public class HitCob extends Module {
         if (webSlot == -1) return;
 
         BlockPos feetPos = target.getBlockPos();
-        
+
         if (mc.world.getBlockState(feetPos).getBlock() == Blocks.COBWEB) return;
         if (mc.world.getBlockState(feetPos).getBlock() == Blocks.WATER) return;
-        
+
         double distance = mc.player.getPos().distanceTo(Vec3d.ofCenter(feetPos));
         if (distance > 4.5) return;
 
         double targetSpeed = Math.hypot(target.getVelocity().x, target.getVelocity().z);
-        
+
         Vec3d knockbackDirection = target.getPos().subtract(mc.player.getPos()).normalize();
-        
+
         double knockbackDistance;
         if (targetSpeed < SPEED_STOPPED) {
             knockbackDistance = mc.player.isSprinting() ? 1.8 : 1.2;
@@ -50,20 +50,20 @@ public class HitCob extends Module {
         } else {
             knockbackDistance = mc.player.isSprinting() ? 1.2 : 0.8;
         }
-        
+
         Vec3d predictedPos = target.getPos().add(knockbackDirection.multiply(knockbackDistance));
         BlockPos predictedFeet = BlockPos.ofFloored(predictedPos);
-        
+
         if (mc.world.getBlockState(predictedFeet).getBlock() == Blocks.COBWEB) return;
         if (mc.world.getBlockState(predictedFeet).getBlock() == Blocks.WATER) return;
-        
+
         if (!mc.world.getBlockState(predictedFeet).isAir()) {
             predictedFeet = feetPos;
         }
-        
+
         BlockPos groundPos = predictedFeet.down();
         if (mc.world.getBlockState(groundPos).isAir()) return;
-        
+
         if (mc.player.getPos().distanceTo(Vec3d.ofCenter(predictedFeet)) > 4.5) return;
 
         int originalSlot = mc.player.getInventory().selectedSlot;
@@ -72,16 +72,16 @@ public class HitCob extends Module {
 
         Vec3d hitVec = Vec3d.ofCenter(groundPos).add(0, 0.5, 0);
         float[] rotation = calculateRotation(hitVec);
-        
+
         mc.player.setYaw(rotation[0]);
         mc.player.setPitch(rotation[1]);
         mc.player.getInventory().selectedSlot = webSlot;
 
         BlockHitResult hitResult = new BlockHitResult(
-            hitVec,
-            Direction.UP,
-            groundPos,
-            false
+                hitVec,
+                Direction.UP,
+                groundPos,
+                false
         );
 
         if (mc.interactionManager != null) {

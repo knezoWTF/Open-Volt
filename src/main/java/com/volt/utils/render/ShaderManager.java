@@ -51,7 +51,7 @@ public class ShaderManager {
         try {
             Identifier identifier = Identifier.of("volt", path);
             Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(identifier).orElse(null);
-            
+
             if (resource == null) {
                 System.err.println("Could not find shader: " + path);
                 return 0;

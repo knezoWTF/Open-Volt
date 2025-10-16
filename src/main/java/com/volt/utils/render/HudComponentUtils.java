@@ -287,9 +287,9 @@ public final class HudComponentUtils {
     }
 
     public record InfoItem(String key, String value, Color color) {
-            public InfoItem(String key, String value) {
-                this(key, value, null);
-            }
+        public InfoItem(String key, String value) {
+            this(key, value, null);
+        }
 
     }
 

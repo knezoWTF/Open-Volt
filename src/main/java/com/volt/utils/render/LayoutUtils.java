@@ -466,24 +466,24 @@ public final class LayoutUtils {
     }
 
     public record Padding(int top, int right, int bottom, int left) {
-            public Padding(int all) {
-                this(all, all, all, all);
-            }
+        public Padding(int all) {
+            this(all, all, all, all);
+        }
 
-            public Padding(int vertical, int horizontal) {
-                this(vertical, horizontal, vertical, horizontal);
-            }
+        public Padding(int vertical, int horizontal) {
+            this(vertical, horizontal, vertical, horizontal);
+        }
 
     }
 
     public record Margin(int top, int right, int bottom, int left) {
-            public Margin(int all) {
-                this(all, all, all, all);
-            }
+        public Margin(int all) {
+            this(all, all, all, all);
+        }
 
-            public Margin(int vertical, int horizontal) {
-                this(vertical, horizontal, vertical, horizontal);
-            }
+        public Margin(int vertical, int horizontal) {
+            this(vertical, horizontal, vertical, horizontal);
+        }
 
     }
 

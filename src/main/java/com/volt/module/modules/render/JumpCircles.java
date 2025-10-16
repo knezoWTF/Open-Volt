@@ -33,6 +33,7 @@ public final class JumpCircles extends Module {
     private final NumberSetting glowRadius = new NumberSetting("Glow Radius", 0.1, 1.0, 0.3, 0.05);
     private final Deque<Ring> rings = new ArrayDeque<>();
     private boolean wasOnGround = true;
+
     public JumpCircles() {
         super("Jump Circles", "Animated ring displayed when jumping", -1, Category.RENDER);
         addSettings(targets, duration, maxRadius, thickness, segments, color, glow, glowIntensity, glowRadius);

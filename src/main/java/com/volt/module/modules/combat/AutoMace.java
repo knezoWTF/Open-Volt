@@ -124,31 +124,31 @@ public final class AutoMace extends Module {
             fallStartY = Math.max(fallStartY == -1 ? currentY : fallStartY, currentY);
         }
 
-      if (stunSlam.getValue()) {
-          double fallDist = fallStartY == -1 ? 0 : Math.max(0, fallStartY - currentY);
+        if (stunSlam.getValue()) {
+            double fallDist = fallStartY == -1 ? 0 : Math.max(0, fallStartY - currentY);
 
-          if (comboState == 1) {
-              comboState = 2;
-              hasExecuted = true;
-              return;
-          }
+            if (comboState == 1) {
+                comboState = 2;
+                hasExecuted = true;
+                return;
+            }
 
-          if (hasExecuted || !currentlyFalling || fallDist < minFallDistance.getValueFloat()) return;
-          if (!(mc.targetedEntity instanceof PlayerEntity target)) return;
-          if (!target.isAlive()) return;
+            if (hasExecuted || !currentlyFalling || fallDist < minFallDistance.getValueFloat()) return;
+            if (!(mc.targetedEntity instanceof PlayerEntity target)) return;
+            if (!target.isAlive()) return;
 
-          if (previousSlot == -1) previousSlot = mc.player.getInventory().selectedSlot;
+            if (previousSlot == -1) previousSlot = mc.player.getInventory().selectedSlot;
 
-          boolean hasShield = target.isHolding(Items.SHIELD) && target.isBlocking();
+            boolean hasShield = target.isHolding(Items.SHIELD) && target.isBlocking();
 
-          if (hasShield) {
-              if (switchToAxe()) {
-                  ((MinecraftClientAccessor) mc).invokeDoAttack();
-                  comboState = 1;
-                  return;
-              }
-          }
-      }
+            if (hasShield) {
+                if (switchToAxe()) {
+                    ((MinecraftClientAccessor) mc).invokeDoAttack();
+                    comboState = 1;
+                    return;
+                }
+            }
+        }
         hasExecuted = true;
     }
 

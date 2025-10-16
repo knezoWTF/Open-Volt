@@ -9,7 +9,13 @@ import com.volt.module.modules.client.ClickGUIModule;
 import com.volt.module.modules.client.Client;
 import com.volt.profiles.ProfileManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.hit.HitResult;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +28,15 @@ public class MinecraftClientMixin implements IMinecraft {
 
     @Shadow
     public ClientWorld world;
+    @Shadow
+    public HitResult crosshairTarget;
+    @Shadow
+    public ClientPlayerEntity player;
+    @Shadow
+    public ClientPlayerInteractionManager interactionManager;
+    @Shadow
+    @Final
+    private RenderTickCounter.Dynamic renderTickCounter;
 
     @Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
     public void setTitle(CallbackInfoReturnable<String> cir) {

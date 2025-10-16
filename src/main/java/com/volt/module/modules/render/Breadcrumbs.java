@@ -33,6 +33,7 @@ public final class Breadcrumbs extends Module {
     private final Deque<Particle> particles = new ArrayDeque<>();
     private Vec3d lastPos = null;
     private int tickCounter = 0;
+
     public Breadcrumbs() {
         super("Breadcrumbs", "Spawns particles when walking", -1, Category.RENDER);
         addSettings(spawnRate, lifetime, particleSize, spread, physics, gravity, color);

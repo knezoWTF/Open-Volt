@@ -96,9 +96,12 @@ public class Notifications extends Module {
         context.fill(x, y, x + 3, y + NOTIFICATION_HEIGHT, accentColor.getRGB());
 
         Color statusColor = switch (notification.getType()) {
-            case MODULE_ENABLED -> new Color(ENABLED_COLOR.getRed(), ENABLED_COLOR.getGreen(), ENABLED_COLOR.getBlue(), alpha);
-            case MODULE_DISABLED -> new Color(DISABLED_COLOR.getRed(), DISABLED_COLOR.getGreen(), DISABLED_COLOR.getBlue(), alpha);
-            case BUFF_EXPIRED -> new Color(BUFF_EXPIRED_COLOR.getRed(), BUFF_EXPIRED_COLOR.getGreen(), BUFF_EXPIRED_COLOR.getBlue(), alpha);
+            case MODULE_ENABLED ->
+                    new Color(ENABLED_COLOR.getRed(), ENABLED_COLOR.getGreen(), ENABLED_COLOR.getBlue(), alpha);
+            case MODULE_DISABLED ->
+                    new Color(DISABLED_COLOR.getRed(), DISABLED_COLOR.getGreen(), DISABLED_COLOR.getBlue(), alpha);
+            case BUFF_EXPIRED ->
+                    new Color(BUFF_EXPIRED_COLOR.getRed(), BUFF_EXPIRED_COLOR.getGreen(), BUFF_EXPIRED_COLOR.getBlue(), alpha);
         };
 
         FontRenderer interFont = Volt.INSTANCE.fontManager.getSize(12, FontManager.Type.Inter);

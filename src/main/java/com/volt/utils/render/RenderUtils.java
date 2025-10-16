@@ -391,11 +391,11 @@ public final class RenderUtils {
 
     public static void fillWithGlow(DrawContext context, int x1, int y1, int x2, int y2, int color, float glowIntensity) {
         Color c = new Color(color, true);
-        
+
         for (int pass = 0; pass < 4; pass++) {
             int glowExpand = 0;
             int glowAlpha = 0;
-            
+
             switch (pass) {
                 case 0:
                     glowExpand = 3;
@@ -414,21 +414,21 @@ public final class RenderUtils {
                     glowAlpha = c.getAlpha();
                     break;
             }
-            
+
             int glowColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), glowAlpha).getRGB();
             context.fill(x1 - glowExpand, y1 - glowExpand, x2 + glowExpand, y2 + glowExpand, glowColor);
         }
     }
 
-    public static void drawTextWithGlow(DrawContext context, net.minecraft.client.font.TextRenderer textRenderer, 
-                                       String text, int x, int y, int color, float glowIntensity) {
+    public static void drawTextWithGlow(DrawContext context, net.minecraft.client.font.TextRenderer textRenderer,
+                                        String text, int x, int y, int color, float glowIntensity) {
         Color c = new Color(color, true);
-        
+
         for (int pass = 0; pass < 4; pass++) {
             int glowAlpha = 0;
             int offsetX = 0;
             int offsetY = 0;
-            
+
             switch (pass) {
                 case 0:
                     glowAlpha = (int) (c.getAlpha() * glowIntensity * 0.2f);
@@ -451,21 +451,21 @@ public final class RenderUtils {
                     offsetY = 0;
                     break;
             }
-            
+
             int glowColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), glowAlpha).getRGB();
             context.drawText(textRenderer, text, x + offsetX, y + offsetY, glowColor, false);
         }
     }
 
     public static void drawCustomTextWithGlow(MatrixStack matrices, com.volt.utils.font.fonts.FontRenderer fontRenderer,
-                                             String text, int x, int y, int color, float glowIntensity) {
+                                              String text, int x, int y, int color, float glowIntensity) {
         Color c = new Color(color, true);
-        
+
         for (int pass = 0; pass < 4; pass++) {
             int glowAlpha = 0;
             int offsetX = 0;
             int offsetY = 0;
-            
+
             switch (pass) {
                 case 0:
                     glowAlpha = (int) (c.getAlpha() * glowIntensity * 0.2f);
@@ -488,7 +488,7 @@ public final class RenderUtils {
                     offsetY = 0;
                     break;
             }
-            
+
             int glowColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), glowAlpha).getRGB();
             fontRenderer.drawString(matrices, text, x + offsetX, y + offsetY, new Color(glowColor, true));
         }

@@ -145,7 +145,6 @@ public class AimAssist extends Module {
     }
 
 
-
     private void applySmoothAiming(float targetYaw, float targetPitch) {
         long currentTime = System.currentTimeMillis();
 

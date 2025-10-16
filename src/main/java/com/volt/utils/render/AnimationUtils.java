@@ -261,7 +261,7 @@ public final class AnimationUtils {
     public record SequenceStep(float startValue, float targetValue, long duration, long delay, EasingFunction easing) {
 
         public SequenceStep(float startValue, float targetValue, long duration) {
-                this(startValue, targetValue, duration, 0, Easing.EASE_OUT_CUBIC);
-            }
+            this(startValue, targetValue, duration, 0, Easing.EASE_OUT_CUBIC);
         }
+    }
 } 

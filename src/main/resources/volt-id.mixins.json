@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ChatScreenMixin",
+    "ClientPlayerInteractionManagerMixin",
     "ExampleMixin",
     "HandledScreenMixin",
     "InGameHudMixin",
@@ -12,12 +13,11 @@
     "MinecraftClientAccessor",
     "MinecraftClientMixin",
     "MixinClientConnection",
+    "MouseHandlerAccessor",
     "MouseMixin",
-    "ScreenMixin",
-    "WorldRendererMixin",
-    "ClientPlayerInteractionManagerMixin",
     "PlayerEntityMixin",
-    "MouseHandlerAccessor"
+    "ScreenMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

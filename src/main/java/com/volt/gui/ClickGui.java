@@ -50,9 +50,9 @@ public final class ClickGui extends Screen {
     private final FontRenderer smallFont;
     private final float typedTitleElapsed = 0f;
     private final long lastCursorBlink = 0;
+    private final List<String> configs = new ArrayList<>();
     private String configName = "";
     private boolean configNameFocused = false;
-    private final List<String> configs = new ArrayList<>();
     private String selectedConfig = "";
 
     public ClickGui() {

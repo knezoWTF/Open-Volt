@@ -180,7 +180,7 @@ public class HUD extends Module {
             i = padding.getValueInt();
             double waveTime = (System.currentTimeMillis() / 1000.0) * waveSpeed.getValue();
             int moduleIndex = 0;
-            
+
             int prevBackgroundLeft = -1;
 
             for (Module m : enabledModules) {
@@ -232,13 +232,13 @@ public class HUD extends Module {
                 boolean isLast = moduleIndex == enabledModules.size() - 1;
 
                 if (glow.getValue()) {
-                    renderBordersWithGlow(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, 
-                                         prevBackgroundLeft, isFirst, isLast, color);
+                    renderBordersWithGlow(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom,
+                            prevBackgroundLeft, isFirst, isLast, color);
                 } else {
-                    renderBorders(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom, 
-                                 prevBackgroundLeft, isFirst, isLast, color);
+                    renderBorders(event, backgroundLeft, backgroundTop, backgroundRight, backgroundBottom,
+                            prevBackgroundLeft, isFirst, isLast, color);
                 }
-                
+
                 prevBackgroundLeft = backgroundLeft - 1;
 
                 switch (backBarMode.getMode()) {
@@ -250,7 +250,7 @@ public class HUD extends Module {
 
                 int textX = totalWidth - moduleWidth - padding.getValueInt();
                 int textY = i;
-                
+
                 if (glow.getValue()) {
                     renderTextWithGlow(event, fullName, textX, textY, textColor, customRenderer);
                 } else {
@@ -364,16 +364,16 @@ public class HUD extends Module {
         return "";
     }
 
-    private void renderBorders(EventRender2D event, int backgroundLeft, int backgroundTop, 
-                               int backgroundRight, int backgroundBottom, int prevBackgroundLeft, 
+    private void renderBorders(EventRender2D event, int backgroundLeft, int backgroundTop,
+                               int backgroundRight, int backgroundBottom, int prevBackgroundLeft,
                                boolean isFirst, boolean isLast, int color) {
         if (isFirst) {
             event.getContext().fill(backgroundLeft - 1, backgroundTop - 1, backgroundRight + 1, backgroundTop, color);
         }
-        
+
         event.getContext().fill(backgroundLeft - 1, backgroundTop, backgroundLeft, backgroundBottom, color);
         event.getContext().fill(backgroundRight, backgroundTop, backgroundRight + 1, backgroundBottom, color);
-        
+
         if (prevBackgroundLeft != -1 && prevBackgroundLeft != backgroundLeft - 1) {
             if (prevBackgroundLeft < backgroundLeft - 1) {
                 event.getContext().fill(prevBackgroundLeft, backgroundTop - 1, backgroundLeft, backgroundTop, color);
@@ -381,46 +381,46 @@ public class HUD extends Module {
                 event.getContext().fill(backgroundLeft - 1, backgroundTop - 1, prevBackgroundLeft + 1, backgroundTop, color);
             }
         }
-        
+
         if (isLast) {
             event.getContext().fill(backgroundLeft - 1, backgroundBottom, backgroundRight + 1, backgroundBottom + 1, color);
         }
     }
 
-    private void renderBordersWithGlow(EventRender2D event, int backgroundLeft, int backgroundTop, 
-                                       int backgroundRight, int backgroundBottom, int prevBackgroundLeft, 
+    private void renderBordersWithGlow(EventRender2D event, int backgroundLeft, int backgroundTop,
+                                       int backgroundRight, int backgroundBottom, int prevBackgroundLeft,
                                        boolean isFirst, boolean isLast, int color) {
         float intensity = glowIntensity.getValueFloat();
-        
+
         if (isFirst) {
-            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1, 
-                                    backgroundRight + 1, backgroundTop, color, intensity);
+            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1,
+                    backgroundRight + 1, backgroundTop, color, intensity);
         }
-        
-        RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop, 
-                                backgroundLeft, backgroundBottom, color, intensity);
-        RenderUtils.fillWithGlow(event.getContext(), backgroundRight, backgroundTop, 
-                                backgroundRight + 1, backgroundBottom, color, intensity);
-        
+
+        RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop,
+                backgroundLeft, backgroundBottom, color, intensity);
+        RenderUtils.fillWithGlow(event.getContext(), backgroundRight, backgroundTop,
+                backgroundRight + 1, backgroundBottom, color, intensity);
+
         if (prevBackgroundLeft != -1 && prevBackgroundLeft != backgroundLeft - 1) {
             if (prevBackgroundLeft < backgroundLeft - 1) {
-                RenderUtils.fillWithGlow(event.getContext(), prevBackgroundLeft, backgroundTop - 1, 
-                                        backgroundLeft, backgroundTop, color, intensity);
+                RenderUtils.fillWithGlow(event.getContext(), prevBackgroundLeft, backgroundTop - 1,
+                        backgroundLeft, backgroundTop, color, intensity);
             } else {
-                RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1, 
-                                        prevBackgroundLeft + 1, backgroundTop, color, intensity);
+                RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundTop - 1,
+                        prevBackgroundLeft + 1, backgroundTop, color, intensity);
             }
         }
-        
+
         if (isLast) {
-            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundBottom, 
-                                    backgroundRight + 1, backgroundBottom + 1, color, intensity);
+            RenderUtils.fillWithGlow(event.getContext(), backgroundLeft - 1, backgroundBottom,
+                    backgroundRight + 1, backgroundBottom + 1, color, intensity);
         }
     }
 
     private void renderTextWithGlow(EventRender2D event, String text, int x, int y, int color, FontRenderer customRenderer) {
         float intensity = glowIntensity.getValueFloat();
-        
+
         if (fontMode.getMode().equals("MC")) {
             RenderUtils.drawTextWithGlow(event.getContext(), mc.textRenderer, text, x, y, color, intensity);
         } else {
@@ -430,13 +430,13 @@ public class HUD extends Module {
 
     private int applyWaveColor(int baseColor, double waveValue) {
         Color base = new Color(baseColor, true);
-        
+
         double wave = Math.pow(waveValue, 0.5);
-        
+
         int r = (int) (base.getRed() + (255 - base.getRed()) * wave);
         int g = (int) (base.getGreen() + (255 - base.getGreen()) * wave);
         int b = (int) (base.getBlue() + (255 - base.getBlue()) * wave);
-        
+
         return (base.getAlpha() << 24) | (r << 16) | (g << 8) | b;
     }
 

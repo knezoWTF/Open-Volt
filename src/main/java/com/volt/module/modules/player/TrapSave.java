@@ -68,6 +68,7 @@ public final class TrapSave extends Module {
     private BlockPos lastScanPosition;
     private int lastScanRadius;
     private int lastScanHeight;
+
     public TrapSave() {
         super("Trap Save", "Detects trap blocks and armor stands around the player", -1, Category.PLAYER);
         this.addSettings(scanRadius, scanHeight, maxExpansion, soundAlert, showWarning, outlineWidth,
