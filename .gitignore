@@ -17,6 +17,12 @@
 !.gitignore
 !.gitattributes
 
-# ALlow other
+# Allow other sub-projects
+build-logic/*
+
+!build-logic/build.gradle
+!build-logic/src
+
+# Allow other
 !README.md
-!LICENSE.txt
+!LICENSE

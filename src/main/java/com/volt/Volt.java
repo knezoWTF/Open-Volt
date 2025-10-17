@@ -9,7 +9,7 @@ import com.volt.utils.render.font.FontManager;
 import io.github.racoondog.norbit.EventBus;
 import lombok.Getter;
 import meteordevelopment.orbit.IEventBus;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 @Getter
-public final class Volt implements ModInitializer {
+public final class Volt implements ClientModInitializer {
     public static final String CLIENT_VERSION = "v2.2";
     public static final boolean shouldUseMouseEvent = System.getProperty("os.name").toLowerCase().contains("windows");
     public static Volt INSTANCE;
@@ -50,7 +50,7 @@ public final class Volt implements ModInitializer {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
         // Double initialization prevention, it's already initializing in the constructor
     }
 }

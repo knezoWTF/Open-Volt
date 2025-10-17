@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "motionblurry",
+  "id": "volt",
   "version": "${version}",
   "name": "motionblurr",
   "description": "Motion Blur for fabric",
@@ -9,23 +9,22 @@
     "issues": "https://github.com/Noryea/motionblur-fabric/issues"
   },
   "license": "CC0-1.0",
-  "icon": "assets/volt-id/icon.png",
-  "environment": "*",
+  "icon": "assets/volt/icon.png",
+  "environment": "client",
   "entrypoints": {
-    "main": [
+    "client": [
       "com.volt.Volt"
     ]
   },
   "mixins": [
-    "volt-id.mixins.json"
+    "volt.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.14",
-    "minecraft": "~1.21.1",
+    "fabricloader": ">=0.16.3",
+    "minecraft": "1.21.1",
     "java": ">=21",
-    "fabric-api": "*"
-  },
-  "suggests": {
-    "another-mod": "*"
+    "fabric-api-base": ">=0.4.35",
+    "fabric-resource-loader-v0": ">=0.11.14",
+    "fabric-networking-api-v1": ">=3.1.1"
   }
 }

@@ -1,0 +1,30 @@
+plugins {
+    id "fabric-loom"
+    id "volt.base-conventions"
+}
+
+configurations {
+    jij // Jar in Jar
+    modJij // Jar in Jar for mods
+
+    include.extendsFrom modJij
+    modImplementation.extendsFrom modJij
+    modCompileOnlyApi.extendsFrom modJij
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    mappings "net.fabricmc:yarn:${project.yarn_mappings_version}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
+    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
+    modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
+}
+
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
