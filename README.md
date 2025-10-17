@@ -63,7 +63,7 @@ OpenVolt wouldn't exist without these amazing individuals:
 | **Koi**        | 1227992566339731479 | Core development & 1.9 combat expertise        |
 | **Etho**       | 1383737664645369926 | Moral support & Walmart Solutions              |
 | **3000IQPlay** | 1193266310977691760 | Strategic guidance & Walmart Solutions creator |
-| **Walper**     | 957343617272414230  | Code contributions                             |
+| **Walper**     | 957343617272414230  | Code contributions and auth, yo.               |
 
 A special shoutout to **Koi** for being an invaluable part of the Volt journey and for their deep knowledge of 1.9+ combat mechanics.
 
