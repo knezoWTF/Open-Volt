@@ -1,4 +1,4 @@
-package com.volt.utils.font.util;
+package com.volt.utils.render.font.util;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.client.gl.VertexBuffer;

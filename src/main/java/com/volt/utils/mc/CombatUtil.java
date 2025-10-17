@@ -1,6 +1,6 @@
 package com.volt.utils.mc;
 
-import com.volt.IMinecraft;
+import com.volt.utils.IMinecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 

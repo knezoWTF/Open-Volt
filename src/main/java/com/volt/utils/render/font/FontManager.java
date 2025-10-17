@@ -1,8 +1,8 @@
-package com.volt.utils.font;
+package com.volt.utils.render.font;
 
 
 import com.volt.Volt;
-import com.volt.utils.font.fonts.FontRenderer;
+import com.volt.utils.render.font.fonts.FontRenderer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

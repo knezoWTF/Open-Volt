@@ -1,6 +1,6 @@
-package com.volt.utils.font.fonts;
+package com.volt.utils.render.font.fonts;
 
-import com.volt.utils.font.util.RendererUtils;
+import com.volt.utils.render.font.util.RendererUtils;
 import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.MinecraftClient;

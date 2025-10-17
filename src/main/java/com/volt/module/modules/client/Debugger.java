@@ -3,7 +3,7 @@ package com.volt.module.modules.client;
 import com.volt.event.impl.network.EventPacket;
 import com.volt.module.Category;
 import com.volt.module.Module;
-import com.volt.utils.mc.ChatUtils;
+import com.volt.utils.mc.ChatUtil;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 
@@ -19,7 +19,7 @@ public class Debugger extends Module {
         if (!(e.getPacket() instanceof ClickSlotC2SPacket packet))
             return;
 
-        ChatUtils.addChatMessage("""
+        ChatUtil.addChatMessage("""
                 ClickSlotPacket
                   syncId: %s
                   revision: %s

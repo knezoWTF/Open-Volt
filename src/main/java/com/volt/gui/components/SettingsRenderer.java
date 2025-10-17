@@ -3,7 +3,7 @@ package com.volt.gui.components;
 import com.volt.gui.events.GuiEventHandler;
 import com.volt.module.Module;
 import com.volt.module.setting.*;
-import com.volt.utils.font.fonts.FontRenderer;
+import com.volt.utils.render.font.fonts.FontRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;

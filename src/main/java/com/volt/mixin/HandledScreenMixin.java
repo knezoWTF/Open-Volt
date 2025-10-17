@@ -2,7 +2,7 @@ package com.volt.mixin;
 
 import com.volt.Volt;
 import com.volt.module.modules.render.ContainerSlots;
-import com.volt.utils.font.FontManager;
+import com.volt.utils.render.font.FontManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.Items;

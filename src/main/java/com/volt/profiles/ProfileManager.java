@@ -8,7 +8,7 @@ import com.volt.Volt;
 import com.volt.module.Module;
 import com.volt.module.ModuleManager;
 import com.volt.module.setting.*;
-import com.volt.utils.mc.ChatUtils;
+import com.volt.utils.mc.ChatUtil;
 import lombok.Getter;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public final class ProfileManager {
 
     private void createProfileDirectoryIfNeeded() {
         if (profileDir != null && !profileDir.exists() && !profileDir.mkdirs()) {
-            ChatUtils.addChatMessage("§cFailed to create profile directory: " + profileDir.getAbsolutePath());
+            ChatUtil.addChatMessage("§cFailed to create profile directory: " + profileDir.getAbsolutePath());
         }
     }
 
@@ -41,7 +41,7 @@ public final class ProfileManager {
         if (profileName == null || moduleManager == null) return;
         final File profileFile = new File(profileDir, profileName + ".json");
         if (!profileFile.exists()) {
-            ChatUtils.addChatMessage("Profile not found: " + profileName);
+            ChatUtil.addChatMessage("Profile not found: " + profileName);
             return;
         }
         resetProfile();
@@ -61,12 +61,12 @@ public final class ProfileManager {
                     }
                 }
             }
-            ChatUtils.addChatMessage("Profile loaded successfully.");
+            ChatUtil.addChatMessage("Profile loaded successfully.");
         } catch (com.google.gson.JsonSyntaxException jse) {
-            ChatUtils.addChatMessage("§cFailed to parse profile (invalid JSON): " + profileFile.getName());
+            ChatUtil.addChatMessage("§cFailed to parse profile (invalid JSON): " + profileFile.getName());
             jse.printStackTrace();
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to load profile: " + e.getMessage());
+            ChatUtil.addChatMessage("§cFailed to load profile: " + e.getMessage());
         }
     }
 
@@ -128,10 +128,10 @@ public final class ProfileManager {
                         }
                     }
                 }
-                default -> ChatUtils.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
+                default -> ChatUtil.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
             }
         } catch (Exception ex) {
-            ChatUtils.addChatMessage("§cFailed to load setting: " + name);
+            ChatUtil.addChatMessage("§cFailed to load setting: " + name);
         }
     }
 
@@ -143,20 +143,20 @@ public final class ProfileManager {
         if (profileName == null) return;
         final File profileFile = new File(profileDir, profileName + ".json");
         if (profileFile.exists() && !forceOverride) {
-            ChatUtils.addChatMessage("§eProfile '" + profileName + "' already exists. Use .save <name> -override to overwrite it.");
+            ChatUtil.addChatMessage("§eProfile '" + profileName + "' already exists. Use .save <name> -override to overwrite it.");
             return;
         }
 
         try {
             if (!profileFile.exists() && !profileFile.createNewFile()) {
-                ChatUtils.addChatMessage("§cFailed to create profile file: " + profileFile.getAbsolutePath());
+                ChatUtil.addChatMessage("§cFailed to create profile file: " + profileFile.getAbsolutePath());
                 return;
             }
-            ChatUtils.addChatMessage(forceOverride ?
+            ChatUtil.addChatMessage(forceOverride ?
                     "§aProfile '" + profileName + "' overridden successfully." :
                     "§aProfile '" + profileName + "' saved successfully.");
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to save profile: " + e.getMessage());
+            ChatUtil.addChatMessage("§cFailed to save profile: " + e.getMessage());
             return;
         }
         writeProfileToFile(profileFile);
@@ -182,7 +182,7 @@ public final class ProfileManager {
         try (FileWriter writer = new FileWriter(profileFile, StandardCharsets.UTF_8)) {
             gson.toJson(json, writer);
         } catch (IOException e) {
-            ChatUtils.addChatMessage("§cFailed to write profile: " + e.getMessage());
+            ChatUtil.addChatMessage("§cFailed to write profile: " + e.getMessage());
         }
     }
 
@@ -205,10 +205,10 @@ public final class ProfileManager {
                     if (colorSetting.isHasAlpha()) hex += String.format("%02X", colorSetting.getAlpha());
                     moduleJson.addProperty(name, hex);
                 }
-                default -> ChatUtils.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
+                default -> ChatUtil.addChatMessage("§cUnknown setting type: " + setting.getClass().getSimpleName());
             }
         } catch (Exception e) {
-            ChatUtils.addChatMessage("§cFailed to save setting: " + name);
+            ChatUtil.addChatMessage("§cFailed to save setting: " + name);
         }
     }
 

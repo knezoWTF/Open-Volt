@@ -4,13 +4,15 @@ import com.volt.command.CommandManager;
 import com.volt.module.ModuleManager;
 import com.volt.module.events.MouseModuleHandler;
 import com.volt.profiles.ProfileManager;
-import com.volt.utils.font.FontManager;
 import com.volt.utils.notification.NotificationManager;
+import com.volt.utils.render.font.FontManager;
 import io.github.racoondog.norbit.EventBus;
 import lombok.Getter;
 import meteordevelopment.orbit.IEventBus;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
@@ -27,18 +29,22 @@ public final class Volt implements ModInitializer {
     public final CommandManager commandManager;
     public final MouseModuleHandler mouseModuleHandler;
     public final NotificationManager notificationManager;
+    private final Logger logger = LoggerFactory.getLogger("Volt");
 
     public Volt() {
         INSTANCE = this;
         mc = MinecraftClient.getInstance();
         VoltEventBus = EventBus.threadSafe();
         VoltEventBus.registerLambdaFactory("com.volt", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
-        moduleManager = new ModuleManager();
-        fontManager = new FontManager();
-        profileManager = new ProfileManager();
-        commandManager = new CommandManager();
-        mouseModuleHandler = new MouseModuleHandler();
-        notificationManager = NotificationManager.getInstance();
+
+        this.moduleManager = new ModuleManager();
+        this.fontManager = new FontManager();
+        this.profileManager = new ProfileManager();
+        this.commandManager = new CommandManager();
+        this.commandManager.init();
+        this.mouseModuleHandler = new MouseModuleHandler();
+        this.notificationManager = NotificationManager.getInstance();
+
         VoltEventBus.subscribe(mouseModuleHandler);
         VoltEventBus.subscribe(notificationManager);
     }

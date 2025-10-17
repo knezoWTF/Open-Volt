@@ -8,7 +8,7 @@ import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.ModeSetting;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.font.util.RendererUtils;
+import com.volt.utils.render.font.util.RendererUtils;
 import com.volt.utils.render.RenderUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.render.GameRenderer;

@@ -1,4 +1,4 @@
-package com.volt.utils.font.util;
+package com.volt.utils.render.font.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.NonNull;

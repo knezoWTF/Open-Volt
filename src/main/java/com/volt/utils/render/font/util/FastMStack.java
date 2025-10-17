@@ -1,4 +1,4 @@
-package com.volt.utils.font.util;
+package com.volt.utils.render.font.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;

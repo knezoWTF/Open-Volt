@@ -5,7 +5,7 @@ import com.volt.event.impl.render.EventRender2D;
 import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.font.FontManager;
+import com.volt.utils.render.font.FontManager;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
 

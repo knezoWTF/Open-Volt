@@ -8,9 +8,9 @@ import com.volt.module.Category;
 import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.font.util.RendererUtils;
+import com.volt.utils.render.font.util.RendererUtils;
 import com.volt.utils.math.TimerUtil;
-import com.volt.utils.mc.ChatUtils;
+import com.volt.utils.mc.ChatUtil;
 import lombok.Getter;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Block;
@@ -282,7 +282,7 @@ public final class TrapSave extends Module {
             mc.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), 2.0f));
         }
 
-        ChatUtils.addChatMessage(CHAT_PREFIX + "Trap detected: " + detectedTrapType + " (" + trapCount + " traps)");
+        ChatUtil.addChatMessage(CHAT_PREFIX + "Trap detected: " + detectedTrapType + " (" + trapCount + " traps)");
     }
 
     private void renderWarningOverlay(EventRender2D event) {

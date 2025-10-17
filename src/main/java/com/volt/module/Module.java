@@ -1,6 +1,6 @@
 package com.volt.module;
 
-import com.volt.IMinecraft;
+import com.volt.utils.IMinecraft;
 import com.volt.Volt;
 import com.volt.module.setting.KeybindSetting;
 import com.volt.module.setting.Setting;

@@ -1,6 +1,6 @@
 package com.volt.utils.keybinding;
 
-import com.volt.IMinecraft;
+import com.volt.utils.IMinecraft;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;

@@ -3,7 +3,7 @@ package com.volt.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.volt.Volt;
 import com.volt.event.impl.render.EventRender3D;
-import com.volt.utils.font.util.RendererUtils;
+import com.volt.utils.render.font.util.RendererUtils;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;

@@ -1,4 +1,4 @@
-package com.volt;
+package com.volt.utils;
 
 import net.minecraft.client.MinecraftClient;
 

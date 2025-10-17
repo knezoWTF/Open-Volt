@@ -1,6 +1,6 @@
 package com.volt.mixin;
 
-import com.volt.IMinecraft;
+import com.volt.utils.IMinecraft;
 import com.volt.Volt;
 import com.volt.event.impl.player.TickEvent;
 import com.volt.event.impl.world.WorldChangeEvent;
@@ -14,7 +14,6 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.hit.HitResult;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

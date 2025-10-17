@@ -1,4 +1,4 @@
-package com.volt.utils.simulation;
+package com.volt.utils.keybinding.simulation;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.MinecraftClient;

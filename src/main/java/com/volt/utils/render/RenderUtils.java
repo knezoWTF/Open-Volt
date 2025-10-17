@@ -457,7 +457,7 @@ public final class RenderUtils {
         }
     }
 
-    public static void drawCustomTextWithGlow(MatrixStack matrices, com.volt.utils.font.fonts.FontRenderer fontRenderer,
+    public static void drawCustomTextWithGlow(MatrixStack matrices, com.volt.utils.render.font.fonts.FontRenderer fontRenderer,
                                               String text, int x, int y, int color, float glowIntensity) {
         Color c = new Color(color, true);
 

@@ -1,4 +1,4 @@
-package com.volt.utils.font.fonts;
+package com.volt.utils.render.font.fonts;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -7,7 +7,7 @@ import com.volt.module.Module;
 import com.volt.module.setting.BooleanSetting;
 import com.volt.module.setting.ColorSetting;
 import com.volt.module.setting.NumberSetting;
-import com.volt.utils.font.util.RendererUtils;
+import com.volt.utils.render.font.util.RendererUtils;
 import com.volt.utils.friend.FriendManager;
 import com.volt.utils.render.RenderUtils;
 import meteordevelopment.orbit.EventHandler;

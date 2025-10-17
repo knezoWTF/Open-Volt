@@ -1,4 +1,4 @@
-package com.volt.utils.simulation;
+package com.volt.utils.keybinding.simulation;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;

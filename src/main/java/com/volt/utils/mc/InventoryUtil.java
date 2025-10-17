@@ -1,6 +1,6 @@
 package com.volt.utils.mc;
 
-import com.volt.IMinecraft;
+import com.volt.utils.IMinecraft;
 import lombok.experimental.UtilityClass;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
