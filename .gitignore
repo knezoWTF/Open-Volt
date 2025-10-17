@@ -1,121 +1,22 @@
-# ===================
-# Java & JVM files
-# ===================
-*.class
-*.jar
-*.war
-*.ear
-*.zip
-*.log
-*.hprof
-*.jfr
-*.idx
-*.bin
-*.dat
-*.map
-*.rej
-*.orig
-*.patch
-*.tmp
-*.swp
+# Ignore everything by default
+/*
 
-# Crash and error logs
-hs_err_*.log
-replay_*.log
+# Allow source files
+!src/
 
-# ===================
-# Build outputs
-# ===================
-/build/
-/out/
-/classes/
-/bin/
+# Allow gradle
+!gradle/
+!gradlew
+!gradlew.bat
+!build.gradle
+!settings.gradle
+!gradle.properties
 
-# ===================
-# Gradle
-# ===================
-.gradle/
-!gradle/wrapper/gradle-wrapper.jar
+# Allow git
+!.github/
+!.gitignore
+!.gitattributes
 
-# ===================
-# Maven
-# ===================
-/target/
-
-# ===================
-# IDEs and Editors
-# ===================
-
-# Eclipse
-.classpath
-.project
-.settings/
-*.launch
-
-# IntelliJ IDEA
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# VS Code
-.vscode/
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-# ===================
-# OS & Filesystem
-# ===================
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.lnk
-
-# Linux
-*~
-.nfs*
-
-# ===================
-# Miscellaneous Tools
-# ===================
-
-# Fabric (Minecraft modding)
-run/
-
-# Fabric Loom cache files
-.fabric/
-.loom-cache/
-remapClasspath.txt
-
-# Logs
-logs/
-*.log
-
-# Local environment files
-.env
-.env.local
-.env.*.local
-
-# JetBrains Rider
-.idea/
-
-# ===================
-# Git
-# ===================
-*.orig
-*.patch
-
-/.gradle/
+# ALlow other
+!README.md
+!LICENSE.txt
