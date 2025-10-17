@@ -2,13 +2,16 @@ package com.volt.utils.math;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 @UtilityClass
 public final class MathUtils {
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     public static double randomDoubleBetween(double origin, double bound) {
-        return random.nextDouble(Math.clamp(origin, Integer.MIN_VALUE, bound - 1), bound);
+        if (origin >= bound) {
+            origin--;
+        }
+        return random.nextDouble(origin, bound);
     }
 }

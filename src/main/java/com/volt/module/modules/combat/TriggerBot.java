@@ -25,7 +25,6 @@ import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
 
