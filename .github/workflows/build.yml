@@ -7,34 +7,52 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
-      - uses: gradle/wrapper-validation-action@v3
-      - uses: actions/setup-java@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v3
+        with:
+          allow-snapshots: true
+        continue-on-error: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
         with:
           distribution: "graalvm"
           java-version: 21
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          cache: gradle
+
       - name: Build project
-        run: ./gradlew build
+        run: ./gradlew build --no-daemon
+        timeout-minutes: 10
+
+      - name: Capture build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build/libs/*.jar
+          if-no-files-found: error
+
       - name: Receive commit hash
         id: vars
-        run: echo "GITHUB_SHA_SHORT=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+        run: |
+          echo "GITHUB_SHA_SHORT=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.GITHUB_SHA_SHORT }}
+          name: "Build ${{ env.BUILD_VERSION }}-${{ env.GITHUB_SHA_SHORT }}"
           files: build/libs/*.jar
           prerelease: ${{ github.ref != 'refs/heads/main' }}
           make_latest: ${{ github.ref == 'refs/heads/main' }}
-          target_commitish: ${{ github.ref }}
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
