@@ -1,6 +1,7 @@
 package com.volt.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.volt.Volt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
@@ -35,7 +36,7 @@ public class ShaderManager {
         GL20.glLinkProgram(program);
 
         if (GL20.glGetProgrami(program, GL20.GL_LINK_STATUS) == 0) {
-            System.err.println("Failed to link shader program: " + GL20.glGetProgramInfoLog(program));
+            Volt.INSTANCE.getLogger().error("Could not link shader: " + GL20.glGetProgramInfoLog(program));
             GL20.glDeleteProgram(program);
             return 0;
         }
@@ -53,7 +54,7 @@ public class ShaderManager {
             Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(identifier).orElse(null);
 
             if (resource == null) {
-                System.err.println("Could not find shader: " + path);
+                Volt.INSTANCE.getLogger().error("Could not load shader: " + identifier);
                 return 0;
             }
 
@@ -67,14 +68,14 @@ public class ShaderManager {
             GL20.glCompileShader(shader);
 
             if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) == 0) {
-                System.err.println("Failed to compile shader " + path + ": " + GL20.glGetShaderInfoLog(shader));
+                Volt.INSTANCE.getLogger().error("Failed to compile shader " + path + ": " + GL20.glGetShaderInfoLog(shader));
                 GL20.glDeleteShader(shader);
                 return 0;
             }
 
             return shader;
         } catch (IOException e) {
-            System.err.println("Failed to load shader " + path + ": " + e.getMessage());
+            Volt.INSTANCE.getLogger().error("Failed to load shader " + path + ": " + e.getMessage());
             return 0;
         }
     }

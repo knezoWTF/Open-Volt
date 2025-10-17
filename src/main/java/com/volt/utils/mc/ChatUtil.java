@@ -84,7 +84,7 @@ public final class ChatUtil implements IMinecraft {
     @Deprecated(forRemoval = true)
     public static void addChatMessage(String text) {
         if (mc.player == null || mc.world == null || Objects.isNull(mc.inGameHud) || mc.inGameHud.getChatHud() == null) {
-            System.out.println("[Volt] " + text);
+            Volt.INSTANCE.getLogger().info("[Volt] " + text);
             return;
         }
         mc.inGameHud.getChatHud().addMessage(Text.of(text));
