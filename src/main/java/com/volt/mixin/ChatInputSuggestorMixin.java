@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.volt.Volt;
 import com.volt.command.Command;
 import com.volt.command.CommandManager;
+import com.volt.module.modules.client.Client;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.command.CommandSource;
@@ -67,6 +68,16 @@ public abstract class ChatInputSuggestorMixin {
             if (Objects.isNull(this.parse)) {
                 this.parse = commandManager.commandDispatcher().parse(reader, Command.COMMAND_SOURCE);
             }
+
+            final boolean shouldCancel = Volt.INSTANCE.getModuleManager().getModule(Client.class)
+                    .filter(module -> !module.isEnabled() && !module.showCommandSuggestions())
+                    .isPresent();
+
+            if (shouldCancel) {
+                callback.cancel();
+                return;
+            }
+
             final int cursor = this.textField.getCursor();
             if (cursor >= length && (Objects.isNull(this.window) || !this.completingSuggestions)) {
                 this.pendingSuggestions = commandManager.commandDispatcher().getCompletionSuggestions(this.parse, cursor);
