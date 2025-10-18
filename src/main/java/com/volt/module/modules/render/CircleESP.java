@@ -69,9 +69,11 @@ public final class CircleESP extends Module {
             if (!should(ent)) continue;
             hasVertices = true;
             Vec3d base = ent.getPos();
-            double cx = base.x - cam.x;
-            double cy = base.y - cam.y + y;
-            double cz = base.z - cam.z;
+
+            float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
+            double cx = (ent.prevX + (base.getX() - ent.prevX) * tickDelta) - cam.x;
+            double cy = (ent.prevY + (base.getY() - ent.prevY) * tickDelta) - cam.y + y;
+            double cz = (ent.prevZ + (base.getZ() - ent.prevZ) * tickDelta) - cam.z;
 
             for (int i = 0; i < segs; i++) {
                 double a0 = (i / (double) segs) * Math.PI * 2.0;
