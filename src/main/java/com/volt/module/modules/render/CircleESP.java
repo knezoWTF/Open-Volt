@@ -18,7 +18,6 @@ import org.joml.Matrix4f;
 import java.awt.*;
 
 public final class CircleESP extends Module {
-
     private final ModeSetting targets = new ModeSetting("Targets", "Players", "Players", "Living");
     private final NumberSetting heightMin = new NumberSetting("Height Min", 0.1, 2.5, 0.2, 0.05);
     private final NumberSetting heightMax = new NumberSetting("Height Max", 0.2, 3.0, 1.4, 0.05);
@@ -35,11 +34,11 @@ public final class CircleESP extends Module {
     }
 
     @EventHandler
-    private void onRender3D(EventRender3D e) {
+    private void onRender3D(EventRender3D event) {
         if (isNull()) return;
 
-        MatrixStack matrices = e.getMatrixStack();
-        Matrix4f m = matrices.peek().getPositionMatrix();
+        MatrixStack matrices = event.getMatrixStack();
+        Matrix4f posMatrix = matrices.peek().getPositionMatrix();
         Vec3d cam = mc.gameRenderer.getCamera().getPos();
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
@@ -52,32 +51,32 @@ public final class CircleESP extends Module {
 
         float minH = heightMin.getValueFloat();
         float maxH = heightMax.getValueFloat();
-        float rad = radius.getValueFloat();
+        float radius = this.radius.getValueFloat();
         float thick = thickness.getValueFloat();
-        int segs = Math.max(8, segments.getValueInt());
+        int segments = Math.max(8, this.segments.getValueInt());
 
-        double t = (System.currentTimeMillis() / 1000.0) * speed.getValue();
-        double phase = (Math.sin(t) * 0.5) + 0.5;
+        double time = (System.currentTimeMillis() / 1000.0) * speed.getValue();
+        double phase = (Math.sin(time) * 0.5) + 0.5;
         float y = (float) (minH + (maxH - minH) * phase);
         float baseAlpha = color.getValue().getAlpha() / 255.0f;
 
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
 
         boolean hasVertices = false;
 
-        for (var ent : mc.world.getEntities()) {
-            if (!should(ent)) continue;
+        for (var entity : mc.world.getEntities()) {
+            if (!should(entity)) continue;
             hasVertices = true;
-            Vec3d base = ent.getPos();
+            Vec3d base = entity.getPos();
 
             float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
-            double cx = (ent.prevX + (base.getX() - ent.prevX) * tickDelta) - cam.x;
-            double cy = (ent.prevY + (base.getY() - ent.prevY) * tickDelta) - cam.y + y;
-            double cz = (ent.prevZ + (base.getZ() - ent.prevZ) * tickDelta) - cam.z;
+            double cx = (entity.prevX + (base.getX() - entity.prevX) * tickDelta) - cam.x;
+            double cy = (entity.prevY + (base.getY() - entity.prevY) * tickDelta) - cam.y + y;
+            double cz = (entity.prevZ + (base.getZ() - entity.prevZ) * tickDelta) - cam.z;
 
-            for (int i = 0; i < segs; i++) {
-                double a0 = (i / (double) segs) * Math.PI * 2.0;
-                double a1 = ((i + 1) / (double) segs) * Math.PI * 2.0;
+            for (int i = 0; i < segments; i++) {
+                double a0 = (i / (double) segments) * Math.PI * 2.0;
+                double a1 = ((i + 1) / (double) segments) * Math.PI * 2.0;
                 double x0 = Math.cos(a0), z0 = Math.sin(a0);
                 double x1 = Math.cos(a1), z1 = Math.sin(a1);
 
@@ -86,36 +85,36 @@ public final class CircleESP extends Module {
                 float aSeg = baseAlpha * (1.0f - (float) sideFade.getValue() * sideFactor);
                 float aOut = aSeg * 0.2f;
 
-                float x0i = (float) (cx + x0 * rad);
-                float z0i = (float) (cz + z0 * rad);
-                float x1i = (float) (cx + x1 * rad);
-                float z1i = (float) (cz + z1 * rad);
-                float x0o = (float) (cx + x0 * (rad + thick));
-                float z0o = (float) (cz + z0 * (rad + thick));
-                float x1o = (float) (cx + x1 * (rad + thick));
-                float z1o = (float) (cz + z1 * (rad + thick));
+                float x0i = (float) (cx + x0 * radius);
+                float z0i = (float) (cz + z0 * radius);
+                float x1i = (float) (cx + x1 * radius);
+                float z1i = (float) (cz + z1 * radius);
+                float x0o = (float) (cx + x0 * (radius + thick));
+                float z0o = (float) (cz + z0 * (radius + thick));
+                float x1o = (float) (cx + x1 * (radius + thick));
+                float z1o = (float) (cz + z1 * (radius + thick));
 
-                buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aSeg);
-                buf.vertex(m, x1i, (float) cy, z1i).color(r, g, b, aSeg);
-                buf.vertex(m, x1o, (float) cy, z1o).color(r, g, b, aOut);
+                buffer.vertex(posMatrix, x0i, (float) cy, z0i).color(r, g, b, aSeg);
+                buffer.vertex(posMatrix, x1i, (float) cy, z1i).color(r, g, b, aSeg);
+                buffer.vertex(posMatrix, x1o, (float) cy, z1o).color(r, g, b, aOut);
 
-                buf.vertex(m, x0i, (float) cy, z0i).color(r, g, b, aSeg);
-                buf.vertex(m, x1o, (float) cy, z1o).color(r, g, b, aOut);
-                buf.vertex(m, x0o, (float) cy, z0o).color(r, g, b, aOut);
+                buffer.vertex(posMatrix, x0i, (float) cy, z0i).color(r, g, b, aSeg);
+                buffer.vertex(posMatrix, x1o, (float) cy, z1o).color(r, g, b, aOut);
+                buffer.vertex(posMatrix, x0o, (float) cy, z0o).color(r, g, b, aOut);
             }
         }
 
         if (hasVertices) {
-            BufferRenderer.drawWithGlobalProgram(buf.end());
+            BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
 
         RenderSystem.enableDepthTest();
     }
 
-    private boolean should(net.minecraft.entity.Entity e) {
-        if (e == mc.player) return e instanceof PlayerEntity && targets.isMode("Players");
-        if (targets.isMode("Players")) return e instanceof PlayerEntity;
-        return e instanceof LivingEntity;
+    private boolean should(net.minecraft.entity.Entity entity) {
+        if (entity == mc.player) return entity instanceof PlayerEntity && targets.isMode("Players");
+        if (targets.isMode("Players")) return entity instanceof PlayerEntity;
+        return entity instanceof LivingEntity;
     }
 }
 
